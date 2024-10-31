@@ -12,7 +12,7 @@
   &nbsp; | &nbsp; 
   <a href="https://github.com/orgs/boostcampwm-2024/projects/19">백로그</a>
   &nbsp; | &nbsp;
-  <a href="https://www.notion.so/04317c11a3d240408383dab9249527a2">기획서</a>   &nbsp; | &nbsp;
+  <a href="https://lemon-scene-5c9.notion.site/12e622fa707b809abe4ff76038787e27?pvs=74">기획서</a>   &nbsp; | &nbsp;
   <a href="https://www.figma.com/design/4xAIQB3t5CIgQqxCVtspZy/You-Quiz?node-id=0-1&node-type=canvas&t=GaZuAbtY0GrDjO48-0">figma</a> 
   <br />
   <a href="https://github.com/boostcampwm-2024/web01-youQuiz/wiki/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0">그라운드 룰</a>
@@ -22,11 +22,14 @@
 
 
 ## ✋팀원 소개
-
+<div align="center">
+  
 |[FE] J031_김도훈|[FE] J255_최병찬|[BE] J087_도성현|[BE] J289_이채원|
 |--|--|--|--|
 |<img src="https://avatars.githubusercontent.com/u/74540646?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/77400298?v=4" width=150 />|<img src="https://avatars.githubusercontent.com/u/52828205?v=4" width=150 />|<img src="https://avatars.githubusercontent.com/u/99425616?v=4" width=150/>|
 |[@dooohun](https://github.com/dooohun)|[@chan-byeong](https://github.com/chan-byeong)|[@glaxyt](https://github.com/glaxyt)|[@nowChae](https://github.com/nowChae)|
+
+</div>
 
 
 
