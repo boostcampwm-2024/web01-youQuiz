@@ -4,6 +4,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "dev": "yarn dev:FE",
+    "dev:FE": "yarn workspace client run dev"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
