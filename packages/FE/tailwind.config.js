@@ -4,8 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#053cad',
+        primary: '#053cd5',
         secondary: '#3fe27e',
+        'weak-primary': '#E5F4FF',
         text: '#1a1a1a',
         textWeak: '#525252',
         border: '#e5e5e5',
