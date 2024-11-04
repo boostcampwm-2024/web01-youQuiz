@@ -9,6 +9,7 @@ export default {
         text: '#1a1a1a',
         textWeak: '#525252',
         border: '#e5e5e5',
+        weak: '#f5f5f5',
         yellow: {
           100: '#ffdb43',
           200: '#fdb400',
@@ -36,7 +37,7 @@ export default {
       },
       borderRadius: {
         base: '12px',
-      }
+      },
     },
   },
   plugins: [
