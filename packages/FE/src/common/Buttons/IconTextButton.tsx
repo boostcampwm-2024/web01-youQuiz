@@ -1,10 +1,13 @@
-import React from 'react';
-
 interface IconTextButtonProps {
+  /** 어떤 아이콘을 넣을 것인가 */
   Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  /** 아이콘 밑에 텍스트 */
   text: string;
+  /** 활성화 여부 */
   isActive: boolean;
+  /** 클릭 이벤트 */
   onClick: () => void;
+  /** How large should the button be? */
   size?: 'small' | 'medium' | 'large';
 }
 
