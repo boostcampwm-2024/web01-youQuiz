@@ -18,30 +18,32 @@ interface CustomButtonProps {
 const buttonStyles = {
   sm: {
     primary: {
-      full: 'px-2.5 py-1.5 bg-primary text-white rounded-lg',
-      outline: 'px-2.5 py-1.5 bg-white border-2 border-primary text-primary rounded-lg ',
+      full: 'h-[24px] px-2.5 py-1.5 bg-primary text-white rounded-lg',
+      outline: 'h-[24px] px-2.5 py-1.5 bg-white border-2 border-primary text-primary rounded-lg ',
     },
     secondary: {
-      full: 'px-2.5 py-1.5 bg-secondary text-white rounded-lg',
-      outline: 'px-2.5 py-1.5 bg-white border-2 border-secondary text-secondary rounded-lg',
+      full: 'h-[24px] px-2.5 py-1.5 bg-secondary text-white rounded-lg',
+      outline:
+        'h-[24px] px-2.5 py-1.5 bg-white border-2 border-secondary text-secondary rounded-lg',
     },
     light: {
-      full: 'px-2.5 py-1.5 bg-blue-100 text-primary rounded-lg',
-      outline: 'px-2.5 py-1.5 bg-white border-2 border-blue-100 text-blue-100 rounded-lg',
+      full: 'h-[24px] px-2.5 py-1.5 bg-blue-100 text-primary rounded-lg',
+      outline: 'h-[24px] px-2.5 py-1.5 bg-white border-2 border-blue-100 text-blue-100 rounded-lg',
     },
   },
   md: {
     primary: {
-      full: 'px-4 py-2.5 bg-primary text-white rounded-base',
-      outline: 'px-4 py-2.5 bg-white border-2 border-primary text-primary rounded-base',
+      full: 'h-[44px] px-4 py-2.5 bg-primary text-white rounded-base',
+      outline: 'h-[44px] px-4 py-2.5 bg-white border-2 border-primary text-primary rounded-base',
     },
     secondary: {
-      full: 'px-4 py-2.5 bg-secondary text-white rounded-base',
-      outline: 'px-4 py-2.5 bg-white border-2 border-secondary text-secondary rounded-base',
+      full: 'h-[44px] px-4 py-2.5 bg-secondary text-white rounded-base',
+      outline:
+        'h-[44px] px-4 py-2.5 bg-white border-2 border-secondary text-secondary rounded-base',
     },
     light: {
-      full: 'px-4 py-2.5 bg-blue-100 text-primary rounded-base',
-      outline: 'px-4 py-2.5 bg-white border-2 border-blue-100 text-blue-100 rounded-base',
+      full: 'h-[44px] px-4 py-2.5 bg-blue-100 text-primary rounded-base',
+      outline: 'h-[44px] px-4 py-2.5 bg-white border-2 border-blue-100 text-blue-100 rounded-base',
     },
   },
 };
