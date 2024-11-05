@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import InfoCard from './InfoCard';
-import QuestionIcon from '../assets/icons/question.svg?react';
-import CheckboxIcon from '../assets/icons/check-box.svg?react';
+import QuestionIcon from '@/assets/icons/question.svg?react';
+import CheckboxIcon from '@/assets/icons/check-box.svg?react';
 
 const quizInfoList = [
   {
