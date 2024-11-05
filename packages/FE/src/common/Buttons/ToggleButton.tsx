@@ -1,6 +1,6 @@
-import CheckIcon from '../assets/icons/check.svg?react';
-import CheckBoxIcon from '../assets/icons/check-box.svg?react';
-import QuestionIcon from '../assets/icons/question.svg?react';
+import CheckIcon from '@/assets/icons/check.svg?react';
+import CheckBoxIcon from '@/assets/icons/check-box.svg?react';
+import QuestionIcon from '@/assets/icons/question.svg?react';
 
 type ToggleButtonType = 'check' | 'question' | 'checkBox';
 type ToggleButtonSize = 'small' | 'medium' | 'large';
