@@ -5,7 +5,7 @@ import GraphIcon from '@/assets/icons/graph.svg?react';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 
 const meta = {
-  title: '아이콘 텍스트 버튼',
+  title: 'common/IconTextButton',
   parameters: {
     layout: 'centered',
   },

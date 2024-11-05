@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import BackButton from './BackButton';
 
 const meta = {
-  title: '뒤로가기 버튼',
+  title: 'common/BackButton',
   parameters: {
     layout: 'centered',
   },

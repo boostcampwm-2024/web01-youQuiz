@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import ToggleButton from './ToggleButton';
 
 const meta = {
-  title: '토글 버튼',
+  title: 'common/ToggleButton',
   parameters: {
     layout: 'centered',
   },

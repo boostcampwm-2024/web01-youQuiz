@@ -27,7 +27,7 @@ const quizInfoList = [
 ];
 
 const meta = {
-  title: '정보 카드',
+  title: 'common/InfoCard',
   parameters: {
     layout: 'centered',
   },
