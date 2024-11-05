@@ -44,9 +44,9 @@ export default function ProgressBar({
 
   return (
     <section className="group" onAnimationEnd={handleAnimationEnd}>
-      <div className="h-2 w-full bg-transparent">
+      <div className="h-[6px] w-full bg-transparent">
         <div
-          className={`h-2 w-full ${progressBarColor} ${progressBarShape} ${progressAnimation} ${pauseOnHover && 'group-hover:[animation-play-state:paused]'}`}
+          className={`h-[6px] w-full ${progressBarColor} ${progressBarShape} ${progressAnimation} ${pauseOnHover && 'group-hover:[animation-play-state:paused]'}`}
         ></div>
       </div>
     </section>
