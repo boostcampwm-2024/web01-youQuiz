@@ -6,8 +6,11 @@ type ToggleButtonType = 'check' | 'question' | 'checkBox';
 type ToggleButtonSize = 'small' | 'medium' | 'large';
 
 interface ToggleButtonProps {
+  /** 토글 버튼 타입 (check, question, checkbox) */
   type: ToggleButtonType;
+  /** 활성화 여부 */
   isActive: boolean;
+  /** 클릭 이벤트 핸들러 */
   onClick: () => void;
   // TODO: 다양한 사이즈 지원
   size?: ToggleButtonSize;
