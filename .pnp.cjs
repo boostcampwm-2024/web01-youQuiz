@@ -1600,6 +1600,25 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@hapi/hoek", [\
+      ["npm:9.3.0", {\
+        "packageLocation": "./.yarn/cache/@hapi-hoek-npm-9.3.0-447eb8d274-a096063805.zip/node_modules/@hapi/hoek/",\
+        "packageDependencies": [\
+          ["@hapi/hoek", "npm:9.3.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@hapi/topo", [\
+      ["npm:5.1.0", {\
+        "packageLocation": "./.yarn/cache/@hapi-topo-npm-5.1.0-5e0b776809-b16b06d935.zip/node_modules/@hapi/topo/",\
+        "packageDependencies": [\
+          ["@hapi/topo", "npm:5.1.0"],\
+          ["@hapi/hoek", "npm:9.3.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@humanfs/core", [\
       ["npm:0.19.1", {\
         "packageLocation": "./.yarn/cache/@humanfs-core-npm-0.19.1-e2e7aaeb6e-aa4e015217.zip/node_modules/@humanfs/core/",\
@@ -2984,6 +3003,34 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/unplugged/@rollup-rollup-win32-x64-msvc-npm-4.24.4-b092aff663/node_modules/@rollup/rollup-win32-x64-msvc/",\
         "packageDependencies": [\
           ["@rollup/rollup-win32-x64-msvc", "npm:4.24.4"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@sideway/address", [\
+      ["npm:4.1.5", {\
+        "packageLocation": "./.yarn/cache/@sideway-address-npm-4.1.5-a3852745c8-638eb6f7e7.zip/node_modules/@sideway/address/",\
+        "packageDependencies": [\
+          ["@sideway/address", "npm:4.1.5"],\
+          ["@hapi/hoek", "npm:9.3.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@sideway/formula", [\
+      ["npm:3.0.1", {\
+        "packageLocation": "./.yarn/cache/@sideway-formula-npm-3.0.1-ee371b2ddf-3fe81fa966.zip/node_modules/@sideway/formula/",\
+        "packageDependencies": [\
+          ["@sideway/formula", "npm:3.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@sideway/pinpoint", [\
+      ["npm:2.0.0", {\
+        "packageLocation": "./.yarn/cache/@sideway-pinpoint-npm-2.0.0-66d94e687e-d2ca75daca.zip/node_modules/@sideway/pinpoint/",\
+        "packageDependencies": [\
+          ["@sideway/pinpoint", "npm:2.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -4427,6 +4474,16 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@types/joi", [\
+      ["npm:17.2.3", {\
+        "packageLocation": "./.yarn/cache/@types-joi-npm-17.2.3-81998661f1-5e034b8176.zip/node_modules/@types/joi/",\
+        "packageDependencies": [\
+          ["@types/joi", "npm:17.2.3"],\
+          ["joi", "npm:17.13.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@types/json-schema", [\
       ["npm:7.0.15", {\
         "packageLocation": "./.yarn/cache/@types-json-schema-npm-7.0.15-fd16381786-a996a745e6.zip/node_modules/@types/json-schema/",\
@@ -5210,10 +5267,12 @@ const RAW_RUNTIME_STATE =
           ["@nestjs/typeorm", "virtual:bd488df89f9a0a9991e3cb42418a3ab578602029eb61a13663928b7b39a5cd65b03b4e81c2259bfc0987871963a596f4936ad388d717fd1d41988ccf26e14996#npm:10.0.2"],\
           ["@types/express", "npm:5.0.0"],\
           ["@types/jest", "npm:29.5.14"],\
+          ["@types/joi", "npm:17.2.3"],\
           ["@types/node", "npm:22.8.7"],\
           ["@types/supertest", "npm:6.0.2"],\
           ["ioredis", "npm:5.4.1"],\
           ["jest", "virtual:bd488df89f9a0a9991e3cb42418a3ab578602029eb61a13663928b7b39a5cd65b03b4e81c2259bfc0987871963a596f4936ad388d717fd1d41988ccf26e14996#npm:29.7.0"],\
+          ["joi", "npm:17.13.3"],\
           ["mysql2", "npm:3.11.3"],\
           ["redis", "npm:4.7.0"],\
           ["reflect-metadata", "npm:0.2.2"],\
@@ -9566,6 +9625,20 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jiti-npm-1.21.6-0bb76563a3-05b9ed58cd.zip/node_modules/jiti/",\
         "packageDependencies": [\
           ["jiti", "npm:1.21.6"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["joi", [\
+      ["npm:17.13.3", {\
+        "packageLocation": "./.yarn/cache/joi-npm-17.13.3-866dad5bc8-9262aef1da.zip/node_modules/joi/",\
+        "packageDependencies": [\
+          ["joi", "npm:17.13.3"],\
+          ["@hapi/hoek", "npm:9.3.0"],\
+          ["@hapi/topo", "npm:5.1.0"],\
+          ["@sideway/address", "npm:4.1.5"],\
+          ["@sideway/formula", "npm:3.0.1"],\
+          ["@sideway/pinpoint", "npm:2.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
