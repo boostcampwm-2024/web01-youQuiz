@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>;
 export const CheckToggleButtonWithActive: Story = {
   args: {
     type: 'check',
+    isClickable: true,
     isActive: true,
     onClick: () => console.log('click'),
   },
@@ -24,6 +25,7 @@ export const CheckToggleButtonWithActive: Story = {
 export const QuestionToggleButtonWithActive: Story = {
   args: {
     type: 'question',
+    isClickable: true,
     isActive: true,
     onClick: () => console.log('click'),
   },
@@ -32,6 +34,7 @@ export const QuestionToggleButtonWithActive: Story = {
 export const CheckBoxToggleButtonWithActive: Story = {
   args: {
     type: 'checkBox',
+    isClickable: true,
     isActive: true,
     onClick: () => console.log('click'),
   },
@@ -40,6 +43,7 @@ export const CheckBoxToggleButtonWithActive: Story = {
 export const CheckToggleButtonWithInactive: Story = {
   args: {
     type: 'check',
+    isClickable: true,
     isActive: false,
     onClick: () => console.log('click'),
   },
@@ -48,6 +52,7 @@ export const CheckToggleButtonWithInactive: Story = {
 export const QuestionToggleButtonWithInactive: Story = {
   args: {
     type: 'question',
+    isClickable: true,
     isActive: false,
     onClick: () => console.log('click'),
   },
@@ -56,6 +61,7 @@ export const QuestionToggleButtonWithInactive: Story = {
 export const CheckBoxToggleButtonWithInactive: Story = {
   args: {
     type: 'checkBox',
+    isClickable: true,
     isActive: false,
     onClick: () => console.log('click'),
   },
