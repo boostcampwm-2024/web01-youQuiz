@@ -19,16 +19,16 @@ const buttonStyles = {
   sm: {
     primary: {
       full: 'h-[24px] px-2.5 py-1.5 bg-primary text-white rounded-lg',
-      outline: 'h-[24px] px-2.5 py-1.5 bg-white border-2 border-primary text-primary rounded-lg ',
+      outline: ' h-[24px] px-2.5 py-1.5 bg-white border-2 border-primary text-primary rounded-lg ',
     },
     secondary: {
-      full: 'h-[24px] px-2.5 py-1.5 bg-secondary text-white rounded-lg',
+      full: ' h-[24px] px-2.5 py-1.5 bg-secondary text-white rounded-lg',
       outline:
-        'h-[24px] px-2.5 py-1.5 bg-white border-2 border-secondary text-secondary rounded-lg',
+        ' h-[24px] px-2.5 py-1.5 bg-white border-2 border-secondary text-secondary rounded-lg',
     },
     light: {
-      full: 'h-[24px] px-2.5 py-1.5 bg-blue-100 text-primary rounded-lg',
-      outline: 'h-[24px] px-2.5 py-1.5 bg-white border-2 border-blue-100 text-blue-100 rounded-lg',
+      full: ' h-[24px] px-2.5 py-1.5 bg-blue-100 text-primary rounded-lg',
+      outline: ' h-[24px] px-2.5 py-1.5 bg-white border-2 border-blue-100 text-blue-100 rounded-lg',
     },
   },
   md: {
@@ -59,7 +59,7 @@ export default function CustomButton({
   const classes = buttonStyles[size][color][type];
 
   return (
-    <button onClick={onClick} className={`flex items-center ${classes}`}>
+    <button onClick={onClick} className={`flex items-center min-w-fit ${classes}`}>
       {Icon && <Icon className="w-5 h-5 mr-1" />}
       <span
         className={`flex items-center font-medium leading-none ${
