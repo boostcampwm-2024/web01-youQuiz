@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import { IconTextButton } from '../Buttons';
-import GraphIcon from '../../assets/icons/graph.svg?react';
-import ChartIcon from '../../assets/icons/chart.svg?react';
-import SettingIcon from '../../assets/icons/setting.svg?react';
+import { IconTextButton } from '../buttons';
+import GraphIcon from '@/shared/assets/icons/graph.svg?react';
+import ChartIcon from '@/shared/assets/icons/chart.svg?react';
+import SettingIcon from '@/shared/assets/icons/setting.svg?react';
 
 export default function SideNav() {
   const [activeTab, setActiveTab] = useState('인터렉션');

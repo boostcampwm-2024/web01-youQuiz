@@ -1,4 +1,4 @@
-import LeftArrow from '@/assets/icons/left-arrow.svg?react';
+import LeftArrow from '@/shared/assets/icons/left-arrow.svg?react';
 
 export default function BackButton() {
   return (

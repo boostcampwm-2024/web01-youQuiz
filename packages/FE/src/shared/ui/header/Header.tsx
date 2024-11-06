@@ -1,4 +1,4 @@
-import { CustomButton, BackButton } from '../Buttons';
+import { CustomButton, BackButton } from '../buttons';
 import LogoutIcon from '../../assets/icons/logout.svg?react';
 import ToolIcon from '../../assets/icons/tool.svg?react';
 
