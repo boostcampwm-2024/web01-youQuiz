@@ -4523,7 +4523,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:16.4.5, dotenv@npm:^16.0.3":
+"dotenv@npm:16.4.5, dotenv@npm:^16.0.3, dotenv@npm:^16.4.5":
   version: 16.4.5
   resolution: "dotenv@npm:16.4.5"
   checksum: 10c0/48d92870076832af0418b13acd6e5a5a3e83bb00df690d9812e94b24aff62b88ade955ac99a05501305b8dc8f1b0ee7638b18493deb6fe93d680e5220936292f
@@ -10452,9 +10452,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "you-quiz@workspace:."
   dependencies:
+    "@nestjs/config": "npm:^3.3.0"
     "@types/jest": "npm:^29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:^8.12.2"
     "@typescript-eslint/parser": "npm:^8.12.2"
+    dotenv: "npm:^16.4.5"
     eslint: "npm:8.6.0"
     eslint-config-airbnb: "npm:^19.0.4"
     eslint-config-prettier: "npm:^9.1.0"
