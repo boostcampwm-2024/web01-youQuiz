@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import SubmitIcon from '@/assets/icons/arrow-up-circle.svg?react';
+import SubmitIcon from '@/shared/assets/icons/arrow-up-circle.svg?react';
 
 interface InputBoxProps {
   /** placeholder 텍스트 */

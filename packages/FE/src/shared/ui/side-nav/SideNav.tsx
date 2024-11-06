@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-import { IconTextButton } from '../Buttons';
-import GraphIcon from '../../assets/icons/graph.svg?react';
-import ChartIcon from '../../assets/icons/chart.svg?react';
-import SettingIcon from '../../assets/icons/setting.svg?react';
+import { IconTextButton } from '../buttons';
+import GraphIcon from '@/shared/assets/icons/graph.svg?react';
+import ChartIcon from '@/shared/assets/icons/chart.svg?react';
+import SettingIcon from '@/shared/assets/icons/setting.svg?react';
 
 export default function SideNav() {
   const [activeTab, setActiveTab] = useState('인터렉션');
   //TODO: 버튼 클릭 시 네비게이트
   return (
-    <section className="w-32 min-w-32 h-dvh flex flex-col gap-12 py-4 border-r-2">
+    <section className="w-32 min-w-32 h-[calc(100vh-78px)] flex flex-col gap-12 py-4 border-r-2">
       <IconTextButton
         Icon={GraphIcon}
         text="인터렉션"

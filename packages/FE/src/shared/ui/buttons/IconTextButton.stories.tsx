@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import IconTextButton from './IconTextButton';
-import ChartIcon from '@/assets/icons/chart.svg?react';
-import GraphIcon from '@/assets/icons/graph.svg?react';
-import SettingIcon from '@/assets/icons/setting.svg?react';
+import ChartIcon from '@/shared/assets/icons/chart.svg?react';
+import GraphIcon from '@/shared/assets/icons/graph.svg?react';
+import SettingIcon from '@/shared/assets/icons/setting.svg?react';
 
 const meta = {
   title: 'common/IconTextButton',

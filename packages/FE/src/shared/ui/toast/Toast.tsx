@@ -1,6 +1,7 @@
-import CloseIcon from '@/assets/icons/close.svg?react';
-import ProgressBar from '../ProgressBar/ProgressBar';
-import { ToggleButton } from '../Buttons';
+import React from 'react';
+import CloseIcon from '@/shared/assets/icons/close.svg?react';
+import ProgressBar from '../progress-bar/ProgressBar';
+import { ToggleButton } from '../buttons';
 
 interface ToastProps {
   /** Toast의 타입 (success | warning | error | info) */

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import DownArrow from '@/assets/icons/down-arrow.svg?react';
+import DownArrow from '@/shared/assets/icons/down-arrow.svg?react';
 
 type InfoItem = {
   title: string;
