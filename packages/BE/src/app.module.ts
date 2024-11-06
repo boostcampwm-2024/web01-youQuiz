@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { databaseConfig } from './config/database.config';
+import { databaseConfig } from './config/database/mysql.config';
 import { RedisModule } from '@nestjs-modules/ioredis';
-import { redisConfig } from './config/redis.config';
+import { redisConfig } from './config/database/redis.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -13,8 +13,8 @@ import { AppService } from './app.service';
     
     // Redis 설정
     RedisModule.forRoot({
-      type: 'single',  // Redis 연결 타입 지정
-      options: {       // 실제 연결 설정
+      type: 'single',
+      options: {
         host: redisConfig.host,
         port: redisConfig.port,
       }
