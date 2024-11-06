@@ -2,10 +2,13 @@ import { useState } from 'react';
 import SubmitIcon from '@/assets/icons/arrow-up-circle.svg?react';
 
 interface InputBoxProps {
+  /** placeholder 텍스트 */
   placeholder: string;
+  /** 제출 버튼 표시 여부 */
   button?: boolean;
+  /** 인풋 박스 타입 */
   type?: 'box' | 'underline';
-  /**버튼 타입 True -> 제출 버튼 표시 */
+  /** 제출 함수: 입력한 값을 인자로 받습니다. */
   onSubmit: (value: string) => void;
 }
 

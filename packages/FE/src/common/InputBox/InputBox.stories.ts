@@ -10,7 +10,6 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  // argTypes: {},
   args: { onSubmit: fn() },
 } satisfies Meta<typeof InputBox>;
 
