@@ -1,4 +1,5 @@
 .yarn/*
+.env
 !.yarn/cache
 !.yarn/patches
 !.yarn/plugins
