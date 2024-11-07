@@ -4383,6 +4383,7 @@ __metadata:
     eslint-plugin-storybook: "npm:^0.10.2"
     globals: "npm:^15.11.0"
     postcss: "npm:^8.4.47"
+    qrcode.react: "npm:^4.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-router-dom: "npm:^6.27.0"
@@ -8614,6 +8615,15 @@ __metadata:
   version: 6.1.0
   resolution: "pure-rand@npm:6.1.0"
   checksum: 10c0/1abe217897bf74dcb3a0c9aba3555fe975023147b48db540aa2faf507aee91c03bf54f6aef0eb2bf59cc259a16d06b28eca37f0dc426d94f4692aeff02fb0e65
+  languageName: node
+  linkType: hard
+
+"qrcode.react@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "qrcode.react@npm:4.1.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/716ed23e094613e89b9692d0c11720adf3724133607e097f5221815bfe4ac48235ac312b4991d08a42f3b7735768da9e8f8dd745b5bf87ac2efd5127fba5943f
   languageName: node
   linkType: hard
 
