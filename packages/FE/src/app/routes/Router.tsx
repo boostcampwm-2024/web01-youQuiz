@@ -4,6 +4,7 @@ import HostLayout from '@/app/layouts/HostLayout';
 import GuestLayout from '@/app/layouts/GuestLayout';
 import NotFound from '@/app/routes/NotFound';
 import QuizWait from '@/pages/quiz-wait';
+import Nickname from '@/pages/nickname';
 
 export default function Router() {
   return (
@@ -15,7 +16,7 @@ export default function Router() {
       </Route>
       <Route element={<GuestLayout />}>
         <Route path="/quiz/wait" element={<QuizWait />} />
-        <Route path="/nickname" element={<div>nickname</div>} />
+        <Route path="/nickname" element={<Nickname />} />
       </Route>
       <Route path={'*'} element={<NotFound />} />
     </Routes>
