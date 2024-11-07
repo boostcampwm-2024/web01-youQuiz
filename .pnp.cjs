@@ -5270,6 +5270,7 @@ const RAW_RUNTIME_STATE =
           ["@types/joi", "npm:17.2.3"],\
           ["@types/node", "npm:22.8.7"],\
           ["@types/supertest", "npm:6.0.2"],\
+          ["dotenv", "npm:16.4.5"],\
           ["ioredis", "npm:5.4.1"],\
           ["jest", "virtual:bd488df89f9a0a9991e3cb42418a3ab578602029eb61a13663928b7b39a5cd65b03b4e81c2259bfc0987871963a596f4936ad388d717fd1d41988ccf26e14996#npm:29.7.0"],\
           ["joi", "npm:17.13.3"],\

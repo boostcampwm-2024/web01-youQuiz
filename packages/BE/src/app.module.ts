@@ -1,24 +1,39 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { databaseConfig } from './config/database/mysql.config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { redisConfig } from './config/database/redis.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MysqlConfigModule } from './config/database/mysql/configuration.module';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    // TypeORM 설정
-    TypeOrmModule.forRoot(databaseConfig),
-    
-    // Redis 설정
-    RedisModule.forRoot({
-      type: 'single',
-      options: {
-        host: redisConfig.host,
-        port: redisConfig.port,
-      }
+    MysqlConfigModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
+        type: 'mysql',
+        host: configService.get<string>('mysql.host'),
+        port: configService.get<number>('mysql.port'),
+        username: configService.get<string>('mysql.user'),
+        password: configService.get<string>('mysql.password'),
+        database: configService.get<string>('mysql.database'),
+        entities: [__dirname + '/../**/*.entity.ts'],
+        synchronize: configService.get<boolean>('mysql.synchronize'),
+        autoLoadEntities: configService.get<boolean>('mysql.autoLoadEntities'),
+      }),
     }),
+    // Redis 설정
+    // RedisModule.forRoot({
+    //   type: 'single',
+    //   options: {
+    //     host: redisConfig.host,
+    //     port: redisConfig.port,
+    //   }
+    // }),
   ],
   controllers: [AppController],
   providers: [AppService],
