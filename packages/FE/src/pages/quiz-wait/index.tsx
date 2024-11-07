@@ -59,9 +59,7 @@ export default function QuizWait() {
       </div>
       <div className="flex flex-col gap-16 justify-center items-center">
         <p className="font-bold text-3xl">참가 대기 중 ...</p>
-        <div
-          className={`relative w-[${GUEST_DISPLAY_SIZE.width}px] h-[${GUEST_DISPLAY_SIZE.height}px] bg-white`}
-        >
+        <div className={`relative w-[1020px] h-[576px] bg-white`}>
           {randomPositions.map((position, index) => (
             <div
               key={`${position.x} + ${position.y}`}
