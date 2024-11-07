@@ -39,6 +39,19 @@ export default {
       borderRadius: {
         base: '12px',
       },
+      animation: {
+        'progress-5s': 'progress 5s linear forwards',
+        'progress-10s': 'progress 10s linear forwards',
+        'progress-15s': 'progress 15s linear forwards',
+        'progress-20s': 'progress 20s linear forwards',
+        'progress-30s': 'progress 30s linear forwards',
+      },
+      keyframes: {
+        progress: {
+          '0%': { width: '100%' },
+          '100%': { width: '0%' },
+        },
+      },
     },
   },
   plugins: [
