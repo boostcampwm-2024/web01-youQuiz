@@ -1,16 +1,15 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
+import { SignInRequestDto } from './dto';
 
 @Controller('api/user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
     // 로그인
     @Post('login')
-    userLogin(): any {
+    @UsePipes(ValidationPipe)
+    userLogin(@Body() signInRequestDto : SignInRequestDto) {
         console.log('login');
         // this.userService.validateUser();
     }
-
-    //회원가입
-    // @Post
 }
