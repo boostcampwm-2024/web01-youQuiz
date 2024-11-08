@@ -1,14 +1,24 @@
-import { Injectable, Module } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserRepository } from './repositories/user.repository';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
     // DB repository
-    constructor() {}
+    constructor(private readonly userRepository : UserRepository) {}
 
-    userLogin(): string {
-        // 아이디, 비밀번호 유효성 검증
-        return 'login';
+    async validateUser(email: string, password: string): Promise<User | null> {
+        const user = await this.userRepository.findOne({ where: { email } });
+        
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+        
+        // 추후 암호화 bcrypt 사용 예정
+        if (user.password !== password) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
 
-        // 세션 아이디 추가
+        return user;
     }
 }

@@ -8,9 +8,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MysqlConfigModule } from './config/database/mysql/configuration.module';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserService } from './module/user/users/user.service';
+import { UserModule } from './module/user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     MysqlConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
