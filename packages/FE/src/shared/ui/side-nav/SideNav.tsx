@@ -9,7 +9,7 @@ export default function SideNav() {
   const [activeTab, setActiveTab] = useState('인터렉션');
   //TODO: 버튼 클릭 시 네비게이트
   return (
-    <section className="w-32 min-w-32 h-[calc(100vh-78px)] flex flex-col gap-12 py-4 border-r-2">
+    <section className="w-32 min-w-32 h-[calc(100vh-78px)] flex flex-col gap-12 py-4 border-r-2 bg-white z-10">
       <IconTextButton
         Icon={GraphIcon}
         text="인터렉션"
