@@ -4,7 +4,7 @@ import HostLayout from '@/app/layouts/HostLayout';
 import QuizCreatePage from '@/pages/quiz-create';
 import GuestLayout from '@/app/layouts/GuestLayout';
 import NotFound from '@/app/routes/NotFound';
-
+import QuizSession from '@/pages/quiz-session';
 export default function Router() {
   return (
     <Routes>
@@ -16,6 +16,7 @@ export default function Router() {
       <Route element={<GuestLayout />}>
         <Route path="/quiz/wait" element={<div>waiting</div>} />
         <Route path="/nickname" element={<div>nickname</div>} />
+        <Route path="/quiz/session" element={<QuizSession />} />
       </Route>
       <Route path={'*'} element={<NotFound />} />
     </Routes>
