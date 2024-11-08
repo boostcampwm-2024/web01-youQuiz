@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MysqlConfigModule } from './config/database/mysql/configuration.module';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { UserService } from './module/user/users/user.service';
 import { UserModule } from './module/user/user.module';
 
 @Module({
@@ -39,6 +38,6 @@ import { UserModule } from './module/user/user.module';
     // }),
   ],
   controllers: [AppController],
-  providers: [AppService, UserService],
+  providers: [AppService],
 })
 export class AppModule {}

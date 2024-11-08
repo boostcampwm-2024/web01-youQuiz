@@ -9,7 +9,30 @@ export class UserController {
     @Post('login')
     @UsePipes(ValidationPipe)
     userLogin(@Body() signInRequestDto : SignInRequestDto) {
-        console.log('login');
-        // this.userService.validateUser();
+        console.log('userLogin 호출');
+        try {
+            const email = signInRequestDto.email;
+            const password = signInRequestDto.password;        
+            console.log('Processing login request', email, password);
+            return {
+                message: 'Login request received',
+                data: signInRequestDto
+            };
+        } catch (error) {
+            console.log('Login error:', error);
+            throw error;
+        }    
+    }
+
+    @Get('test')
+    testMethod() {
+      console.log('testMethod 호출');
+      return 'User Test Method';
+    }
+    @Post('test-login')
+    testLogin(@Body() body: any) {
+        console.log('test-login 호출');
+        console.log('Received body:', body);
+        return body;
     }
 }
