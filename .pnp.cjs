@@ -6606,6 +6606,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-storybook", "virtual:d55a75591d7a34735f856449d67339419aecde09cdcc225f8d1a88afe5e882d9ec50db2b79cad5ab1330ca8e309b8dc0ac6714dfbbfd7f8797d8c0cf9f907dc2#npm:0.10.2"],\
           ["globals", "npm:15.11.0"],\
           ["postcss", "npm:8.4.47"],\
+          ["qrcode.react", "virtual:d55a75591d7a34735f856449d67339419aecde09cdcc225f8d1a88afe5e882d9ec50db2b79cad5ab1330ca8e309b8dc0ac6714dfbbfd7f8797d8c0cf9f907dc2#npm:4.1.0"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:d55a75591d7a34735f856449d67339419aecde09cdcc225f8d1a88afe5e882d9ec50db2b79cad5ab1330ca8e309b8dc0ac6714dfbbfd7f8797d8c0cf9f907dc2#npm:18.3.1"],\
           ["react-router-dom", "virtual:d55a75591d7a34735f856449d67339419aecde09cdcc225f8d1a88afe5e882d9ec50db2b79cad5ab1330ca8e309b8dc0ac6714dfbbfd7f8797d8c0cf9f907dc2#npm:6.27.0"],\
@@ -11516,6 +11517,28 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/pure-rand-npm-6.1.0-497ea3fc37-1abe217897.zip/node_modules/pure-rand/",\
         "packageDependencies": [\
           ["pure-rand", "npm:6.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["qrcode.react", [\
+      ["npm:4.1.0", {\
+        "packageLocation": "./.yarn/cache/qrcode.react-npm-4.1.0-908904cc67-716ed23e09.zip/node_modules/qrcode.react/",\
+        "packageDependencies": [\
+          ["qrcode.react", "npm:4.1.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:d55a75591d7a34735f856449d67339419aecde09cdcc225f8d1a88afe5e882d9ec50db2b79cad5ab1330ca8e309b8dc0ac6714dfbbfd7f8797d8c0cf9f907dc2#npm:4.1.0", {\
+        "packageLocation": "./.yarn/__virtual__/qrcode.react-virtual-78bf50f256/0/cache/qrcode.react-npm-4.1.0-908904cc67-716ed23e09.zip/node_modules/qrcode.react/",\
+        "packageDependencies": [\
+          ["qrcode.react", "virtual:d55a75591d7a34735f856449d67339419aecde09cdcc225f8d1a88afe5e882d9ec50db2b79cad5ab1330ca8e309b8dc0ac6714dfbbfd7f8797d8c0cf9f907dc2#npm:4.1.0"],\
+          ["@types/react", "npm:18.3.12"],\
+          ["react", "npm:18.3.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/react",\
+          "react"\
         ],\
         "linkType": "HARD"\
       }]\
