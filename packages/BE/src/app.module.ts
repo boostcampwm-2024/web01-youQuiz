@@ -7,9 +7,11 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MysqlConfigModule } from './config/database/mysql/configuration.module';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { UserModule } from './module/user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     MysqlConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

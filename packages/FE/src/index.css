@@ -22,3 +22,8 @@
   font-style: normal;
   src: url("./assets/fonts/Pretendard-Bold.woff2") format("woff2");
 }
+
+body {
+  background-color: #f7f7f7;
+  color: #2c2c2c;
+}

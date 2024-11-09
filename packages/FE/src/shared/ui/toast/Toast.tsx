@@ -1,4 +1,3 @@
-import React from 'react';
 import CloseIcon from '@/shared/assets/icons/close.svg?react';
 import ProgressBar from '../progress-bar/ProgressBar';
 import { ToggleButton } from '../buttons';
