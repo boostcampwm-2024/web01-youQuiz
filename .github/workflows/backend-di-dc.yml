@@ -1,0 +1,77 @@
+name: main 브랜치에서 백엔드 CI/CD 파이프라인 구축
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'packages/BE/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 소스 코드 불러오기
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: BE 의존성 설치
+        run: yarn install
+
+    # e2e 테스트 추가 후 설정 예정
+    #   - name: BE e2e 테스트 실행
+    #     run: yarn test:e2e
+    #     working-directory: packages/BE
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: success()
+
+    steps:
+      # - name: 소스 코드 불러오기
+      #   uses: actions/checkout@v4
+
+      - name: Github Actions Public IP 가져오기
+        id: ip
+        run: |
+          PUBLIC_IP=$(curl -s https://ifconfig.me)
+          echo "::set-output name=public_ip::$PUBLIC_IP"
+
+      - name: NCP CLI 설치 및 자격 증명
+        run: |
+          cd ~
+          wget https://www.ncloud.com/api/support/download/5/65
+          unzip 65
+          mkdir ~/.ncloud
+          echo -e "[DEFAULT]\nncloud_access_key_id = ${{ secrets.NCP_ACCESS_KEY_ID }}\nncloud_secret_access_key = ${{ secrets.NCP_SECRET_ACCESS_KEY }}\nncloud_api_url = ${{ secrets.NCP_API_URL }}" >> ~/.ncloud/configure
+
+      - name: Github Actions IP를 ACG, ACL 규칙에 추가
+        run: |
+          chmod -R 777 ~/cli_linux
+          cd ~/cli_linux
+          ./ncloud vserver addAccessControlGroupInboundRule --regionCode KR --vpcNo ${{ secrets.NCP_VPC_ID }} --accessControlGroupNo ${{ secrets.NCP_AGC_ID }} --accessControlGroupRuleList "protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}'"
+          ./ncloud vpc addNetworkAclInboundRule --regionCode KR --networkAclNo ${{ secrets.NCP_ACL_ID }} --networkAclRuleList "priority='${{ secrets.NCP_ACL_PRIORITY}}', protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}', ruleActionCode='ALLOW'"
+
+      - name: NCP 서버에 SSH로 접속 후 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.NCP_SERVET_HOST}}
+          username: ${{ secrets.NCP_SERVER_USERNAME}}
+          password: ${{ secrets.NCP_SERVER_PASSWORD}}
+          port: ${{ secrets.NCP_SERVER_PORT}}
+          # script: |
+          #   # 프로젝트 디렉토리로 이동
+
+      - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
+        run: |
+          chmod -R 777 ~/cli_linux
+          cd ~/cli_linux
+          ./ncloud vserver removeAccessControlGroupInboundRule --regionCode KR --vpcNo ${{ secrets.NCP_VPC_ID }} --accessControlGroupNo ${{ secrets.NCP_AGC_ID }} --accessControlGroupRuleList "protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}'"
+          ./ncloud vpc removeNetworkAclInboundRule --regionCode KR --networkAclNo ${{ secrets.NCP_ACL_ID }} --networkAclRuleList "priority='${{ secrets.NCP_ACL_PRIORITY}}', protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}', ruleActionCode='ALLOW'"
