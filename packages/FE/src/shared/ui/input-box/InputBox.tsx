@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import SubmitIcon from '@/shared/assets/icons/arrow-up-circle.svg?react';
 
 interface InputBoxProps {
@@ -10,15 +10,19 @@ interface InputBoxProps {
   type?: 'box' | 'underline';
   /** 제출 함수: 입력한 값을 인자로 받습니다. */
   onSubmit: (value: string) => void;
+  /** 키 입력 함수 (유저가 Enter를 누르면 호출이 됩니다.) */
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const inputBoxStyles = {
-  box: 'min-w-96 h-10 border-2 border-weak rounded-base p-4 text-md-md',
+  box: 'min-w-96 w-full h-10 border-2 border-weak rounded-base p-4 text-md-md',
   underline:
-    'min-w-96 h-10 border-b-2 border-weak p-4 text-md-md focus:border-b-primary focus:outline-none',
+    'min-w-96 w-full h-10 border-b-2 border-weak p-4 text-md-md focus:border-b-primary focus:outline-none',
 };
-
-export default function InputBox({ placeholder, button, type = 'box', onSubmit }: InputBoxProps) {
+export default forwardRef(function InputBox(
+  { placeholder, button, type = 'box', onSubmit, onKeyDown }: InputBoxProps,
+  ref: React.Ref<HTMLInputElement>,
+) {
   const [value, setValue] = useState('');
   const classes = inputBoxStyles[type];
 
@@ -26,10 +30,13 @@ export default function InputBox({ placeholder, button, type = 'box', onSubmit }
     if (e.key === 'Enter') {
       onSubmit(value);
     }
+    onKeyDown?.(e);
   };
+
   return (
     <div className="relative">
       <input
+        ref={ref}
         type="text"
         className={classes}
         placeholder={placeholder}
@@ -48,4 +55,4 @@ export default function InputBox({ placeholder, button, type = 'box', onSubmit }
       )}
     </div>
   );
-}
+});

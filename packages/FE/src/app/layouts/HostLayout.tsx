@@ -6,7 +6,7 @@ import SideNav from '@/shared/ui/side-nav/SideNav';
 export default function HostLayout() {
   return (
     <div>
-      <Header />
+      <Header classTitle="클래스 이름" />
       <div className="flex">
         <SideNav />
         <Outlet />
