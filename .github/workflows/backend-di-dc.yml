@@ -66,8 +66,17 @@ jobs:
           username: ${{ secrets.NCP_SERVER_USERNAME}}
           password: ${{ secrets.NCP_SERVER_PASSWORD}}
           port: ${{ secrets.NCP_SERVER_PORT}}
-          # script: |
-          #   # 프로젝트 디렉토리로 이동
+          script: |
+            cd /you-quiz
+            git switch main
+            git pull origin main
+
+            docker build -f Dockerfile.be -t you-quiz-be .
+
+            docker stop you-quiz-be || true
+            docker rm you-quiz-be || true
+
+            docker run -d --name you-quiz-be --env-file ./packages/BE/.env -p 80:3000 you-quiz-be
 
       - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
         run: |
