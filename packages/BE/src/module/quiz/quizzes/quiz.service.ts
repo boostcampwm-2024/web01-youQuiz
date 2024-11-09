@@ -5,4 +5,8 @@ export class QuizService {
     constructor() {
         console.log('QuizService');
     }
+
+    createQuiz() {
+
+    }
 }
