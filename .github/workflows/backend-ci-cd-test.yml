@@ -64,7 +64,7 @@ jobs:
           password: ${{ secrets.NCP_SERVER_PASSWORD}}
           port: ${{ secrets.NCP_SERVER_PORT}}
           script: |
-            cd /you-quiz-test
+            cd ${{ secrets.TEST_DIRECTORY_PATH }}
             git switch develop
             git pull origin develop
 
