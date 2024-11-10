@@ -10,10 +10,7 @@ export class QuizController {
     @Post('create-class')
     @UsePipes(ValidationPipe)
     async createQuiz(@Body() createClassRequestDto : CreateClassRequestDto) {
-        try {
-            return this.quizService.createQuiz();
-        } catch(err) {
-            console.log(err);
-        }
+        // const response = await this.quizService.createQuiz();
+        // return response;
     }
 }
