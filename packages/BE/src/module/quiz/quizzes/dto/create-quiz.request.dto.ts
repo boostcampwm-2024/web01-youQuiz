@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsString, IsNumber } from "class-validator";
+import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
+import { CreateChoiceRequestDto } from "./create-choice.request.dto";
 
 export class CreateQuizRequestDto {
     @IsNumber()
@@ -24,4 +26,9 @@ export class CreateQuizRequestDto {
     @IsNumber()
     @IsNotEmpty()
     position: number;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CreateChoiceRequestDto)
+    choices: CreateChoiceRequestDto[];
 }
