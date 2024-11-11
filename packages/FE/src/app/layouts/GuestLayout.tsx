@@ -5,7 +5,7 @@ import Header from '@/shared/ui/header/Header';
 export default function GuestLayout() {
   return (
     <>
-      <Header />
+      <Header classTitle="Class Name" />
       <Outlet />
     </>
   );
