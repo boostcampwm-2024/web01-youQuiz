@@ -6,13 +6,17 @@ import { Class } from './quizzes/entities/class.entity';
 import { QuizRepository } from './quizzes/repositories/quiz.repository';
 import { ChoiceRepository } from './quizzes/repositories/choice.repository';
 import { ClassRepository } from './quizzes/repositories/class.repository';
+import { QuizService } from './quizzes/quiz.service';
+import { QuizController } from './quizzes/quiz.controller';
 
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Quiz, Choice, Class])
     ],
+    controllers: [QuizController],
     providers: [
+        QuizService,
         QuizRepository,
         ChoiceRepository,
         ClassRepository
