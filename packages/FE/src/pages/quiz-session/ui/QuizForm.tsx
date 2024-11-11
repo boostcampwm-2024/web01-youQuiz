@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import ToggleButton from '@/shared/ui/buttons/ToggleButton';
 
 interface QuizFormProps {
