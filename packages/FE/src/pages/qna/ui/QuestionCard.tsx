@@ -30,12 +30,9 @@ export default function QuestionCard({
         <span className="text-textWeak">{question.index}번 퀴즈</span>
         <span>{question.description}</span>
       </div>
-      <div
-        className={`flex justify-center items-center w-14 h-14 ${isSelected ? 'bg-primary' : 'bg-weak'} rounded-full cursor-pointer`}
-        onClick={handleMessageIconClick}
-      >
-        <MessageIcon stroke={`${isSelected ? '#ffffff' : '#2c2c2c'}`} />
-      </div>
+      <button className="flex items-start" onClick={handleMessageIconClick}>
+        <MessageIcon stroke="#266CAE" />
+      </button>
     </div>
   );
 }
