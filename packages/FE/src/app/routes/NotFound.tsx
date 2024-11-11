@@ -6,6 +6,6 @@ export default function NotFound() {
 
   useEffect(() => {
     navigate('/');
-  }, []);
+  }, [navigate]);
   return <></>;
 }
