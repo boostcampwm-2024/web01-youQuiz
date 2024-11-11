@@ -8,7 +8,7 @@
 
 
  <p align=center>
-  <a href="https://www.notion.so/e3906f064a574f58a7adc5bb0bf59e64?v=0f21d87970884f3db3c2541122804cba">팀 노션</a>
+  <a href="https://www.notion.so/e3906f064a574f58a7adc5bb0bf59e64?v=0f21d87970884f3db3c2541122804cba](https://lemon-scene-5c9.notion.site/e3906f064a574f58a7adc5bb0bf59e64?v=0f21d87970884f3db3c2541122804cba&pvs=4">팀 노션</a>
   &nbsp; | &nbsp; 
   <a href="https://github.com/orgs/boostcampwm-2024/projects/19">백로그</a>
   &nbsp; | &nbsp;
