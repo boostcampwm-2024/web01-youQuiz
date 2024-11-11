@@ -12,6 +12,7 @@ export class ChoiceRepository {
     ) {}
 
     async create(quiz_id: number, choiceData: CreateChoiceRequestDto): Promise<Choice> {
+        const { position, content, isCorrect } = choiceData;
         const choiceEntity = this.repository.create({
             quiz_id,
             position: choiceData.position,

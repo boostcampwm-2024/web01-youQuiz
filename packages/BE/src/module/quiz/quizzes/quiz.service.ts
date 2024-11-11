@@ -33,7 +33,7 @@ export class QuizService {
     }
 
     // dto가 여러개라서 처리하기 좀 그러네 quiz, choice는 dto가 아니라 인터페이스로 구현하는게 좋지않을까라는 생각...?
-    async createQuiz(quizData: CreateQuizListRequestDto): Promise<ResponseDto> {
+    async createQuiz(classId: number, quizData: CreateQuizListRequestDto): Promise<ResponseDto> {
         // 그럼 이 컨트롤러에서 dto 구분이 힘들다
         // 너무 이 메서드에 책임이 많은게 아닌가 라는 생각도 든다.
         // const queryRunner = this.dataSource.createQueryRunner();
@@ -41,14 +41,14 @@ export class QuizService {
         // await queryRunner.startTransaction();
         try {
             // class_id가 유효한지 확인
-            const is_valid_class = await this.classRepository.findClassById(quizData.classId);
+            const is_valid_class = await this.classRepository.findClassById(classId);
             if (!is_valid_class) {
-                throw new Error(`Class with ID ${quizData.classId} not found`);
+                throw new Error(`Class with ID ${classId} not found`);
             }
 
             await Promise.all(
                 quizData.quizzes.map(async (quiz) => {
-                    const quizEntity = await this.quizRepository.create(quizData.classId, quiz);
+                    const quizEntity = await this.quizRepository.create(classId, quiz);
                     quiz.choices.map(async (choice) => {
                         this.choiceRepository.create(quizEntity.id, choice);
                     });
