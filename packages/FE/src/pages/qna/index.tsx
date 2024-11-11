@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import QuestionCard from './components/QuestionCard';
-import CommentCard from './components/CommentCard';
+import QuestionCard from './ui/QuestionCard';
+import CommentCard from './ui/CommentCard';
 
 // TODO: API로 받아온 데이터로 대체
 const questions = [

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import QuizCard from './components/quiz-card';
+import QuizCard from './ui/quiz-card';
 import ArrowUpCircleIcon from '@/shared/assets/icons/arrow-up-circle.svg?react';
 import { scrollToPosition } from '@/shared/utils/scrollToPosition';
 
