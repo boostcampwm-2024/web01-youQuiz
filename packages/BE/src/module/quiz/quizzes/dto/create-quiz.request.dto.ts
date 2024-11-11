@@ -5,7 +5,7 @@ import { CreateChoiceRequestDto } from "./create-choice.request.dto";
 export class CreateQuizRequestDto {
     @IsNumber()
     @IsNotEmpty()
-    creator_id: number;
+    position: number;
 
     @IsString()
     @IsNotEmpty()
@@ -13,19 +13,19 @@ export class CreateQuizRequestDto {
 
     @IsNumber()
     @IsNotEmpty()
-    time_limit: number;
+    timeLimit: number;
 
     @IsNumber()
     @IsNotEmpty()
     point: number;
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    question_type: number;
+    questionType: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    position: number;
+    // @IsNumber()
+    // @IsNotEmpty()
+    // position: number;
 
     @IsArray()
     @ValidateNested({ each: true })

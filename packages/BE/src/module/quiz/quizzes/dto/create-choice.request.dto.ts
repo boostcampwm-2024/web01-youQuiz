@@ -1,11 +1,15 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
 
 export class CreateChoiceRequestDto {
+    @IsNumber()
+    @IsNotEmpty()
+    position: number;
+    
     @IsString()
     @IsNotEmpty()
     content: string;
 
-    @IsNumber()
+    @IsBoolean()
     @IsNotEmpty()
-    is_correct: boolean;
+    isCorrect: boolean;
 }
