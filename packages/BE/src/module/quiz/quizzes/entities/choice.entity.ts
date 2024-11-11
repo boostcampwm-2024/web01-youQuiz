@@ -6,6 +6,12 @@ export class Choice {
     id: number;
 
     @Column()
+    quiz_id: number;
+
+    @Column()
+    position: number;
+
+    @Column()
     content: string;
 
     @Column()

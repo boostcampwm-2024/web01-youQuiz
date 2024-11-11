@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import { Choice } from '../entities/choice.entity';
+import { CreateChoiceRequestDto } from "../dto/create-choice.request.dto";
 
 @Injectable()
 export class ChoiceRepository {
@@ -10,9 +11,16 @@ export class ChoiceRepository {
         private readonly repository: Repository<Choice>
     ) {}
 
-    async create(choice: Partial<Choice>): Promise<Choice> {
-        return this.repository.save(choice);
+    async create(quiz_id: number, choiceData: CreateChoiceRequestDto): Promise<Choice> {
+        const choiceEntity = this.repository.create({
+            quiz_id,
+            position: choiceData.position,
+            content: choiceData.content,
+            is_correct: choiceData.isCorrect,
+        });
+        return await this.repository.save(choiceEntity);
     }
+
 
     async findById(id: number): Promise<Choice> {
         return this.repository.findOne({ where: { id } });
