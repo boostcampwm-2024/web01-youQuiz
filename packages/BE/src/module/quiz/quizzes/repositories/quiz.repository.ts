@@ -12,13 +12,14 @@ export class QuizRepository {
     ) {}
 
     async create(class_id: number, quiz: CreateQuizRequestDto): Promise<Quiz> {
+        const { position, content, timeLimit: time_limit, point, questionType: question_type } = quiz;
         const quizEntity = this.repository.create({
             class_id,
-            position: quiz.position,
-            content: quiz.content,
-            time_limit: quiz.timeLimit,
-            point: quiz.point,
-            question_type: quiz.questionType,
+            position,
+            content,
+            time_limit,
+            point,
+            question_type,
         });
         return await this.repository.save(quizEntity); // 실제로 데이터베이스에 저장
     }
