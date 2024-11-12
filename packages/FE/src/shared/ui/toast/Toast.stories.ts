@@ -15,17 +15,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Success: Story = {
-  args: { type: 'success', label: '성공 문구입니다.', time: 5 },
+  args: { toastId: 0, type: 'success', label: '성공 문구입니다.', time: 5 },
 };
 
 export const Warning: Story = {
-  args: { type: 'warning', label: '경고 문구입니다.', time: 5 },
+  args: { toastId: 1, type: 'warning', label: '경고 문구입니다.', time: 5 },
 };
 
 export const Error: Story = {
-  args: { type: 'error', label: '에러 문구입니다.', time: 5 },
+  args: { toastId: 2, type: 'error', label: '에러 문구입니다.', time: 5 },
 };
 
 export const Info: Story = {
-  args: { type: 'info', label: '정보 문구입니다.', time: 5 },
+  args: { toastId: 3, type: 'info', label: '정보 문구입니다.', time: 5 },
 };
