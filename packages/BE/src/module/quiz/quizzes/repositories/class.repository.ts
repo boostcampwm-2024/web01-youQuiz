@@ -11,7 +11,12 @@ export class ClassRepository {
     ) {}
 
     async create(classData: Partial<Class>): Promise<Class> {
-        return this.repository.save(classData);
+        const {title, description} = classData;
+        const classEntity = this.repository.create({
+            title,
+            description,
+        });
+        return this.repository.save(classEntity);
     }
 
     // async delete(classData: Partial<Class>): Promise<void> {
@@ -28,5 +33,9 @@ export class ClassRepository {
 
     async findAll(): Promise<Class[]> {
         return this.repository.find();
+    }
+
+    async deleteById(id: number): Promise<void> {
+        await this.repository.delete(id);
     }
 }

@@ -15,9 +15,10 @@ export class ChoiceRepository {
         const { position, content, isCorrect: is_correct } = choiceData;
         const choiceEntity = this.repository.create({
             quiz_id,
-            position,
             content,
             is_correct,
+            position,
+            created_at: new Date(),
         });
         return await this.repository.save(choiceEntity);
     }
@@ -30,4 +31,8 @@ export class ChoiceRepository {
     async findAll(): Promise<Choice[]> {
         return this.repository.find();
     }
+
+    async deleteByQuizId(quiz_id: number): Promise<void> {
+        await this.repository.delete({ quiz_id });
+    }   
 }
