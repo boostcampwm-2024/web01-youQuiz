@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import { EventManager, ToastEvent } from '@/shared/libs/EventManager';
-
-interface ToastProps {
-  toastId: number;
-  type: 'success' | 'warning' | 'info' | 'error';
-  label: string;
-  time: 5 | 10 | 15 | 20 | 30;
-}
+import { ToastProps } from '../types';
 
 export const useToastContainer = () => {
   const [toastList, setToastList] = useState<ToastProps[]>([]);

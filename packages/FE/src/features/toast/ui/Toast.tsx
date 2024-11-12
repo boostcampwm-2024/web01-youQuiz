@@ -1,19 +1,10 @@
 import CloseIcon from '@/shared/assets/icons/close.svg?react';
-import ProgressBar from '../progress-bar/ProgressBar';
-import { ToggleButton } from '../buttons';
+import ProgressBar from '@/shared/ui/progress-bar/ProgressBar';
+import { ToggleButton } from '@/shared/ui/buttons';
 import { ToastEvent } from '@/shared/libs/EventManager';
 import { EventManager } from '@/shared/libs/EventManager';
 import { useRef } from 'react';
-interface ToastProps {
-  /** Toast의 고유 id */
-  toastId: number;
-  /** Toast의 타입 (success | warning | error | info) */
-  type: 'success' | 'warning' | 'error' | 'info';
-  /** Toast에 표시할 문구 */
-  label: string;
-  /** Toast가 표시될 시간 (5 | 10 | 15 | 20 | 30) */
-  time: 5 | 10 | 15 | 20 | 30;
-}
+import { ToastProps } from '../types';
 
 const getLogo = (type: ToastProps['type']) => {
   switch (type) {
@@ -54,8 +45,10 @@ const getLogo = (type: ToastProps['type']) => {
 export default function Toast({ toastId, type = 'success', label, time = 5 }: ToastProps) {
   const toastRef = useRef<HTMLDivElement>(null);
   const handleToastClose = () => {
-    EventManager.emit(ToastEvent.DELETE, toastId);
-    toastRef.current?.classList.add('animate-fade-out');
+    toastRef.current?.classList.add('animate-slide-out');
+    setTimeout(() => {
+      EventManager.emit(ToastEvent.DELETE, toastId);
+    }, time * 100);
   };
 
   const logo = getLogo(type);

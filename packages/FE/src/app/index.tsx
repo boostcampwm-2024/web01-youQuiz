@@ -1,9 +1,9 @@
 import Router from './routes/Router';
-import ToastContainer from '@/shared/ui/toast/ToastContainer';
+import ToastContainer from '@/features/toast/ui/ToastContainer';
 function App() {
   return (
     <>
-      <ToastContainer position="top-center" />
+      <ToastContainer position="top-right" />
       <Router />
     </>
   );

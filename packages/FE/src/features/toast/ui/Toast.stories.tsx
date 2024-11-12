@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import Toast from './Toast.tsx';
 import ToastContainer from './ToastContainer.tsx';
-import { toastController } from './toastController.ts';
-import CustomButton from '../buttons/CustomButton.tsx';
+import { toastController } from '../model/toastController.ts';
+import CustomButton from '../../../shared/ui/buttons/CustomButton.tsx';
 
 const meta = {
   title: 'Common/Toast',
