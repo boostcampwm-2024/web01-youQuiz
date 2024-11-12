@@ -18,30 +18,37 @@ interface ToastProps {
 const getLogo = (type: ToastProps['type']) => {
   switch (type) {
     case 'success':
+      return <ToggleButton type="check" isClickable={false} isActive={true} size="small" />;
+    case 'warning':
       return (
         <ToggleButton
-          type="check"
+          type="warning"
           isClickable={false}
           isActive={true}
-          onClick={() => console.log('success')}
-          size="small"
+          size="large"
+          color="transparent"
         />
       );
-    case 'warning':
-      return;
     case 'error':
       return (
         <ToggleButton
           type="question"
           isClickable={false}
           isActive={true}
-          onClick={() => console.log('error')}
           size="small"
           color="error"
         />
       );
     case 'info':
-      return;
+      return (
+        <ToggleButton
+          type="info"
+          isClickable={false}
+          isActive={true}
+          size="medium"
+          color="transparent"
+        />
+      );
   }
 };
 export default function Toast({ toastId, type = 'success', label, time = 5 }: ToastProps) {
@@ -59,7 +66,7 @@ export default function Toast({ toastId, type = 'success', label, time = 5 }: To
       ref={toastRef}
     >
       <div className="flex gap-4 px-4 item-center">
-        <div className="">{logo}</div>
+        {logo}
         <p className="flex justify-center items-center text-weak-md">{label}</p>
       </div>
       <div className="absolute bottom-0 left-0 w-[296px]">

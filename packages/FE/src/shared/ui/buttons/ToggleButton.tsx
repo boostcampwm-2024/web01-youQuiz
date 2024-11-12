@@ -1,20 +1,22 @@
 import CheckIcon from '@/shared/assets/icons/check.svg?react';
 import CheckBoxIcon from '@/shared/assets/icons/check-box.svg?react';
 import QuestionIcon from '@/shared/assets/icons/question.svg?react';
+import WarningIcon from '@/shared/assets/icons/warning.svg?react';
+import InfoIcon from '@/shared/assets/icons/info.svg?react';
 
-type ToggleButtonType = 'check' | 'question' | 'checkBox';
+type ToggleButtonType = 'check' | 'question' | 'checkBox' | 'warning' | 'info';
 type ToggleButtonSize = 'small' | 'medium' | 'large';
-type ToggleButtonColor = 'success' | 'warning' | 'error' | 'info';
+type ToggleButtonColor = 'success' | 'warning' | 'error' | 'info' | 'transparent';
 
 interface ToggleButtonProps {
-  /** 토글 버튼 타입 (check, question, checkbox) */
+  /** 토글 버튼 타입 (check, question, checkbox, warning, info) */
   type: ToggleButtonType;
   /**클릭이 가능한 상태 여부 */
   isClickable: boolean;
   /** 버튼 활성화 여부 */
   isActive: boolean;
   /** 클릭 이벤트 핸들러 */
-  onClick: () => void;
+  onClick?: () => void;
   /** 버튼 사이즈 (small, medium, large) */
   size?: ToggleButtonSize;
   /** 색상 */
@@ -29,6 +31,10 @@ const getIcon = (type: ToggleButtonType, isActive: boolean, iconSize: string) =>
       return <QuestionIcon stroke={`${isActive ? '#ffffff' : '#525252'}`} className={iconSize} />;
     case 'checkBox':
       return <CheckBoxIcon stroke={`${isActive ? '#ffffff' : '#525252'}`} className={iconSize} />;
+    case 'warning':
+      return <WarningIcon stroke={`${isActive ? '#ffffff' : '#525252'}`} className={iconSize} />;
+    case 'info':
+      return <InfoIcon stroke={`${isActive ? '#ffffff' : '#525252'}`} className={iconSize} />;
   }
 };
 
@@ -49,6 +55,7 @@ const colors = {
   warning: 'bg-yellow-500',
   error: 'bg-red-500',
   info: 'bg-blue-500',
+  transparent: 'transparent',
 };
 
 export default function ToggleButton({
@@ -75,7 +82,7 @@ export default function ToggleButton({
         </button>
       ) : (
         <div
-          className={`flex items-center justify-center ${buttonSize} ${backgroundColor} border rounded-full `}
+          className={`flex items-center justify-center ${buttonSize} ${backgroundColor} rounded-full `}
         >
           {icon}
         </div>
