@@ -23,13 +23,33 @@ export class QuizService {
 
     async createClass(createClassRequestDto: CreateClassRequestDto): Promise<void> {
         try {
-            const classData = await this.classRepository.create({
-                title: createClassRequestDto.title,
-                description: createClassRequestDto.description,
-            });
+            await this.classRepository.create(createClassRequestDto);
         } catch (error) {
             console.error('error:', error);
         }
+    }
+
+    // id에 해당하는 클래스와 퀴즈, 선택지를 삭제한다.
+    async deleteClass(id: number): Promise<ResponseDto> {
+        const classEntity = await this.classRepository.findClassById(id);
+        if (!classEntity) {
+            throw new HttpException(`Class with ID ${id} not found`, HttpStatus.NOT_FOUND);
+        }
+
+        await this.classRepository.deleteById(id);
+
+        const quizzes = await this.quizRepository.findByClassId(id);
+        await Promise.all(
+            quizzes.map(async (quiz) => {
+                await this.choiceRepository.deleteByQuizId(quiz.id);
+            })
+        );
+        await this.quizRepository.deleteByClassId(id);
+
+        return {
+            success: true,
+            message: 'Class deleted successfully',
+        };
     }
 
     // dto가 여러개라서 처리하기 좀 그러네 quiz, choice는 dto가 아니라 인터페이스로 구현하는게 좋지않을까라는 생각...?
