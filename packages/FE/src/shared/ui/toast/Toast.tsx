@@ -1,8 +1,12 @@
 import CloseIcon from '@/shared/assets/icons/close.svg?react';
 import ProgressBar from '../progress-bar/ProgressBar';
 import { ToggleButton } from '../buttons';
-
+import { ToastEvent } from '@/shared/libs/EventManager';
+import { EventManager } from '@/shared/libs/EventManager';
+import { useRef } from 'react';
 interface ToastProps {
+  /** Toast의 고유 id */
+  toastId: number;
   /** Toast의 타입 (success | warning | error | info) */
   type: 'success' | 'warning' | 'error' | 'info';
   /** Toast에 표시할 문구 */
@@ -40,10 +44,20 @@ const getLogo = (type: ToastProps['type']) => {
       return;
   }
 };
-export default function Toast({ type = 'success', label, time }: ToastProps) {
+export default function Toast({ toastId, type = 'success', label, time = 5 }: ToastProps) {
+  const toastRef = useRef<HTMLDivElement>(null);
+  const handleToastClose = () => {
+    EventManager.emit(ToastEvent.DELETE, toastId);
+    toastRef.current?.classList.add('animate-fade-out');
+  };
+
   const logo = getLogo(type);
+
   return (
-    <div className="relative flex flex-col justify-center w-[296px] h-16 rounded-base bg-white border overflow-hidden group ">
+    <div
+      className="relative flex flex-col justify-center w-[296px] h-16 rounded-base bg-white border overflow-hidden group"
+      ref={toastRef}
+    >
       <div className="flex gap-4 px-4 item-center">
         <div className="">{logo}</div>
         <p className="flex justify-center items-center text-weak-md">{label}</p>
@@ -54,10 +68,10 @@ export default function Toast({ type = 'success', label, time }: ToastProps) {
           type={type}
           barShape="rounded"
           pauseOnHover={true}
-          handleAnimationEnd={() => console.log('토스트 닫기')}
+          handleAnimationEnd={handleToastClose}
         />
       </div>
-      <CloseIcon className="absolute top-3 right-3 cursor-pointer" />
+      <CloseIcon className="absolute top-3 right-3 cursor-pointer" onClick={handleToastClose} />
     </div>
   );
 }
