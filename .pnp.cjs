@@ -5550,6 +5550,7 @@ const RAW_RUNTIME_STATE =
           ["redis", "npm:4.7.0"],\
           ["reflect-metadata", "npm:0.2.2"],\
           ["rxjs", "npm:7.8.1"],\
+          ["socket.io", "npm:4.8.1"],\
           ["supertest", "npm:7.0.0"],\
           ["ts-jest", "virtual:bd488df89f9a0a9991e3cb42418a3ab578602029eb61a13663928b7b39a5cd65b03b4e81c2259bfc0987871963a596f4936ad388d717fd1d41988ccf26e14996#npm:29.2.5"],\
           ["ts-node", "virtual:bd488df89f9a0a9991e3cb42418a3ab578602029eb61a13663928b7b39a5cd65b03b4e81c2259bfc0987871963a596f4936ad388d717fd1d41988ccf26e14996#npm:10.9.2"],\
@@ -12474,6 +12475,20 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/socket.io-npm-4.8.0-1e93513319-eab8a0da61.zip/node_modules/socket.io/",\
         "packageDependencies": [\
           ["socket.io", "npm:4.8.0"],\
+          ["accepts", "npm:1.3.8"],\
+          ["base64id", "npm:2.0.0"],\
+          ["cors", "npm:2.8.5"],\
+          ["debug", "virtual:3e6e7a6bcf85063c1871dabf67ed2f9be0d915cac19f644865a637f8f5784ec89de641ce76795e5d1db4c46954238721040693f06cc5667de5817fb807db5915#npm:4.3.7"],\
+          ["engine.io", "npm:6.6.2"],\
+          ["socket.io-adapter", "npm:2.5.5"],\
+          ["socket.io-parser", "npm:4.2.4"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:4.8.1", {\
+        "packageLocation": "./.yarn/cache/socket.io-npm-4.8.1-26090d3c01-acf931a2bb.zip/node_modules/socket.io/",\
+        "packageDependencies": [\
+          ["socket.io", "npm:4.8.1"],\
           ["accepts", "npm:1.3.8"],\
           ["base64id", "npm:2.0.0"],\
           ["cors", "npm:2.8.5"],\
