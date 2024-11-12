@@ -9,11 +9,14 @@ export class Choice {
     quiz_id: number;
 
     @Column()
-    position: number;
-
-    @Column()
     content: string;
 
     @Column()
     is_correct: boolean;
+
+    @Column()
+    position: number;
+
+    @Column()
+    created_at: Date;
 }

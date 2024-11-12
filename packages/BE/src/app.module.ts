@@ -9,6 +9,7 @@ import { MysqlConfigModule } from './config/database/mysql/configuration.module'
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
 import { QuizModule } from './module/quiz/quiz.module';
+import { GameGateway } from './module/game/game.gateway';
 
 @Module({
   imports: [
@@ -40,6 +41,6 @@ import { QuizModule } from './module/quiz/quiz.module';
     // }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GameGateway],
 })
 export class AppModule {}

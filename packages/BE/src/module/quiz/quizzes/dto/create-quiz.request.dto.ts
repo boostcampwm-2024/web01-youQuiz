@@ -1,15 +1,16 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested, IsEnum } from "class-validator";
 import { Type } from "class-transformer";
 import { CreateChoiceRequestDto } from "./create-choice.request.dto";
+import { QuizType } from '../utils/quiz-type.enum';
 
 export class CreateQuizRequestDto {
-    @IsNumber()
-    @IsNotEmpty()
-    position: number;
-
     @IsString()
     @IsNotEmpty()
     content: string;
+
+    @IsEnum(QuizType)
+    @IsNotEmpty()
+    quizType: QuizType;
 
     @IsNumber()
     @IsNotEmpty()
@@ -19,13 +20,9 @@ export class CreateQuizRequestDto {
     @IsNotEmpty()
     point: number;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    questionType: string;
-
-    // @IsNumber()
-    // @IsNotEmpty()
-    // position: number;
+    position: number;
 
     @IsArray()
     @ValidateNested({ each: true })
