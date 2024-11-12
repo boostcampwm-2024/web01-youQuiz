@@ -9,7 +9,7 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  args: { className: 'Class Name' },
+  args: { classTitle: 'Class Name' },
 } satisfies Meta<typeof Header>;
 
 export default meta;
@@ -17,6 +17,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    className: '클래스명',
+    classTitle: '클래스명',
   },
 };

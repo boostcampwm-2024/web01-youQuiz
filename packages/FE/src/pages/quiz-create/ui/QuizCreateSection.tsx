@@ -113,6 +113,7 @@ export default function QuizCreateSection() {
       <CustomButton
         label="퀴즈 발행하기"
         onClick={() => {
+          console.log(quizTitle);
           console.log('퀴즈 발행하기');
         }}
       />
