@@ -12,16 +12,17 @@ export class QuizRepository {
     ) {}
 
     async create(class_id: number, quiz: CreateQuizRequestDto): Promise<Quiz> {
-        const { position, content, timeLimit: time_limit, point, questionType: question_type } = quiz;
+        const { content, quizType: quiz_type, timeLimit: time_limit, position, point } = quiz;
         const quizEntity = this.repository.create({
             class_id,
-            position,
             content,
+            quiz_type,
             time_limit,
+            position,
             point,
-            question_type,
+            created_at: new Date(),
         });
-        return await this.repository.save(quizEntity); // 실제로 데이터베이스에 저장
+        return await this.repository.save(quizEntity);
     }
 
     async findById(id: number): Promise<Quiz> {
@@ -34,5 +35,9 @@ export class QuizRepository {
 
     async findByClassId(class_id: number): Promise<Quiz[]> {
         return this.repository.find({ where: { class_id } });
+    }
+
+    async deleteByClassId(class_id: number): Promise<void> {
+        await this.repository.delete({ class_id });
     }
 }

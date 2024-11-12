@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Post, UsePipes, ValidationPipe } from "@nestjs/common";
 import { QuizService } from "./quiz.service";
 // index.ts barrel file로 처리해도 좋을 듯.
 import { CreateClassRequestDto } from "./dto/create-class.request.dto";
@@ -13,6 +13,12 @@ export class QuizController {
     @UsePipes(ValidationPipe)
     async createClass(@Body() dto : CreateClassRequestDto) {
         return await this.quizService.createClass(dto);
+    }
+
+    @Delete('classes/:classId')
+    @UsePipes(ValidationPipe)
+    async deleteClass(@Param('classId') classId: number) {
+        return await this.quizService.deleteClass(classId);
     }
 
     @Post('classes/:classId/quizzes')

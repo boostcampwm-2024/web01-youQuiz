@@ -23,10 +23,7 @@ export class QuizService {
 
     async createClass(createClassRequestDto: CreateClassRequestDto): Promise<void> {
         try {
-            const classData = await this.classRepository.create({
-                title: createClassRequestDto.title,
-                description: createClassRequestDto.description,
-            });
+            await this.classRepository.create(createClassRequestDto);
         } catch (error) {
             console.error('error:', error);
         }
@@ -56,7 +53,6 @@ export class QuizService {
             ));
 
             // await queryRunner.commitTransaction();
-
 
             return {
                 success: true,
@@ -90,5 +86,29 @@ export class QuizService {
     // async updateQuiz(id: number, updateQuizDto: UpdateQuizDto): Promise<Quiz> {}
 
     // async deleteQuiz(id: number): Promise<void> {}
+
+    // id에 해당하는 클래스와 퀴즈, 선택지를 삭제한다.
+    async deleteClass(id: number): Promise<ResponseDto> {
+        const classEntity = await this.classRepository.findClassById(id);
+        if (!classEntity) {
+            throw new HttpException(`Class with ID ${id} not found`, HttpStatus.NOT_FOUND);
+        }
+
+        const quizzes = await this.quizRepository.findByClassId(id);
+        await Promise.all(
+            quizzes.map(async (quiz) => {
+                await this.choiceRepository.deleteByQuizId(quiz.id);
+            })
+        );
+
+        await this.quizRepository.deleteByClassId(id);
+        
+        await this.classRepository.deleteById(id);
+
+        return {
+            success: true,
+            message: 'Class deleted successfully',
+        };
+    }
 
 }

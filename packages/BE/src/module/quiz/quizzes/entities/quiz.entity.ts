@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { QuizType } from '../utils/quiz-type.enum';
 
 @Entity()
 export class Quiz {
@@ -9,10 +10,14 @@ export class Quiz {
     class_id: number;
 
     @Column()
-    position: number
-
-    @Column()
     content: string;
+
+    @Column({
+        type: 'enum',
+        enum: QuizType,
+        default: QuizType.TF,
+    })
+    quiz_type: QuizType;
 
     @Column()
     time_limit: number;
@@ -21,8 +26,8 @@ export class Quiz {
     point: number;
 
     @Column()
-    question_type: string;  // 퀴즈 타입에 따른 구분이 가능한 String Enum 혹은 정수로 해도 좋을 것 같음
+    position: number
 
-    // @Column()
-    // position: number;
+    @Column()
+    created_at: Date;
 }

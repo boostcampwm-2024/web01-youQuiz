@@ -5,8 +5,8 @@ export class Class {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    creator_id: number;
+    // @Column()
+    // uesr_id: number;
 
     @Column()
     title: string;
