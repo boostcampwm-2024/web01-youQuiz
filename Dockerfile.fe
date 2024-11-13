@@ -1,0 +1,43 @@
+# 빌드 스테이지
+FROM node:22.9.0-alpine AS builder
+
+WORKDIR /app
+
+# 종속성 파일만 먼저 복사하여 캐시 활용
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY tsconfig.json ./
+COPY .yarn ./.yarn 
+COPY packages ./packages
+
+# 종속성 설치
+RUN yarn install
+
+# FE 프로젝트 빌드
+WORKDIR /app/packages/FE
+RUN yarn build
+
+# 실행 스테이지
+FROM node:22.9.0-alpine AS runner
+
+WORKDIR /app
+
+# 필요한 파일 복사 순서 변경 및 종속성 설치 추가
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/yarn.lock ./
+COPY --from=builder /app/.yarnrc.yml ./
+COPY --from=builder /app/.yarn ./.yarn
+COPY --from=builder /app/packages ./packages
+
+# 종속성 설치 추가
+RUN yarn install
+
+# 환경 변수 설정
+ENV NODE_ENV production
+ENV PORT 4173
+
+# 포트 설정
+EXPOSE 4173
+
+# 실행 명령어
+CMD ["yarn", "workspace", "client", "preview", "--host", "0.0.0.0"]

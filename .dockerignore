@@ -26,7 +26,6 @@ logs/
 *.tsbuildinfo
 
 .npm/
-.yarn/
 .cache/
 
 .env.testing
