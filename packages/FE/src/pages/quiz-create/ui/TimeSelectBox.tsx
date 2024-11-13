@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction } from 'react';
 
 interface TimeSelectBoxProps {
-  setTime: Dispatch<SetStateAction<number>>;
+  setTime: (time: number) => void;
   setShowTimeSelect: Dispatch<SetStateAction<boolean>>;
 }
 
-const TIMES = [10, 20, 30, 40, 0];
+const TIMES = [10, 20, 30, 40];
+
 export default function TimeSelectBox({ setTime, setShowTimeSelect }: TimeSelectBoxProps) {
   return (
     <div className="absolute w-[100px] left-6 bg-white rounded-base border overflow-hidden z-10">
@@ -19,7 +20,7 @@ export default function TimeSelectBox({ setTime, setShowTimeSelect }: TimeSelect
             }}
             className="cursor-pointer text-weak-md text-center border-b py-1"
           >
-            {time === 0 ? '제한없음' : `${time}초`}
+            {`${time}초`}
           </li>
         ))}
       </ul>
