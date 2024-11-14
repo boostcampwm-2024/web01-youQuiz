@@ -26,7 +26,7 @@ export default function Router() {
         <Route path="/nickname" element={<Nickname />} />
         <Route path="/guest/questions" element={<GuestQnA />} />
       </Route>
-      <Route path="quiz/question" element={<QuizQuestion />} />
+      <Route path="/quiz/question" element={<QuizQuestion />} />
       <Route path={'*'} element={<NotFound />} />
     </Routes>
   );

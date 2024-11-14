@@ -2,6 +2,7 @@ import { CustomButton } from '@/shared/ui/buttons';
 import { generateRandomPositions } from '@/shared/utils/generateRandomPositions';
 import { QRCodeSVG } from 'qrcode.react';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // TODO: 파일 분리
 const GUEST_DISPLAY_SIZE = { width: 1020, height: 576 };
@@ -19,6 +20,7 @@ const count = fakeGuests.length;
 export default function QuizWait() {
   const buttonRefs = useRef<HTMLDivElement[]>([]);
   const [buttonSize, setButtonSize] = useState(BUTTON_SIZE);
+  const navigate = useNavigate();
 
   useLayoutEffect(() => {
     if (buttonRefs.current.length > 0) {
@@ -42,6 +44,12 @@ export default function QuizWait() {
       // TODO: 토스트 실패 메시지 추가
       console.error('Failed to copy link', error);
     }
+  };
+
+  const handleQuizStart = () => {
+    // DEMO 용도로 바로 퀴즈 페이지로 이동 추후 삭제
+    navigate('/quiz/session');
+    // TODO: socket.emit을 통해 전체 사용자에게 퀴즈 시작 이벤트 전달
   };
 
   return (
@@ -81,7 +89,7 @@ export default function QuizWait() {
             color="primary"
             label="퀴즈 시작하기"
             size="md"
-            onClick={() => console.log('퀴즈 시작하기')}
+            onClick={handleQuizStart}
           />
         </div>
       </div>
