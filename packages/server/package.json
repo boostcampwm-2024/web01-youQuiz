@@ -36,6 +36,7 @@
   "devDependencies": {
     "@nestjs/testing": "^10.4.6",
     "@types/express": "^5.0.0",
+    "@types/ioredis": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.8.7",
     "@types/supertest": "^6.0.2",
