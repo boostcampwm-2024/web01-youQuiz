@@ -19,37 +19,24 @@ export interface QuizData {
   choices: Choice[];
 }
 
+const INITIAL_QUIZ_VALUE: QuizData = {
+  content: '',
+  quizType: 'MC',
+  timeLimit: 30,
+  point: 1000,
+  position: 0,
+  choices: [
+    { content: '', isCorrect: false, position: 0 },
+    { content: '', isCorrect: false, position: 1 },
+  ],
+};
+
 export default function QuizCreatePage() {
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
-  const [quizzes, setQuizzes] = useState<QuizData[]>([
-    {
-      content: '',
-      quizType: 'MC',
-      timeLimit: 30,
-      point: 1000,
-      position: 0,
-      choices: [
-        { content: '', isCorrect: false, position: 0 },
-        { content: '', isCorrect: false, position: 1 },
-      ],
-    },
-  ]);
+  const [quizzes, setQuizzes] = useState<QuizData[]>([INITIAL_QUIZ_VALUE]);
 
   const addNewQuiz = () => {
-    setQuizzes((prev) => [
-      ...prev,
-      {
-        content: '',
-        quizType: 'MC',
-        timeLimit: 30,
-        point: 1000,
-        position: prev.length,
-        choices: [
-          { content: '', isCorrect: false, position: 0 },
-          { content: '', isCorrect: false, position: 1 },
-        ],
-      },
-    ]);
+    setQuizzes((prev) => [...prev, INITIAL_QUIZ_VALUE]);
     setCurrentQuizIndex((prev) => prev + 1);
   };
 
@@ -79,10 +66,10 @@ export default function QuizCreatePage() {
         key={currentQuizIndex}
         currentQuizIndex={currentQuizIndex}
         quizData={quizzes[currentQuizIndex]}
-        onQuizUpdate={(updatedData) => {
+        onQuizUpdate={(updatedData: QuizData) => {
           setQuizzes((prev) => {
             const newQuizzes = [...prev];
-            newQuizzes[currentQuizIndex] = updatedData as QuizData;
+            newQuizzes[currentQuizIndex] = updatedData;
             return newQuizzes;
           });
         }}

@@ -11,7 +11,7 @@ import { QuizData } from '../index';
 interface QuizCreateSectionProps {
   quizData: QuizData;
   currentQuizIndex: number;
-  onQuizUpdate: (updatedData: Partial<QuizData>) => void;
+  onQuizUpdate: (updatedData: QuizData) => void;
 }
 
 export default function QuizCreateSection({
