@@ -10,6 +10,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
 import { QuizModule } from './module/quiz/quiz.module';
 import { GameGateway } from './module/game/game.gateway';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -31,14 +32,17 @@ import { GameGateway } from './module/game/game.gateway';
         autoLoadEntities: configService.get<boolean>('mysql.autoLoadEntities'),
       }),
     }),
-    // Redis 설정
-    // RedisModule.forRoot({
-    //   type: 'single',
-    //   options: {
-    //     host: redisConfig.host,
-    //     port: redisConfig.port,
-    //   }
-    // }),
+    ClientsModule.register([
+      {
+        name: 'REDIS_SERVICE',
+        transport: Transport.REDIS,
+        options: {
+          host: redisConfig.host,
+          port: redisConfig.port,
+          password: redisConfig.password,
+        },
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService, GameGateway],
