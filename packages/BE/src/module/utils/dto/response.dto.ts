@@ -1,9 +1,9 @@
 import { IsString, IsNumber } from 'class-validator';
 
 export class ResponseDto {
-    @IsNumber()
-    statusCode: number;
+  @IsNumber()
+  statusCode: number;
 
-    @IsString()
-    message: string;
-}   
+  @IsString()
+  message: string;
+}

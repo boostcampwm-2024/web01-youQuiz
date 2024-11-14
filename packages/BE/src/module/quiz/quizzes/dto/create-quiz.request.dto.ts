@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested, IsEnum } from "class-validator";
-import { Type } from "class-transformer";
-import { CreateChoiceRequestDto } from "./create-choice.request.dto";
+import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateChoiceRequestDto } from './create-choice.request.dto';
 import { QuizType } from '../utils/quiz-type.enum';
 
 export class CreateQuizRequestDto {

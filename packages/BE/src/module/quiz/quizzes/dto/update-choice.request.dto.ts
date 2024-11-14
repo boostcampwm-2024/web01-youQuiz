@@ -8,7 +8,7 @@ export class UpdateChoiceRequestDto {
   @IsNumber()
   @IsNotEmpty()
   position: number;
-  
+
   @IsString()
   @IsNotEmpty()
   content: string;

@@ -92,7 +92,7 @@ export class ClassRepository {
     const { title, description } = classData;
     await this.repository.update(id, {
       title,
-      description 
+      description,
     });
   }
 }
