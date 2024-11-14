@@ -7,8 +7,6 @@ import QuizForm from './QuizForm';
 // TODO: 제출하기 버튼 API 연동
 // TODO: 타이머 종료 시 다음 퀴즈 페이지로 이동
 
-const OPTIONS = ['문제의 선지입니다 알맞은 답을 골라주세요.~', 'B', 'C', 'D'];
-
 type Choice = {
   content: string;
   isAnswer: boolean;
@@ -43,12 +41,7 @@ export default function Quiz({ quizData, handleAnimationEnd }: QuizProps) {
         handleAnimationEnd={() => handleAnimationEnd()}
       />
       <div className="flex flex-col justify-center items-center pt-[100px]">
-        <QuizForm
-          options={OPTIONS}
-          selectedOptions={selectedOptions}
-          onToggle={handleToggle}
-          quizData={quizData}
-        />
+        <QuizForm selectedOptions={selectedOptions} onToggle={handleToggle} quizData={quizData} />
         <div className="flex justify-center mt-6">
           <CustomButton label="제출하기" onClick={() => {}} />
         </div>

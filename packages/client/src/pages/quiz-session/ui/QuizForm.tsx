@@ -11,14 +11,12 @@ interface QuizProps {
 }
 
 interface QuizFormProps {
-  options: string[];
   selectedOptions: number[];
   onToggle: (index: number) => void;
   quizData: QuizProps;
 }
 
-export default function QuizForm({ options, selectedOptions, onToggle, quizData }: QuizFormProps) {
-  console.log(quizData);
+export default function QuizForm({ selectedOptions, onToggle, quizData }: QuizFormProps) {
   return (
     <div className="flex flex-col bg-white rounded-base w-2/4 min-h-[432px] py-6">
       <p className="text-md-xl text-center mb-2">{quizData.title}</p>
