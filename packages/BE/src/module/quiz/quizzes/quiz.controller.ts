@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Param, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Patch, Post, UsePipes, ValidationPipe } from "@nestjs/common";
 import { QuizService } from "./quiz.service";
-// index.ts barrel file로 처리해도 좋을 듯.
 import { CreateClassRequestDto } from "./dto/create-class.request.dto";
 import { CreateQuizListRequestDto } from "./dto/create-quizlist.request.dto";
+import { UpdateClassRequestDto } from "./dto/update-class.request.dto";
+import { UpdateQuizListRequestDto } from "./dto/update-quizlist.request.dto";
 
 @Controller('api')
 export class QuizController {
@@ -28,9 +29,17 @@ export class QuizController {
         return await this.quizService.createQuiz(classId, dto);
     }
 
-    // @Delete('delete-class')
-    // @UsePipes(ValidationPipe)
-    // async deleteQuiz(@Body() dto : CreateClassRequestDto) {
-    //     return await this.quizService.deleteClass(dto);
-    // }
+    @Patch('classes/:classId')
+    @UsePipes(ValidationPipe)
+    async updateClass(@Param('classId') classId: number,
+    @Body() dto : UpdateClassRequestDto) {
+        return await this.quizService.updateClass(classId, dto);
+    }
+
+    @Patch('classes/:classId/quizzes')
+    @UsePipes(ValidationPipe)
+    async updateQuiz(@Param('classId') classId: number,
+    @Body() dto: UpdateQuizListRequestDto) {
+        return await this.quizService.updateQuiz(classId, dto);
+    }
 }
