@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { redisConfig } from './config/database/redis/redis.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -9,9 +8,8 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
 import { QuizModule } from './module/quiz/quiz.module';
 import { GameGateway } from './module/game/game.gateway';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RedisService } from './config/database/redis/redis.service';
-
+import { RedisModule } from '@nestjs-modules/ioredis'; // 추가
 @Module({
   imports: [
     UserModule,
@@ -32,17 +30,10 @@ import { RedisService } from './config/database/redis/redis.service';
         autoLoadEntities: configService.get<boolean>('mysql.autoLoadEntities'),
       }),
     }),
-    ClientsModule.register([
-      {
-        name: 'REDIS_SERVICE',
-        transport: Transport.REDIS,
-        options: {
-          host: redisConfig.host,
-          port: redisConfig.port,
-          password: redisConfig.password,
-        },
-      },
-    ]),
+    RedisModule.forRoot({
+      type: 'single',
+      url: process.env.REDIS_URL,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, GameGateway, RedisService],
