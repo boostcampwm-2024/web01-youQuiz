@@ -1,9 +1,9 @@
-import { IsString, IsBoolean } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 
 export class ResponseDto {
-    @IsBoolean()
-    success: boolean;
+  @IsNumber()
+  statusCode: number;
 
-    @IsString()
-    message: string;
-}   
+  @IsString()
+  message: string;
+}

@@ -1,22 +1,27 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Quiz } from './quiz.entity';
 
 @Entity()
 export class Choice {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    quiz_id: number;
+  @Column({ name: 'quiz_id' })
+  quizId: number;
 
-    @Column()
-    content: string;
+  @Column()
+  content: string;
 
-    @Column()
-    is_correct: boolean;
+  @Column({ name: 'is_correct' })
+  isCorrect: boolean;
 
-    @Column()
-    position: number;
+  @Column()
+  position: number;
 
-    @Column()
-    created_at: Date;
+  @Column({ name: 'created_at' }) 
+  createdAt: Date;
+
+  @ManyToOne(() => Quiz, quiz => quiz.choices)
+  @JoinColumn({ name: 'quiz_id' })
+  quiz: Quiz;
 }

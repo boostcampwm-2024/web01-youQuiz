@@ -9,22 +9,10 @@ import { ClassRepository } from './quizzes/repositories/class.repository';
 import { QuizService } from './quizzes/quiz.service';
 import { QuizController } from './quizzes/quiz.controller';
 
-
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Quiz, Choice, Class])
-    ],
-    controllers: [QuizController],
-    providers: [
-        QuizService,
-        QuizRepository,
-        ChoiceRepository,
-        ClassRepository
-    ],
-    exports: [
-        QuizRepository,
-        ChoiceRepository,
-        ClassRepository
-    ]
+  imports: [TypeOrmModule.forFeature([Quiz, Choice, Class])],
+  controllers: [QuizController],
+  providers: [QuizService, QuizRepository, ChoiceRepository, ClassRepository],
+  exports: [QuizRepository, ChoiceRepository, ClassRepository],
 })
 export class QuizModule {}

@@ -1,19 +1,26 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Quiz } from './quiz.entity';
 
 @Entity()
 export class Class {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    // @Column()
-    // uesr_id: number;
+  // @Column()
+  // uesr_id: number;
 
-    @Column()
-    title: string;
+  @Column()
+  title: string;
 
-    @Column()
-    description: string;
+  @Column()
+  description: string;
 
-    @Column()
-    created_at: Date;
+  @Column({ name: 'created_at' })
+  createdAt: Date;
+
+  @OneToMany(() => Quiz, quiz => quiz.class, {
+    cascade: true,
+    eager: false
+  })
+  quizzes: Quiz[];
 }

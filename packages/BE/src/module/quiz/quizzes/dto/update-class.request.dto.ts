@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreateClassRequestDto {
+export class UpdateClassRequestDto {
   @IsString()
   @IsNotEmpty()
   title: string;
