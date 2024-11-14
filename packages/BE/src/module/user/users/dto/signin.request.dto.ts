@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber} from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class SignInRequestDto {
   @IsNotEmpty()

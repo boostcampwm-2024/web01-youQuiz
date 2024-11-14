@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 
 import HostLayout from '@/app/layouts/HostLayout';
+import MainPage from '@/pages/main';
 import QuizCreatePage from '@/pages/quiz-create';
 import GuestLayout from '@/app/layouts/GuestLayout';
 import NotFound from '@/app/routes/NotFound';
@@ -14,7 +15,7 @@ import GuestQnA from '@/pages/guest-qna';
 export default function Router() {
   return (
     <Routes>
-      <Route path="/" element={<h1>MAIN PAGE</h1>} />
+      <Route path="/" element={<MainPage />} />
       <Route element={<HostLayout />}>
         <Route path="/quiz/create" element={<QuizCreatePage />} />
         <Route path="/questions" element={<QnA />} />

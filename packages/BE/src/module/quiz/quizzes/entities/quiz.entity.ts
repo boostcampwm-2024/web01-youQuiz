@@ -1,33 +1,46 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { QuizType } from '../utils/quiz-type.enum';
+import { Choice } from './choice.entity';
+import { Class } from './class.entity';
 
 @Entity()
 export class Quiz {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    class_id: number;
+  @Column({ name: 'class_id' })
+  classId: number;
 
-    @Column()
-    content: string;
+  @Column()
+  content: string;
 
-    @Column({
-        type: 'enum',
-        enum: QuizType,
-        default: QuizType.TF,
-    })
-    quiz_type: QuizType;
+  @Column({
+      name: 'quiz_type',
+      type: 'enum',
+      enum: QuizType,
+      default: QuizType.TF,
+  })
+  quizType: QuizType;
 
-    @Column()
-    time_limit: number;
+  @Column({ name: 'time_limit' })
+  timeLimit: number;
 
-    @Column()
-    point: number;
+  @Column()
+  point: number;
 
-    @Column()
-    position: number
+  @Column()
+  position: number
 
-    @Column()
-    created_at: Date;
+  @Column({ name: 'created_at' })
+  createdAt: Date;
+
+  @OneToMany(() => Choice, choice => choice.quiz, {
+    cascade: true,
+    eager: false
+  })
+  choices: Choice[];
+
+  @ManyToOne(() => Class, cls => cls.quizzes)
+  @JoinColumn({ name: 'class_id' })
+  class: Class;
 }
