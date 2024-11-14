@@ -9,9 +9,9 @@ COPY ./yarn.lock ./
 RUN corepack enable
 RUN yarn install
 
-WORKDIR /app/packages/BE
+WORKDIR /app/packages/server
 
-COPY ./packages/BE .
+COPY ./packages/server .
 
 RUN yarn install
 

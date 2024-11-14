@@ -1,5 +1,5 @@
 {
-  "name": "BE",
+  "name": "server",
   "packageManager": "yarn@4.5.1",
   "scripts": {
     "start": "ts-node src/main.ts",

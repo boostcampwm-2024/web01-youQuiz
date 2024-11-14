@@ -13,7 +13,7 @@ COPY packages ./packages
 RUN yarn install
 
 # FE 프로젝트 빌드
-WORKDIR /app/packages/FE
+WORKDIR /app/packages/client
 RUN yarn build
 
 # 실행 스테이지
