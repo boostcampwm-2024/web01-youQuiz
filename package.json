@@ -5,13 +5,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "yarn dev:FE",
-    "dev:FE": "yarn workspace client run dev"
+    "start": "concurrently \"yarn start:server \" \"yarn dev:client\"",
+    "dev:client": "yarn workspace client run dev",
+    "start:server": "yarn workspace server run start"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
+    "concurrently": "^9.1.0",
     "eslint": "^9.14.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.1.0",
