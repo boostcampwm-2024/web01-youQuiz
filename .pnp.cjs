@@ -2141,7 +2141,10 @@ const RAW_RUNTIME_STATE =
           ["@types/ioredis", "npm:5.0.0"],\
           ["@types/nestjs__common", null],\
           ["@types/nestjs__core", null],\
-          ["ioredis", "npm:5.4.1"]\
+          ["@types/rxjs", null],\
+          ["ioredis", "npm:5.4.1"],\
+          ["rxjs", "npm:7.8.1"],\
+          ["tslib", "npm:2.8.1"]\
         ],\
         "packagePeers": [\
           "@nestjs/common",\
@@ -2149,7 +2152,9 @@ const RAW_RUNTIME_STATE =
           "@types/ioredis",\
           "@types/nestjs__common",\
           "@types/nestjs__core",\
-          "ioredis"\
+          "@types/rxjs",\
+          "ioredis",\
+          "rxjs"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -2520,7 +2525,7 @@ const RAW_RUNTIME_STATE =
           ["check-disk-space", "npm:3.4.0"],\
           ["mongoose", null],\
           ["reflect-metadata", null],\
-          ["rxjs", null],\
+          ["rxjs", "npm:7.8.1"],\
           ["sequelize", null],\
           ["typeorm", null]\
         ],\
