@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateQuizRequestDto } from './create-quiz.request.dto';
 
