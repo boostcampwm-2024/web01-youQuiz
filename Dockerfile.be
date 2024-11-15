@@ -2,9 +2,7 @@ FROM node:20
 
 WORKDIR /app
 
-COPY ./package.json ./
-COPY ./tsconfig.json ./
-COPY ./yarn.lock ./
+COPY . .
 
 RUN corepack enable
 RUN yarn install
