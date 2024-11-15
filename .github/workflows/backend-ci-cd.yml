@@ -72,6 +72,7 @@ jobs:
             git pull origin main
 
             docker build -f Dockerfile.be -t you-quiz-be .
+            docker image prune -f
 
             docker stop you-quiz-be || true
             docker rm you-quiz-be || true

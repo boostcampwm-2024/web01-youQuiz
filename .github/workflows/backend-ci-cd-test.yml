@@ -69,6 +69,7 @@ jobs:
             git pull origin develop
 
             docker build -f Dockerfile.be -t you-quiz-be-test .
+            docker image prune -f
 
             docker stop you-quiz-be-test || true
             docker rm you-quiz-be-test || true
