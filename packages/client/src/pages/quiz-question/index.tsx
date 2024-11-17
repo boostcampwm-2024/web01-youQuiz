@@ -36,20 +36,6 @@ const quizData: QuizData[] = [
     guestChoice: 2,
     isCorrect: true,
   },
-  {
-    quizIndex: 2,
-    title: '임시 퀴즈 문제3',
-    choices: ['천마총', '왕릉', '석굴암', '불국사'],
-    guestChoice: 1,
-    isCorrect: false,
-  },
-  {
-    quizIndex: 3,
-    title: '임시 퀴즈 문제4',
-    choices: ['천마총', '왕릉', '석굴암', '불국사'],
-    guestChoice: 0,
-    isCorrect: false,
-  },
 ];
 
 export default function QuizQuestion() {

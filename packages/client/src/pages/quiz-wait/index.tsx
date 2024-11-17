@@ -11,7 +11,7 @@ const BUTTON_SIZE = { width: 74, height: 44 };
 
 // TODO: API 연동 후 삭제
 const fakeLink = 'https://google.com';
-const fakeGuests = ['도훈', '성현', '병찬', '채원', '세상에서가장긴닉네임입니다.', 'faker'];
+const fakeGuests = ['도훈', '성현', '병찬', '채원'];
 
 const from = { x: SPACING, y: SPACING };
 const to = { x: GUEST_DISPLAY_SIZE.width - SPACING, y: GUEST_DISPLAY_SIZE.height - SPACING };

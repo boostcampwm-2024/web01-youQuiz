@@ -13,43 +13,43 @@ interface Quizes {
 
 const mockQuizData: Quizes[] = [
   {
-    title: '문제 중비중입니다.',
+    title: '임시 퀴즈 문제1',
     choices: [
       {
-        content: '선지1이다..',
+        content: '천마총',
         isAnswer: false,
       },
       {
-        content: '선지2 코파일럿아 일해라',
+        content: '왕릉',
         isAnswer: false,
       },
       {
-        content: '선지3 노가다는 니가 해라',
+        content: '석굴암',
         isAnswer: true,
       },
       {
-        content: '선지4 야야야',
+        content: '불국사',
         isAnswer: false,
       },
     ],
   },
   {
-    title: '문제 중비중입니다. 2트',
+    title: '임시 퀴즈 문제2',
     choices: [
       {
-        content: '선지1이다..',
+        content: '천마총',
         isAnswer: false,
       },
       {
-        content: '선지2 코파일럿아 일해라',
+        content: '왕릉',
         isAnswer: false,
       },
       {
-        content: '선지3 노가다는 니가 해라',
+        content: '석굴암',
         isAnswer: true,
       },
       {
-        content: '선지4 야야야',
+        content: '불국사',
         isAnswer: false,
       },
     ],

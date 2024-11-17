@@ -6,72 +6,36 @@ import CommentCard from './ui/CommentCard';
 const questions = [
   {
     index: 1,
-    description: 'What is the capital of France?',
+    description: '왜 석굴암은 정답이 아닌가요?',
     comments: [
       {
-        content: 'I think it is Paris',
+        content: '석굴암은 ~~~',
         isOrganizer: true,
       },
       {
-        content: 'I think it is London  ',
+        content: '너무 어려워요',
         isOrganizer: false,
       },
       {
-        content: 'I think it is Berlin',
-        isOrganizer: false,
-      },
-    ],
-  },
-  {
-    index: 1,
-    description: 'What is the capital of USA?',
-    comments: [
-      {
-        content: 'I think it is Washington DC',
-        isOrganizer: false,
-      },
-      {
-        content: 'I think it is New York',
-        isOrganizer: true,
-      },
-      {
-        content: 'I think it is Los Angeles',
+        content: '너무 쉬워요',
         isOrganizer: false,
       },
     ],
   },
   {
     index: 2,
-    description: 'What is the capital of Germany?',
+    description: '왜 불국사는 정답인가요?',
     comments: [
       {
-        content: 'I think it is Berlin',
+        content: '너무 어려워요!',
+        isOrganizer: false,
+      },
+      {
+        content: '왜냐하면 ~~',
         isOrganizer: true,
       },
       {
-        content: 'I think it is Munich',
-        isOrganizer: false,
-      },
-      {
-        content: 'I think it is Frankfurt',
-        isOrganizer: false,
-      },
-    ],
-  },
-  {
-    index: 3,
-    description: 'What is the capital of Italy?',
-    comments: [
-      {
-        content: 'I think it is Rome',
-        isOrganizer: true,
-      },
-      {
-        content: 'I think it is Milan',
-        isOrganizer: false,
-      },
-      {
-        content: 'I think it is Venice',
+        content: '맞아요 너무 어려웠어요',
         isOrganizer: false,
       },
     ],
