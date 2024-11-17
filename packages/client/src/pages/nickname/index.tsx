@@ -3,13 +3,24 @@ import AvatarIcon from '@/shared/assets/icons/avatar.svg?react';
 
 import { useState } from 'react';
 import { CustomButton } from '@/shared/ui/buttons';
+import { getCookie, setCookie } from '@/shared/utils/cookie';
+import { getQuizSocket } from '@/shared/utils/socket';
 
 export default function Nickname() {
   const [nickname, setNickname] = useState('');
 
   const handleNicknameSubmit = (nickname: string) => {
-    // TODO: API 연동 후 submit 함수 구현
-    console.log(nickname);
+    const socket = getQuizSocket();
+    const sid = getCookie('sid');
+    if (sid) {
+      socket.emit('entry', { roomId: 123456, nickname: nickname, sid: sid });
+      return;
+    }
+    socket.emit('entry', { roomId: 123456, nickname: nickname });
+
+    socket.on('session', (response) => {
+      setCookie('sid', response.sid);
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -47,6 +58,7 @@ export default function Nickname() {
               nickname.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100'
             }`}
             disabled={nickname.length === 0}
+            onClick={() => handleNicknameSubmit(nickname)}
           >
             Join
           </button>

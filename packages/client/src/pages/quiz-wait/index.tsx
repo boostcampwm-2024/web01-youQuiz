@@ -2,6 +2,8 @@ import { CustomButton } from '@/shared/ui/buttons';
 import { generateRandomPositions } from '@/shared/utils/generateRandomPositions';
 import { QRCodeSVG } from 'qrcode.react';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { getQuizSocket } from '@/shared/utils/socket';
+import { getCookie } from '@/shared/utils/cookie';
 
 // TODO: 파일 분리
 const GUEST_DISPLAY_SIZE = { width: 1020, height: 576 };
@@ -10,15 +12,20 @@ const BUTTON_SIZE = { width: 74, height: 44 };
 
 // TODO: API 연동 후 삭제
 const fakeLink = 'https://google.com';
-const fakeGuests = ['도훈', '성현', '병찬', '채원', '세상에서가장긴닉네임입니다.', 'faker'];
 
 const from = { x: SPACING, y: SPACING };
 const to = { x: GUEST_DISPLAY_SIZE.width - SPACING, y: GUEST_DISPLAY_SIZE.height - SPACING };
-const count = fakeGuests.length;
 
 export default function QuizWait() {
   const buttonRefs = useRef<HTMLDivElement[]>([]);
   const [buttonSize, setButtonSize] = useState(BUTTON_SIZE);
+  const [guests, setGuests] = useState<string[]>([]);
+  const guestCount = guests.length;
+  const socket = getQuizSocket();
+
+  socket.on('nickname', (response) => {
+    setGuests((prev) => [response.nickname, ...prev]);
+  });
 
   useLayoutEffect(() => {
     if (buttonRefs.current.length > 0) {
@@ -32,7 +39,7 @@ export default function QuizWait() {
     }
   }, []);
 
-  const randomPositions = generateRandomPositions({ from, to, count, buttonSize });
+  const randomPositions = generateRandomPositions({ from, to, count: guestCount, buttonSize });
 
   const handleCopyLink = () => {
     try {
@@ -42,6 +49,10 @@ export default function QuizWait() {
       // TODO: 토스트 실패 메시지 추가
       console.error('Failed to copy link', error);
     }
+  };
+
+  const handleQuizStart = () => {
+    socket.emit('master entry', { classId: '123', sid: getCookie('sid') });
   };
 
   return (
@@ -71,7 +82,7 @@ export default function QuizWait() {
                 }
               }}
             >
-              <CustomButton type="full" color="light" label={fakeGuests[index]} size="md" />
+              <CustomButton type="full" color="light" label={guests[index]} size="md" />
             </div>
           ))}
         </div>
@@ -81,7 +92,7 @@ export default function QuizWait() {
             color="primary"
             label="퀴즈 시작하기"
             size="md"
-            onClick={() => console.log('퀴즈 시작하기')}
+            onClick={handleQuizStart}
           />
         </div>
       </div>
