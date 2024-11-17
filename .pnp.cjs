@@ -6697,6 +6697,7 @@ const RAW_RUNTIME_STATE =
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:18.3.1"],\
           ["react-router-dom", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:6.27.0"],\
+          ["socket.io-client", "npm:4.8.1"],\
           ["storybook", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:8.4.1"],\
           ["tailwindcss", "npm:3.4.14"],\
           ["typescript", "patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"],\
@@ -7491,7 +7492,21 @@ const RAW_RUNTIME_STATE =
           ["cors", "npm:2.8.5"],\
           ["debug", "virtual:3e6e7a6bcf85063c1871dabf67ed2f9be0d915cac19f644865a637f8f5784ec89de641ce76795e5d1db4c46954238721040693f06cc5667de5817fb807db5915#npm:4.3.7"],\
           ["engine.io-parser", "npm:5.2.3"],\
-          ["ws", "virtual:5e1ad2a7862aee833ef56e6438cd24aa30efe06c23147978b84e2c2c2130cbe542568ae38f491d993931bedd1ed54b9b0e4d2fa2ede5d05f44e07ee33fd09dc8#npm:8.17.1"]\
+          ["ws", "virtual:5eef7f59d1d1aa0582a7b75dde266b71af8bd36e062eaf8f33ffa3a9a4f4c8f703b23c6b4cc826183bdcc4769c89f98c10fa6fcbba77be1d9b4b8d97cc3e059c#npm:8.17.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["engine.io-client", [\
+      ["npm:6.6.2", {\
+        "packageLocation": "./.yarn/cache/engine.io-client-npm-6.6.2-5eef7f59d1-a1a0995df1.zip/node_modules/engine.io-client/",\
+        "packageDependencies": [\
+          ["engine.io-client", "npm:6.6.2"],\
+          ["@socket.io/component-emitter", "npm:3.1.2"],\
+          ["debug", "virtual:3e6e7a6bcf85063c1871dabf67ed2f9be0d915cac19f644865a637f8f5784ec89de641ce76795e5d1db4c46954238721040693f06cc5667de5817fb807db5915#npm:4.3.7"],\
+          ["engine.io-parser", "npm:5.2.3"],\
+          ["ws", "virtual:5eef7f59d1d1aa0582a7b75dde266b71af8bd36e062eaf8f33ffa3a9a4f4c8f703b23c6b4cc826183bdcc4769c89f98c10fa6fcbba77be1d9b4b8d97cc3e059c#npm:8.17.1"],\
+          ["xmlhttprequest-ssl", "npm:2.1.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -12376,7 +12391,8 @@ const RAW_RUNTIME_STATE =
           ["ts-jest", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:29.2.5"],\
           ["ts-node", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:10.9.2"],\
           ["ts-node-dev", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:2.0.0"],\
-          ["typeorm", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:0.3.20"]\
+          ["typeorm", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:0.3.20"],\
+          ["uuid", "npm:11.0.3"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -12547,7 +12563,20 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["socket.io-adapter", "npm:2.5.5"],\
           ["debug", "virtual:3e6e7a6bcf85063c1871dabf67ed2f9be0d915cac19f644865a637f8f5784ec89de641ce76795e5d1db4c46954238721040693f06cc5667de5817fb807db5915#npm:4.3.7"],\
-          ["ws", "virtual:5e1ad2a7862aee833ef56e6438cd24aa30efe06c23147978b84e2c2c2130cbe542568ae38f491d993931bedd1ed54b9b0e4d2fa2ede5d05f44e07ee33fd09dc8#npm:8.17.1"]\
+          ["ws", "virtual:5eef7f59d1d1aa0582a7b75dde266b71af8bd36e062eaf8f33ffa3a9a4f4c8f703b23c6b4cc826183bdcc4769c89f98c10fa6fcbba77be1d9b4b8d97cc3e059c#npm:8.17.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["socket.io-client", [\
+      ["npm:4.8.1", {\
+        "packageLocation": "./.yarn/cache/socket.io-client-npm-4.8.1-eb1c9f0ea4-544c49cc8c.zip/node_modules/socket.io-client/",\
+        "packageDependencies": [\
+          ["socket.io-client", "npm:4.8.1"],\
+          ["@socket.io/component-emitter", "npm:3.1.2"],\
+          ["debug", "virtual:3e6e7a6bcf85063c1871dabf67ed2f9be0d915cac19f644865a637f8f5784ec89de641ce76795e5d1db4c46954238721040693f06cc5667de5817fb807db5915#npm:4.3.7"],\
+          ["engine.io-client", "npm:6.6.2"],\
+          ["socket.io-parser", "npm:4.2.4"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -13834,6 +13863,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["uuid", [\
+      ["npm:11.0.3", {\
+        "packageLocation": "./.yarn/cache/uuid-npm-11.0.3-abcb5b16c0-cee762fc76.zip/node_modules/uuid/",\
+        "packageDependencies": [\
+          ["uuid", "npm:11.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:9.0.1", {\
         "packageLocation": "./.yarn/cache/uuid-npm-9.0.1-39a8442bc6-1607dd32ac.zip/node_modules/uuid/",\
         "packageDependencies": [\
@@ -14216,10 +14252,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["virtual:5e1ad2a7862aee833ef56e6438cd24aa30efe06c23147978b84e2c2c2130cbe542568ae38f491d993931bedd1ed54b9b0e4d2fa2ede5d05f44e07ee33fd09dc8#npm:8.17.1", {\
-        "packageLocation": "./.yarn/__virtual__/ws-virtual-f640a9d5b6/0/cache/ws-npm-8.17.1-f57fb24a2c-f4a49064af.zip/node_modules/ws/",\
+      ["virtual:5eef7f59d1d1aa0582a7b75dde266b71af8bd36e062eaf8f33ffa3a9a4f4c8f703b23c6b4cc826183bdcc4769c89f98c10fa6fcbba77be1d9b4b8d97cc3e059c#npm:8.17.1", {\
+        "packageLocation": "./.yarn/__virtual__/ws-virtual-60464f8a68/0/cache/ws-npm-8.17.1-f57fb24a2c-f4a49064af.zip/node_modules/ws/",\
         "packageDependencies": [\
-          ["ws", "virtual:5e1ad2a7862aee833ef56e6438cd24aa30efe06c23147978b84e2c2c2130cbe542568ae38f491d993931bedd1ed54b9b0e4d2fa2ede5d05f44e07ee33fd09dc8#npm:8.17.1"],\
+          ["ws", "virtual:5eef7f59d1d1aa0582a7b75dde266b71af8bd36e062eaf8f33ffa3a9a4f4c8f703b23c6b4cc826183bdcc4769c89f98c10fa6fcbba77be1d9b4b8d97cc3e059c#npm:8.17.1"],\
           ["@types/bufferutil", null],\
           ["@types/utf-8-validate", null],\
           ["bufferutil", null],\
@@ -14230,6 +14266,15 @@ const RAW_RUNTIME_STATE =
           "@types/utf-8-validate",\
           "bufferutil",\
           "utf-8-validate"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["xmlhttprequest-ssl", [\
+      ["npm:2.1.2", {\
+        "packageLocation": "./.yarn/cache/xmlhttprequest-ssl-npm-2.1.2-7d8e3817bc-70d6086932.zip/node_modules/xmlhttprequest-ssl/",\
+        "packageDependencies": [\
+          ["xmlhttprequest-ssl", "npm:2.1.2"]\
         ],\
         "linkType": "HARD"\
       }]\
