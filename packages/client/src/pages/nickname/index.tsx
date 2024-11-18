@@ -3,7 +3,6 @@ import AvatarIcon from '@/shared/assets/icons/avatar.svg?react';
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CustomButton } from '@/shared/ui/buttons';
 import { getCookie, setCookie } from '@/shared/utils/cookie';
 import { getQuizSocket } from '@/shared/utils/socket';
 
@@ -64,7 +63,6 @@ export default function Nickname() {
             }`}
             onClick={() => handleNicknameSubmit(nickname)}
             disabled={nickname.length === 0}
-            onClick={() => handleNicknameSubmit(nickname)}
           >
             Join
           </button>
