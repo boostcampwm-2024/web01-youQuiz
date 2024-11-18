@@ -20,9 +20,9 @@ const to = { x: GUEST_DISPLAY_SIZE.width - SPACING, y: GUEST_DISPLAY_SIZE.height
 export default function QuizWait() {
   const buttonRefs = useRef<HTMLDivElement[]>([]);
   const [buttonSize, setButtonSize] = useState(BUTTON_SIZE);
-  const navigate = useNavigate();
   const [guests, setGuests] = useState<string[]>([]);
   const guestCount = guests.length;
+  const navigate = useNavigate();
   const socket = getQuizSocket();
 
   socket.on('nickname', (response) => {
@@ -55,6 +55,7 @@ export default function QuizWait() {
 
   const handleQuizStart = () => {
     socket.emit('master entry', { classId: '123', sid: getCookie('sid') });
+    navigate('/quiz/session');
   };
 
   return (
