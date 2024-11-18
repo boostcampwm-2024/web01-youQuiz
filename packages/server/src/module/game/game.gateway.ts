@@ -48,37 +48,43 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 방장이 게임을 나가도 재접속이 가능하며, 게임은 지속된다.
 
     const masterSid = uuidv4();
-    const gamePin = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
-    this.redisService.set(`master_sid=${masterSid}`, gamePin);
+    const pinCode = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
+
+    client.join(pinCode); // pinCode로 되어 있는 roomd을 들어감
+
+    this.redisService.set(`master_sid=${masterSid}`, pinCode);
 
     const { classId } = payload;
-    const gameInfo = { classId, currentOrder: 0, clientNum: 0, participantList: [] };
+    const gameInfo = { classId, currentOrder: 0, participantList: [] };
 
-    this.redisService.set(`gameId=${gamePin}`, JSON.stringify(gameInfo));
+    this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
     // refactor: 캐싱이 되어있다면 기간 연장, 안되어있다면 MySQL에서 데이터 가져오기, 데이터 전처리
     const quizData = await this.gameService.cachingQuizData(classId);
     this.redisService.set(`classId=${classId}`, JSON.stringify(quizData));
 
     client.emit('session', masterSid);
-    client.emit('pincode', gamePin);
+    client.emit('pincode', pinCode);
   }
 
   @SubscribeMessage('participant entry')
-  handleParticipantEntry(client: Socket, payload: any) {
-    const { roomId, nickname } = payload;
-    const clientInfo = { roomId, nickname };
+  async handleParticipantEntry(client: Socket, payload: any) {
+    const { pinCode, nickname } = payload;
+    const clientInfo = { pinCode, nickname };
 
-    if (payload.sid) {
-      this.redisService.set(`participant_sid=${payload.sid}`, JSON.stringify(clientInfo));
-      return;
-    }
+    client.join(pinCode); // 같은 룸에 들어오게 된것
 
-    const sid = uuidv4();
-    this.redisService.set(`participant_sid=${sid}`, JSON.stringify(clientInfo));
-    client.emit('session', { sid });
+    const participantSid = uuidv4();
+    this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
+    client.emit('session', participantSid);
 
-    // 해당 게임 아이디에 있는 모든 사람들한테 nickname braodcast
+    // 레디스 갱신
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const newParticipantList = gameInfo.participantList.push(nickname);
+    this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+
+    client.emit('nickname', newParticipantList);
+    client.to(pinCode).emit('nickname', newParticipantList);
 
     return;
   }
