@@ -18,7 +18,7 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
     >
       <input
         type="text"
-        placeholder="Join Code"
+        placeholder="퀴즈 제목을 입력하세요"
         className="w-full h-10 px-3 rounded-lg border border-gray-200"
       />
       <button className="h-10 px-6 bg-primary text-white rounded-lg" onClick={handleConfirmClick}>
