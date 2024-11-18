@@ -2138,10 +2138,13 @@ const RAW_RUNTIME_STATE =
           ["@nestjs/common", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:10.4.6"],\
           ["@nestjs/core", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:10.4.6"],\
           ["@nestjs/terminus", "virtual:ef3947e1416be14da271f1cea11b029acb8045f9552026e50d3639fb92e54fc3d7c48c13e8766466450a1b27c5c4d49cdf5d9b91125d082edca72ef653c93e1f#npm:10.2.0"],\
-          ["@types/ioredis", null],\
+          ["@types/ioredis", "npm:5.0.0"],\
           ["@types/nestjs__common", null],\
           ["@types/nestjs__core", null],\
-          ["ioredis", "npm:5.4.1"]\
+          ["@types/rxjs", null],\
+          ["ioredis", "npm:5.4.1"],\
+          ["rxjs", "npm:7.8.1"],\
+          ["tslib", "npm:2.8.1"]\
         ],\
         "packagePeers": [\
           "@nestjs/common",\
@@ -2149,7 +2152,9 @@ const RAW_RUNTIME_STATE =
           "@types/ioredis",\
           "@types/nestjs__common",\
           "@types/nestjs__core",\
-          "ioredis"\
+          "@types/rxjs",\
+          "ioredis",\
+          "rxjs"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -2333,7 +2338,7 @@ const RAW_RUNTIME_STATE =
           ["@types/amqplib", null],\
           ["@types/cache-manager", null],\
           ["@types/grpc__grpc-js", null],\
-          ["@types/ioredis", null],\
+          ["@types/ioredis", "npm:5.0.0"],\
           ["@types/kafkajs", null],\
           ["@types/mqtt", null],\
           ["@types/nats", null],\
@@ -2520,7 +2525,7 @@ const RAW_RUNTIME_STATE =
           ["check-disk-space", "npm:3.4.0"],\
           ["mongoose", null],\
           ["reflect-metadata", null],\
-          ["rxjs", null],\
+          ["rxjs", "npm:7.8.1"],\
           ["sequelize", null],\
           ["typeorm", null]\
         ],\
@@ -4532,6 +4537,16 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@types-http-errors-npm-2.0.4-8b39ca5d7c-494670a57a.zip/node_modules/@types/http-errors/",\
         "packageDependencies": [\
           ["@types/http-errors", "npm:2.0.4"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@types/ioredis", [\
+      ["npm:5.0.0", {\
+        "packageLocation": "./.yarn/cache/@types-ioredis-npm-5.0.0-6efa70abfa-e52ce4239f.zip/node_modules/@types/ioredis/",\
+        "packageDependencies": [\
+          ["@types/ioredis", "npm:5.0.0"],\
+          ["ioredis", "npm:5.4.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -12341,6 +12356,7 @@ const RAW_RUNTIME_STATE =
           ["@nestjs/typeorm", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:10.0.2"],\
           ["@nestjs/websockets", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:10.4.7"],\
           ["@types/express", "npm:5.0.0"],\
+          ["@types/ioredis", "npm:5.0.0"],\
           ["@types/jest", "npm:29.5.14"],\
           ["@types/joi", "npm:17.2.3"],\
           ["@types/node", "npm:22.8.7"],\
@@ -12360,7 +12376,6 @@ const RAW_RUNTIME_STATE =
           ["ts-jest", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:29.2.5"],\
           ["ts-node", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:10.9.2"],\
           ["ts-node-dev", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:2.0.0"],\
-          ["tslib", "npm:2.8.1"],\
           ["typeorm", "virtual:2499dbb93d824027565d71b0716c4fb8b548ad61955d0a0286bfb3c5b4058e227894b6691d96808c00f576db14870018375210362c26ee321ea99fd6ed041c74#npm:0.3.20"]\
         ],\
         "linkType": "SOFT"\
@@ -13547,7 +13562,7 @@ const RAW_RUNTIME_STATE =
           ["@types/better-sqlite3", null],\
           ["@types/google-cloud__spanner", null],\
           ["@types/hdb-pool", null],\
-          ["@types/ioredis", null],\
+          ["@types/ioredis", "npm:5.0.0"],\
           ["@types/mongodb", null],\
           ["@types/mssql", null],\
           ["@types/mysql2", null],\

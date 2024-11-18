@@ -5,7 +5,7 @@ on:
     branches:
       - 'develop'
     paths:
-      - 'packages/BE/**'
+      - 'packages/server/**'
   workflow_dispatch:
 
 jobs:
@@ -69,13 +69,15 @@ jobs:
             git pull origin develop
 
             docker build -f Dockerfile.be -t you-quiz-be-test .
+            docker image prune -f
 
             docker stop you-quiz-be-test || true
             docker rm you-quiz-be-test || true
 
-            docker run -d --name you-quiz-be-test --env-file ./packages/BE/.env -p 80:3000 you-quiz-be-test
+            docker run -d --name you-quiz-be-test --env-file ./packages/server/.env -p 80:3000 you-quiz-be-test
 
       - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
+        if: ${{ always() }}
         run: |
           chmod -R 777 ~/cli_linux
           cd ~/cli_linux

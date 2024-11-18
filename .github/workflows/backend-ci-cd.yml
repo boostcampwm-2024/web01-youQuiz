@@ -72,11 +72,12 @@ jobs:
             git pull origin main
 
             docker build -f Dockerfile.be -t you-quiz-be .
+            docker image prune -f
 
             docker stop you-quiz-be || true
             docker rm you-quiz-be || true
 
-            docker run -d --name you-quiz-be --env-file ./packages/BE/.env -p 80:3000 you-quiz-be
+            docker run -d --name you-quiz-be --env-file ./packages/server/.env -p 80:3000 you-quiz-be
 
       - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
         run: |
