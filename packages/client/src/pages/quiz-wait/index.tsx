@@ -2,6 +2,7 @@ import { CustomButton } from '@/shared/ui/buttons';
 import { generateRandomPositions } from '@/shared/utils/generateRandomPositions';
 import { QRCodeSVG } from 'qrcode.react';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 
@@ -19,6 +20,7 @@ const to = { x: GUEST_DISPLAY_SIZE.width - SPACING, y: GUEST_DISPLAY_SIZE.height
 export default function QuizWait() {
   const buttonRefs = useRef<HTMLDivElement[]>([]);
   const [buttonSize, setButtonSize] = useState(BUTTON_SIZE);
+  const navigate = useNavigate();
   const [guests, setGuests] = useState<string[]>([]);
   const guestCount = guests.length;
   const socket = getQuizSocket();

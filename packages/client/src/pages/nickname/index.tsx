@@ -2,12 +2,14 @@ import TrophyIcon from '@/shared/assets/icons/tropyhy.svg?react';
 import AvatarIcon from '@/shared/assets/icons/avatar.svg?react';
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CustomButton } from '@/shared/ui/buttons';
 import { getCookie, setCookie } from '@/shared/utils/cookie';
 import { getQuizSocket } from '@/shared/utils/socket';
 
 export default function Nickname() {
   const [nickname, setNickname] = useState('');
+  const navigate = useNavigate();
 
   const handleNicknameSubmit = (nickname: string) => {
     const socket = getQuizSocket();
@@ -21,6 +23,9 @@ export default function Nickname() {
     socket.on('session', (response) => {
       setCookie('sid', response.sid);
     });
+    // TODO: API 연동 후 submit 함수 구현
+    console.log(nickname);
+    navigate('/quiz/wait');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -57,21 +62,13 @@ export default function Nickname() {
             className={`w-20 h-10 text-white bg-primary rounded-3xl ${
               nickname.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100'
             }`}
+            onClick={() => handleNicknameSubmit(nickname)}
             disabled={nickname.length === 0}
             onClick={() => handleNicknameSubmit(nickname)}
           >
             Join
           </button>
         </div>
-      </div>
-      <div className="flex self-end mt-[640px]">
-        <CustomButton
-          type="full"
-          color="primary"
-          label="퀴즈 시작하기"
-          size="md"
-          onClick={() => handleNicknameSubmit(nickname)}
-        />
       </div>
     </div>
   );

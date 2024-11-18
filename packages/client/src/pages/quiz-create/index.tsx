@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { CustomButton } from '@/shared/ui/buttons';
 import PlusIcon from '@/shared/assets/icons/plus.svg?react';
 import QuizCreateSection from './ui/QuizCreateSection';
+import { useNavigate } from 'react-router-dom';
 
 interface Choice {
   content: string;
@@ -34,6 +35,7 @@ const INITIAL_QUIZ_VALUE: QuizData = {
 export default function QuizCreatePage() {
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [quizzes, setQuizzes] = useState<QuizData[]>([INITIAL_QUIZ_VALUE]);
+  const navigate = useNavigate();
 
   const addNewQuiz = () => {
     setQuizzes((prev) => [...prev, INITIAL_QUIZ_VALUE]);
@@ -93,7 +95,7 @@ export default function QuizCreatePage() {
         <CustomButton
           label="퀴즈 발행하기"
           onClick={() => {
-            console.log('퀴즈 발행하기');
+            navigate('/quiz-list');
           }}
         />
       </div>

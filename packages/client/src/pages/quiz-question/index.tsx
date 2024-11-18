@@ -2,6 +2,8 @@ import { useState } from 'react';
 import QuizCard from './ui/quiz-card';
 import ArrowUpCircleIcon from '@/shared/assets/icons/arrow-up-circle.svg?react';
 import { scrollToPosition } from '@/shared/utils/scrollToPosition';
+import { CustomButton } from '@/shared/ui/buttons';
+import { useNavigate } from 'react-router-dom';
 
 // TODO: model
 export type QuizData = {
@@ -34,25 +36,13 @@ const quizData: QuizData[] = [
     guestChoice: 2,
     isCorrect: true,
   },
-  {
-    quizIndex: 2,
-    title: '임시 퀴즈 문제3',
-    choices: ['천마총', '왕릉', '석굴암', '불국사'],
-    guestChoice: 1,
-    isCorrect: false,
-  },
-  {
-    quizIndex: 3,
-    title: '임시 퀴즈 문제4',
-    choices: ['천마총', '왕릉', '석굴암', '불국사'],
-    guestChoice: 0,
-    isCorrect: false,
-  },
 ];
 
 export default function QuizQuestion() {
   const [selectedQuiz, setSelectedQuiz] = useState(0);
+  const [questionText, setQuestionText] = useState('');
   const { scrollTo } = scrollToPosition();
+  const navigate = useNavigate();
 
   const handleQuizIndexClick = (index: number) => {
     const scrollPosition = index * (QUIZ_CARD_HEIGHT + QUIZ_CARD_GAP);
@@ -65,6 +55,16 @@ export default function QuizQuestion() {
 
   const handleQuizCardClick = (index: number) => {
     setSelectedQuiz(index);
+  };
+
+  const handleQuestionSubmit = () => {
+    // TODO: API 연동 후 질문 데이터 전송
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleQuestionSubmit();
+    }
   };
 
   return (
@@ -99,12 +99,26 @@ export default function QuizQuestion() {
                     type="text"
                     placeholder="문제에 대한 질문을 입력하세요"
                     className="w-full font-bold focus:outline-none"
+                    value={questionText}
+                    onChange={(e) => setQuestionText(e.target.value)}
+                    onKeyDown={handleKeyDown}
                   />
-                  <ArrowUpCircleIcon />
+                  <button onClick={handleQuestionSubmit}>
+                    <ArrowUpCircleIcon />
+                  </button>
                 </div>
               )}
             </div>
           ))}
+          <div className="self-end">
+            <CustomButton
+              type="full"
+              color="primary"
+              label="제출하기"
+              size="md"
+              onClick={() => navigate('/guest/questions')}
+            />
+          </div>
         </div>
       </div>
     </div>

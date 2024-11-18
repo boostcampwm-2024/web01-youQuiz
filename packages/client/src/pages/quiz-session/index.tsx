@@ -1,42 +1,84 @@
 import { useState } from 'react';
 
-import ProgressBar from '@/shared/ui/progress-bar/ProgressBar';
-import CustomButton from '@/shared/ui/buttons/CustomButton';
-import QuizForm from './ui/QuizForm';
+import Quiz from './ui/Quiz';
+import { useNavigate } from 'react-router-dom';
 
-// TODO: 제출하기 버튼 API 연동
-// TODO: 타이머 종료 시 다음 퀴즈 페이지로 이동
+interface Quizes {
+  title: string;
+  choices: {
+    content: string;
+    isAnswer: boolean;
+  }[];
+}
 
-const OPTIONS = ['A', 'B', 'C', 'D'];
+const mockQuizData: Quizes[] = [
+  {
+    title: '임시 퀴즈 문제1',
+    choices: [
+      {
+        content: '천마총',
+        isAnswer: false,
+      },
+      {
+        content: '왕릉',
+        isAnswer: false,
+      },
+      {
+        content: '석굴암',
+        isAnswer: true,
+      },
+      {
+        content: '불국사',
+        isAnswer: false,
+      },
+    ],
+  },
+  {
+    title: '임시 퀴즈 문제2',
+    choices: [
+      {
+        content: '천마총',
+        isAnswer: false,
+      },
+      {
+        content: '왕릉',
+        isAnswer: false,
+      },
+      {
+        content: '석굴암',
+        isAnswer: true,
+      },
+      {
+        content: '불국사',
+        isAnswer: false,
+      },
+    ],
+  },
+];
 
 export default function QuizSession() {
-  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+  //TODO: 퀴즈 정보는 React-query를 활용해서 브라우저 캐시에서 가져온다.
 
-  const handleToggle = (index: number) => {
-    setSelectedOptions((prev) => {
-      if (prev.includes(index)) {
-        return prev.filter((item) => item !== index);
-      }
-      return [...prev, index];
-    });
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const handleAnimationEnd = () => {
+    // TODO: 타이머 종료 시 다음 퀴즈 페이지로 이동하는 이벤트 emit
+    setCurrentQuizIndex((pre) => pre + 1);
+    if (currentQuizIndex === mockQuizData.length - 1) {
+      // TODO: Host 여부에 따라 페이지 변경
+      // HOST - navigate('/questions)
+      navigate('/quiz/question');
+    }
   };
 
   return (
-    <div>
-      <ProgressBar
-        time={10}
-        type="success"
-        barShape="rounded"
-        handleAnimationEnd={() => {
-          alert('end');
-        }}
+    <>
+      <Quiz
+        key={currentQuizIndex}
+        quizData={mockQuizData[currentQuizIndex]}
+        handleAnimationEnd={handleAnimationEnd}
       />
-      <div className="flex flex-col justify-center items-center  pt-[100px]">
-        <QuizForm options={OPTIONS} selectedOptions={selectedOptions} onToggle={handleToggle} />
-        <div className="flex justify-center">
-          <CustomButton label="제출하기" onClick={() => {}} />
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
