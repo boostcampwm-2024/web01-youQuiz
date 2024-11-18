@@ -72,7 +72,7 @@ export default function QuizList() {
                 color="secondary"
                 onClick={() => navigate('/quiz/wait')}
               />
-              <span>생성일자: {quiz.createdAt}</span>
+              <span className="flex justify-center items-center">생성일자: {quiz.createdAt}</span>
               <button type="button" onClick={() => handleSelectQuiz(index)}>
                 <DownArrowIcon
                   stroke="#000000"
