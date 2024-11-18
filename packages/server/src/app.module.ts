@@ -10,6 +10,7 @@ import { QuizModule } from './module/quiz/quiz.module';
 import { GameGateway } from './module/game/game.gateway';
 import { RedisService } from './config/database/redis/redis.service';
 import { RedisModule } from '@nestjs-modules/ioredis'; // 추가
+import { GameService } from './module/game/games/game.service';
 @Module({
   imports: [
     UserModule,
@@ -36,7 +37,7 @@ import { RedisModule } from '@nestjs-modules/ioredis'; // 추가
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, GameGateway, RedisService],
+  providers: [AppService, GameGateway, RedisService, GameService],
   exports: [RedisService],
 })
 export class AppModule {}
