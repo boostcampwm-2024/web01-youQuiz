@@ -26,7 +26,6 @@ export default function QuizWait() {
   const toast = toastController();
 
   useEffect(() => {
-    socket.emit('nickname', { pinCode });
     socket.on('nickname', (response) => {
       setGuests([...response]);
     });
