@@ -72,19 +72,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { pinCode, nickname } = payload;
     const clientInfo = { pinCode, nickname };
 
-    client.join(pinCode); // 같은 룸에 들어오게 된것
+    client.join(pinCode);
 
     const participantSid = uuidv4();
     this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
     client.emit('session', participantSid);
 
-    // 레디스 갱신
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    const newParticipantList = gameInfo.participantList.push(nickname);
+    gameInfo.participantList.push(nickname);
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    client.emit('nickname', newParticipantList);
-    client.to(pinCode).emit('nickname', newParticipantList);
+    client.emit('nickname', gameInfo.participantList);
+    client.to(pinCode).emit('nickname', gameInfo.participantList);
 
     return;
   }
