@@ -24,8 +24,8 @@ export default function Router() {
       </Route>
       <Route element={<GuestLayout />}>
         <Route path="/quiz/session" element={<QuizSession />} />
-        <Route path="/quiz/wait" element={<QuizWait />} />
-        <Route path="/nickname" element={<Nickname />} />
+        <Route path="/quiz/wait/:pinCode" element={<QuizWait />} />
+        <Route path="/nickname/:pinCode" element={<Nickname />} />
         <Route path="/guest/questions" element={<GuestQnA />} />
       </Route>
       <Route path="/quiz/question" element={<QuizQuestion />} />
