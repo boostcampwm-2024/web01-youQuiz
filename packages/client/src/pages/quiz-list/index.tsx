@@ -4,6 +4,9 @@ import Modal from '@/shared/ui/modal';
 import { useState } from 'react';
 import QuizTitleModal from './ui/QuizTitleModal';
 import { useNavigate } from 'react-router-dom';
+import { getQuizSocket } from '@/shared/utils/socket';
+import { setCookie } from '@/shared/utils/cookie';
+import { Socket } from 'socket.io-client';
 
 const useGetQuizList = () => {
   const data = [
@@ -43,11 +46,19 @@ const useGetQuizList = () => {
   return { data };
 };
 
+const waitForSocketEvent = (eventName: string, socket: Socket): Promise<any> =>
+  new Promise((resolve) => {
+    socket.once(eventName, (response) => {
+      resolve(response);
+    });
+  });
+
 export default function QuizList() {
   const { data: quizList } = useGetQuizList();
   const [selectedQuizIndex, setSelectedQuizIndex] = useState(-1);
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+  const socket = getQuizSocket();
 
   const handleSelectQuiz = (index: number) => {
     if (selectedQuizIndex === index) {
@@ -55,6 +66,18 @@ export default function QuizList() {
       return;
     }
     setSelectedQuizIndex(index);
+  };
+
+  const handleQuizStart = async () => {
+    socket.emit('master entry', { classId: 1 });
+    /**비동기 작업 */
+    const sid = await waitForSocketEvent('session', socket);
+    setCookie('sid', sid);
+
+    const pinCode = await waitForSocketEvent('pincode', socket);
+    setCookie('pincode', pinCode);
+
+    navigate('/quiz/wait');
   };
   return (
     <div className="flex flex-col gap-10 w-full mt-6 mr-6">
@@ -70,7 +93,7 @@ export default function QuizList() {
                 type="full"
                 label="퀴즈 시작하기"
                 color="secondary"
-                onClick={() => navigate('/quiz/wait')}
+                onClick={handleQuizStart}
               />
               <span className="flex justify-center items-center">생성일자: {quiz.createdAt}</span>
               <button type="button" onClick={() => handleSelectQuiz(index)}>
