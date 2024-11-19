@@ -24,7 +24,7 @@ export default function Nickname() {
     socket.on('session', (response) => {
       setCookie('sid', response);
     });
-    navigate(`/quiz/wait${pinCode}`);
+    navigate(`/quiz/wait/${pinCode}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
