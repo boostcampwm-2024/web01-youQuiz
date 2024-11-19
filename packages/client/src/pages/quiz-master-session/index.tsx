@@ -47,7 +47,7 @@ const statisticsCardItems = [
 const limitedTime = 20;
 
 export default function QuizMasterSession() {
-  const { quizId } = useParams();
+  const { id } = useParams();
 
   const [answerStats, setAnswerStats] = useState<AnswerStat[]>([
     { answer: '1번', count: 10, color: '#3B82F6' },
@@ -87,7 +87,7 @@ export default function QuizMasterSession() {
         <div className="flex justify-between">
           <div>
             <h1 className="text-xl font-bold mb-2">실시간 통계</h1>
-            <p className="text-2xl font-bold mb-2">{quizId}Q. 퀴즈 제목</p>
+            <p className="text-2xl font-bold mb-2">{id}Q. 퀴즈 제목</p>
           </div>
           <div>
             <p className="font-bold text-gray-500 mb-2">제한 시간 {time}</p>
