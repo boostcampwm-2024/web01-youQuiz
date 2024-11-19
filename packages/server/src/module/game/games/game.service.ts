@@ -3,6 +3,8 @@ import { ChoiceRepository } from '../../quiz/quizzes/repositories/choice.reposit
 import { ClassRepository } from '../../quiz/quizzes/repositories/class.repository';
 import { QuizRepository } from '../../quiz/quizzes/repositories/quiz.repository';
 import { RedisService } from '../../../config/database/redis/redis.service';
+import { Quiz } from 'src/module/quiz/quizzes/entities/quiz.entity';
+import { identity } from 'rxjs';
 
 @Injectable()
 export class GameService {
@@ -14,9 +16,34 @@ export class GameService {
   ) {}
 
   async cachingQuizData(classId: number) {
-    const classWithRelations = await this.classRepository.findClassWithRelations(classId);
+    const classWithRelations = await this.findClassWithRelations(classId);
+    const transformedData = this.transformQuizData(classWithRelations);
 
-    return classWithRelations;
+    return transformedData;
+  }
+
+  async findClassWithRelations(id: number) {
+    const classEntity = await this.classRepository.getOnlyQuiz(id);
+
+    return classEntity?.quizzes || [];
+  }
+
+  transformQuizData(quizlists: Quiz[]) {
+    const result = [];
+
+    quizlists.forEach((quiz) => {
+      const choiceList = [];
+      quiz.choices.forEach((choice) => {
+        const { id, quizId, content, isCorrect, position } = choice;
+        const oneChoice = { id, quizId, content, isCorrect, position }; // 인터페이스로 refactor
+        choiceList.push(oneChoice);
+      });
+
+      const { id, content, quizType, timeLimit, point, position } = quiz;
+      const oneQuiz = { id, content, quizType, timeLimit, point, position, choices: choiceList }; // 인터페이스로 refactor
+      result.push(oneQuiz);
+    });
+    return result;
   }
 
   async checkPinCode(pinCode: string) {
