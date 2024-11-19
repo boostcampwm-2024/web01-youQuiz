@@ -5,9 +5,11 @@ import QuizBackground from './ui/QuizBackground';
 import QuizBox from './ui/QuizBox';
 import QuizHeader from './ui/QuizHeader';
 import QuizLoading from './ui/QuizLoading';
+import { toastController } from '@/features/toast/model/toastController';
 
 export default function QuizSession() {
   const socket = getQuizSocket();
+  const toast = toastController();
   const [isLoading, setIsLoading] = useState(true);
   const [reactionStats, setReactionStats] = useState({
     easy: 0,
@@ -45,10 +47,14 @@ export default function QuizSession() {
       .then(() => {
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.log('socket 연결 실패', error);
+      .catch(() => {
+        toast.error('문제 로딩에 실패했습니다.');
         setIsLoading(false);
       });
+
+    socket.emit('timeout', (response: any) => {
+      console.log(response);
+    });
   }, []);
 
   console.log(quiz);
