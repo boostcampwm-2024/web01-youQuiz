@@ -1,18 +1,14 @@
 import { Dispatch, SetStateAction, useState, useRef, useEffect, useCallback } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
-
-interface QuizBoxProps {
-  reactionStats: {
-    easy: number;
-    hard: number;
-  };
-  setReactionStats: Dispatch<SetStateAction<{ easy: number; hard: number }>>;
-}
-
 interface ReactionData {
   easy: number;
   hard: number;
+}
+
+interface QuizBoxProps {
+  reactionStats: ReactionData;
+  setReactionStats: Dispatch<SetStateAction<ReactionData>>;
 }
 
 export default function QuizBox({ reactionStats, setReactionStats }: QuizBoxProps) {
