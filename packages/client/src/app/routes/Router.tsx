@@ -12,6 +12,7 @@ import QuizQuestion from '@/pages/quiz-question';
 import QnA from '@/pages/qna';
 import GuestQnA from '@/pages/guest-qna';
 import QuizList from '@/pages/quiz-list';
+import QuizMasterSession from '@/pages/quiz-master-session';
 
 export default function Router() {
   return (
@@ -23,12 +24,13 @@ export default function Router() {
         <Route path="/questions" element={<QnA />} />
       </Route>
       <Route element={<GuestLayout />}>
-        <Route path="/quiz/session" element={<QuizSession />} />
+        <Route path="/quiz/session/:id" element={<QuizSession />} />
         <Route path="/quiz/wait" element={<QuizWait />} />
         <Route path="/nickname" element={<Nickname />} />
         <Route path="/guest/questions" element={<GuestQnA />} />
       </Route>
       <Route path="/quiz/question" element={<QuizQuestion />} />
+      <Route path="quiz/host/session/:quizId" element={<QuizMasterSession />} />
       <Route path={'*'} element={<NotFound />} />
     </Routes>
   );
