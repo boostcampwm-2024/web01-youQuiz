@@ -65,6 +65,16 @@ export default {
             opacity: 0,
           },
         },
+        floatUp: {
+          '0%': {
+            transform: 'translateY(0)',
+            opacity: 1,
+          },
+          '100%': {
+            transform: 'translateY(-100px)',
+            opacity: 0,
+          },
+        },
       },
     },
   },
