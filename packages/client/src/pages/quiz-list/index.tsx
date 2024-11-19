@@ -70,7 +70,7 @@ export default function QuizList() {
     const pinCode = await waitForSocketEvent('pincode', socket);
     setCookie('pincode', pinCode);
 
-    navigate('/quiz/wait');
+    navigate(`/quiz/wait/${pinCode}`);
   };
   return (
     <div className="flex flex-col gap-10 w-full mt-6 mr-6">
