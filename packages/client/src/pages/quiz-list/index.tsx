@@ -6,7 +6,7 @@ import QuizTitleModal from './ui/QuizTitleModal';
 import { useNavigate } from 'react-router-dom';
 import { getQuizSocket } from '@/shared/utils/socket';
 import { setCookie } from '@/shared/utils/cookie';
-import { Socket } from 'socket.io-client';
+import { waitForSocketEvent } from '@/shared/utils/waitForSocketEvent';
 
 const useGetQuizList = () => {
   const data = [
@@ -45,13 +45,6 @@ const useGetQuizList = () => {
   ];
   return { data };
 };
-
-const waitForSocketEvent = (eventName: string, socket: Socket): Promise<any> =>
-  new Promise((resolve) => {
-    socket.once(eventName, (response) => {
-      resolve(response);
-    });
-  });
 
 export default function QuizList() {
   const { data: quizList } = useGetQuizList();
