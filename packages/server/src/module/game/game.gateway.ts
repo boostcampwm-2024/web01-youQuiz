@@ -24,6 +24,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly redisService: RedisService,
     private readonly gameService: GameService,
   ) {}
+
   // 클라이언트가 연결했을 때 처리하는 메서드
   async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -31,6 +32,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // 클라이언트가 연결을 끊었을 때 처리하는 메서드
   async handleDisconnect(client: Socket) {
+    //대기 중에 사람이 나갈 경우 갱신해주는 부분 추가 필요
     console.log(`Client disconnected: ${client.id}`);
   }
 
@@ -102,7 +104,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
-    // {id, content, choice[]}
     const currentQuizData = quizData[currentOrder];
 
     // client.emit('show quiz', currentQuizData);
@@ -119,10 +120,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // redis currentOrder + 1
   }
 
-  startTimer(pinCode: string, timeLimit: number) {
+  startTimer(client: Socket, pinCode: string, timeLimit: number) {
     // 제한시간이 끝나면.
     setTimeout(() => {
-      this.server.to(pinCode).emit('timeout', {});
+      client.emit('timeout', { is_timeout: true });
+      client.to(pinCode).emit('timeout', { is_timeout: true });
     }, timeLimit * 1000);
   }
 
