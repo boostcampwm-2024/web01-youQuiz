@@ -73,8 +73,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameInfo.participantList.push(nickname);
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    client.emit('nickname', gameInfo.participantList);
-    client.to(pinCode).emit('nickname', gameInfo.participantList);
+    // client.emit('nickname', gameInfo.participantList);
+    // client.to(pinCode).emit('nickname', gameInfo.participantList);
+    this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
   @SubscribeMessage('nickname')
@@ -83,8 +84,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    client.emit('nickname', gameInfo.participantList);
-    client.to(pinCode).emit('nickname', gameInfo.participantList);
+    // client.emit('nickname', gameInfo.participantList);
+    // client.to(pinCode).emit('nickname', gameInfo.participantList);
+    this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
   @SubscribeMessage('show quiz')
@@ -103,16 +105,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // {id, content, choice[]}
     const currentQuizData = quizData[currentOrder];
 
-    // this.server.to(pinCode).emit('show quiz', currentQuizData);
-    client.emit('show quiz', currentQuizData);
-    client.to(pinCode).emit('show quiz', currentQuizData);
+    // client.emit('show quiz', currentQuizData);
+    // client.to(pinCode).emit('show quiz', currentQuizData);
+    this.server.to(pinCode).emit('show quiz', currentQuizData);
 
-    gameInfo.currentOrder += 1;
+    // gameInfo.currentOrder += 1;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    setTimeout(() => {
-      this.startTimer(pinCode, currentQuizData.timeLimit);
-    }, 2000);
+    // setTimeout(() => {
+    //   this.startTimer(pinCode, currentQuizData.timeLimit);
+    // }, 2000);
 
     // redis currentOrder + 1
   }
