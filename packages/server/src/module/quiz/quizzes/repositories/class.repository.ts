@@ -30,6 +30,18 @@ export class ClassRepository {
     return this.repository.findOne({ where: { id } });
   }
 
+  async getOnlyQuiz(id: number) {
+    return this.repository.findOne({
+      where: { id },
+      select: ['quizzes'],
+      relations: {
+        quizzes: {
+          choices: true,
+        },
+      },
+    });
+  }
+
   async findAll(): Promise<Class[]> {
     return this.repository.find();
   }

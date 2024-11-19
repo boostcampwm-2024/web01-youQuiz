@@ -9,7 +9,7 @@ interface HeaderProps {
 export default function Header({ classTitle }: HeaderProps) {
   //TODO: 로그인 상태 관리
   return (
-    <div className="border-b-2 py-4 bg-white">
+    <div className="py-2 bg-white shadow-md">
       <section className="flex justify-between items-center min-w-[980px] mx-auto px-8">
         <div className="flex items-center gap-8">
           <BackButton />

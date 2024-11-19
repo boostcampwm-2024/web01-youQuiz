@@ -34,15 +34,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('Quiz')
-  handleQuiz(client: Socket, payload: any) {
-    // classID, 퀴즈의 정보를 가져온다.
-    const quiz = this.redisService.get(payload.classId);
-  }
-
-  @SubscribeMessage('submit')
-  handleSubmit() {}
-
   @SubscribeMessage('master entry')
   async handleMasterEntry(client: Socket, payload: any) {
     // 방장이 게임을 나가도 재접속이 가능하며, 게임은 지속된다.
@@ -82,9 +73,53 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameInfo.participantList.push(nickname);
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    client.emit('nickname', gameInfo.participantList);
-    client.to(pinCode).emit('nickname', gameInfo.participantList);
-
-    return;
+    this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
+
+  @SubscribeMessage('nickname')
+  async handleNickname(client: Socket, payload: any) {
+    const { pinCode } = payload;
+
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+
+    this.server.to(pinCode).emit('nickname', gameInfo.participantList);
+  }
+
+  @SubscribeMessage('show quiz')
+  async handleShowQuiz(client: Socket, payload: any) {
+    // const isMaster = await this.
+
+    const { pinCode } = payload;
+    // 게임 현재 상태 가져오기
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+
+    const { classId, currentOrder, participantList } = gameInfo;
+    // 캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
+    // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
+    const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
+
+    // {id, content, choice[]}
+    const currentQuizData = quizData[currentOrder];
+
+    this.server.to(pinCode).emit('show quiz', currentQuizData);
+
+    gameInfo.currentOrder += 1;
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+
+    setTimeout(() => {
+      this.startTimer(pinCode, currentQuizData.timeLimit);
+    }, 2000);
+
+    // redis currentOrder + 1
+  }
+
+  startTimer(pinCode: string, timeLimit: number) {
+    // 제한시간이 끝나면.
+    setTimeout(() => {
+      this.server.to(pinCode).emit('timeout', {});
+    }, timeLimit * 1000);
+  }
+
+  //퀴즈를 보내고 나서 타이머 재기 시작
+  // 타이머가 끝나면 이벤트 발생 - 타이머 종료 알림
 }
