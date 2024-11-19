@@ -95,4 +95,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit('nickname', gameInfo.participantList);
     client.to(pinCode).emit('nickname', gameInfo.participantList);
   }
+
+  @SubscribeMessage('show quiz')
+  async handleShowQuiz(client: Socket, payload: any) {
+    // const isMaster = await this.
+
+    const { pinCode } = payload;
+    // 게임 현재 상태 가져오기
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+
+    const { classId, currentOrder, participantList } = gameInfo;
+    // 캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
+    // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
+    const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
+
+    // {id, content, choice[]}
+    const currentQuizData = quizData[currentOrder];
+
+    client.emit('show quiz', currentQuizData);
+    client.to(pinCode).emit('show quiz', currentQuizData);
+  }
 }
