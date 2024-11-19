@@ -1,33 +1,36 @@
 import { CustomButton } from '@/shared/ui/buttons';
 import { generateRandomPositions } from '@/shared/utils/generateRandomPositions';
 import { QRCodeSVG } from 'qrcode.react';
-import { useLayoutEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
+import { toastController } from '@/features/toast/model/toastController';
 
-// TODO: 파일 분리
 const GUEST_DISPLAY_SIZE = { width: 1020, height: 576 };
 const SPACING = 10;
 const BUTTON_SIZE = { width: 74, height: 44 };
-
-// TODO: API 연동 후 삭제
-const fakeLink = 'https://google.com';
 
 const from = { x: SPACING, y: SPACING };
 const to = { x: GUEST_DISPLAY_SIZE.width - SPACING, y: GUEST_DISPLAY_SIZE.height - SPACING };
 
 export default function QuizWait() {
+  const { pinCode } = useParams();
+  const guestLink = `${import.meta.env.VITE_CLIENT_URL}/${pinCode}`;
   const buttonRefs = useRef<HTMLDivElement[]>([]);
   const [buttonSize, setButtonSize] = useState(BUTTON_SIZE);
   const [guests, setGuests] = useState<string[]>([]);
   const guestCount = guests.length;
-  const navigate = useNavigate();
   const socket = getQuizSocket();
+  const navigate = useNavigate();
+  const toast = toastController();
 
-  socket.on('nickname', (response) => {
-    setGuests((prev) => [response.nickname, ...prev]);
-  });
+  useEffect(() => {
+    socket.emit('nickname', { pinCode });
+    socket.on('nickname', (response) => {
+      setGuests([...response]);
+    });
+  }, []);
 
   useLayoutEffect(() => {
     if (buttonRefs.current.length > 0) {
@@ -45,11 +48,10 @@ export default function QuizWait() {
 
   const handleCopyLink = () => {
     try {
-      // TODO: 토스트 성공 메시지 추가
-      navigator.clipboard.writeText(fakeLink);
+      navigator.clipboard.writeText(guestLink);
+      toast.success('링크가 복사되었습니다.');
     } catch (error) {
-      // TODO: 토스트 실패 메시지 추가
-      console.error('Failed to copy link', error);
+      toast.error('링크 복사에 실패했습니다.');
     }
   };
 
@@ -62,7 +64,7 @@ export default function QuizWait() {
     <div className="flex gap-6 min-w-[980px] px-64 pt-16">
       <div className="flex flex-col gap-16 w-80 h-[676px] bg-white p-14">
         {/* TODO: Suspense를 통해 loading 시 fallback 컴포넌트  */}
-        <QRCodeSVG value={fakeLink} />
+        <QRCodeSVG value={guestLink} />
         <CustomButton
           type="full"
           color="primary"
