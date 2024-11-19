@@ -84,7 +84,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     client.emit('nickname', gameInfo.participantList);
     client.to(pinCode).emit('nickname', gameInfo.participantList);
+  }
 
-    return;
+  @SubscribeMessage('nickname')
+  async handleNickname(client: Socket, payload: any) {
+    const { pinCode } = payload;
+
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+
+    client.emit('nickname', gameInfo.participantList);
+    client.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 }
