@@ -11,6 +11,7 @@ import { GameGateway } from './module/game/game.gateway';
 import { RedisService } from './config/database/redis/redis.service';
 import { RedisModule } from '@nestjs-modules/ioredis'; // 추가
 import { GameService } from './module/game/games/game.service';
+import { GameController } from './module/game/games/game.controller';
 @Module({
   imports: [
     UserModule,
@@ -36,7 +37,7 @@ import { GameService } from './module/game/games/game.service';
       url: process.env.REDIS_URL,
     }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, GameController],
   providers: [AppService, GameGateway, RedisService, GameService],
   exports: [RedisService],
 })
