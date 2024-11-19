@@ -2,11 +2,12 @@ import TrophyIcon from '@/shared/assets/icons/tropyhy.svg?react';
 import AvatarIcon from '@/shared/assets/icons/avatar.svg?react';
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getCookie, setCookie } from '@/shared/utils/cookie';
 import { getQuizSocket } from '@/shared/utils/socket';
 
 export default function Nickname() {
+  const { pinCode } = useParams();
   const [nickname, setNickname] = useState('');
   const navigate = useNavigate();
 
@@ -14,17 +15,16 @@ export default function Nickname() {
     const socket = getQuizSocket();
     const sid = getCookie('sid');
     if (sid) {
-      socket.emit('entry', { roomId: 123456, nickname: nickname, sid: sid });
+      socket.emit('participant re-entry', { pinCode: pinCode, nickname: nickname, sid: sid });
+      navigate('/quiz/wait');
       return;
     }
-    socket.emit('entry', { roomId: 123456, nickname: nickname });
+    socket.emit('participant entry', { pinCode: pinCode, nickname: nickname });
 
     socket.on('session', (response) => {
-      setCookie('sid', response.sid);
+      setCookie('sid', response);
     });
-    // TODO: API 연동 후 submit 함수 구현
-    console.log(nickname);
-    navigate('/quiz/wait');
+    navigate(`/quiz/wait${pinCode}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
