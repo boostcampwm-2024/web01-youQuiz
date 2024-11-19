@@ -1,24 +1,20 @@
 import { toastController } from '@/features/toast/model/toastController';
+import { getPincodeExist } from '@/shared/api/games';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const useGetPinNumbers = () => {
-  return { data: [123456] };
-};
-
 export default function MainPage() {
-  const [pin, setPin] = useState<string>('');
-  const { data: pinNumbers } = useGetPinNumbers();
-
-  const naviagte = useNavigate();
+  const [pinCode, setPinCode] = useState<string>('');
+  const navigate = useNavigate();
   const toast = toastController();
 
-  const handleClick = () => {
-    if (pinNumbers?.includes(Number(pin))) {
-      naviagte('nickname');
+  const handleClick = async () => {
+    const response = await getPincodeExist(pinCode);
+    if (response.isExist) {
+      navigate(`/nickname/${pinCode}`);
       return;
     }
-    toast.error('유효하지 않은 코드입니다');
+    toast.error('잘못된 코드입니다.');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -29,15 +25,14 @@ export default function MainPage() {
   return (
     <section className="min-h-screen flex flex-col items-center">
       <h1 className="text-6xl font-bold text-primary mt-32 mb-24">You Quiz</h1>
-
       <div className="w-full max-w-4xl px-4">
         <div className="w-full flex justify-between border-[1.5px] border-primary rounded-xl p-2">
           <input
             type="text"
             placeholder="Join Code"
             className="w-3/4 border-none outline-none p-3 bg-transparent"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
+            value={pinCode}
+            onChange={(e) => setPinCode(e.target.value)}
             onKeyDown={handleKeyDown}
           />
           <button
