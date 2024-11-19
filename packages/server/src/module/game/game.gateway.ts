@@ -34,15 +34,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('Quiz')
-  handleQuiz(client: Socket, payload: any) {
-    // classID, 퀴즈의 정보를 가져온다.
-    const quiz = this.redisService.get(payload.classId);
-  }
-
-  @SubscribeMessage('submit')
-  handleSubmit() {}
-
   @SubscribeMessage('master entry')
   async handleMasterEntry(client: Socket, payload: any) {
     // 방장이 게임을 나가도 재접속이 가능하며, 게임은 지속된다.
@@ -82,8 +73,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameInfo.participantList.push(nickname);
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    client.emit('nickname', gameInfo.participantList);
-    client.to(pinCode).emit('nickname', gameInfo.participantList);
+    this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
   @SubscribeMessage('nickname')
@@ -92,8 +82,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    client.emit('nickname', gameInfo.participantList);
-    client.to(pinCode).emit('nickname', gameInfo.participantList);
+    this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
   @SubscribeMessage('show quiz')
@@ -112,7 +101,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // {id, content, choice[]}
     const currentQuizData = quizData[currentOrder];
 
-    client.emit('show quiz', currentQuizData);
-    client.to(pinCode).emit('show quiz', currentQuizData);
+    this.server.to(pinCode).emit('show quiz', currentQuizData);
+
+    gameInfo.currentOrder += 1;
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+
+    setTimeout(() => {
+      this.startTimer(pinCode, currentQuizData.timeLimit);
+    }, 2000);
+
+    // redis currentOrder + 1
   }
+
+  startTimer(pinCode: string, timeLimit: number) {
+    // 제한시간이 끝나면.
+    setTimeout(() => {
+      this.server.to(pinCode).emit('timeout', {});
+    }, timeLimit * 1000);
+  }
+
+  //퀴즈를 보내고 나서 타이머 재기 시작
+  // 타이머가 끝나면 이벤트 발생 - 타이머 종료 알림
 }
