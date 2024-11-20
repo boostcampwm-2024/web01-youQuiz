@@ -39,22 +39,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('master entry')
   async handleMasterEntry(client: Socket, payload: any) {
     // 방장이 게임을 나가도 재접속이 가능하며, 게임은 지속된다.
+    const { classId } = payload;
 
+    // 방장의 세션 ID와 핀코드를 생성
     const masterSid = uuidv4();
     const pinCode = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
 
     client.join(pinCode); // pinCode로 되어 있는 roomd을 들어감
 
-    this.redisService.set(`master_sid=${masterSid}`, pinCode);
+    this.redisService.set(`master_sid=${masterSid}`, JSON.stringify({ pinCode }));
 
-    const { classId } = payload;
-    const gameInfo = { classId, currentOrder: 0, participantList: [] };
+    const quizData = await this.storeQuizToRedis(classId);
+    const quizMaxNum = quizData.length;
 
+    // 퀴즈 개수를 저장.
+    const gameInfo = { classId, currentOrder: 0, quizMaxNum, participantList: [] };
+
+    // 게임 정보를 저장
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
-    // refactor: 캐싱이 되어있다면 기간 연장, 안되어있다면 MySQL에서 데이터 가져오기, 데이터 전처리
-    const quizData = await this.gameService.cachingQuizData(classId);
-    this.redisService.set(`classId=${classId}`, JSON.stringify(quizData));
 
     client.emit('session', masterSid);
     client.emit('pincode', pinCode);
@@ -120,14 +122,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // redis currentOrder + 1
   }
 
-  startTimer(client: Socket, pinCode: string, timeLimit: number) {
-    // 제한시간이 끝나면.
-    setTimeout(() => {
-      client.emit('timeout', { is_timeout: true });
-      client.to(pinCode).emit('timeout', { is_timeout: true });
-    }, timeLimit * 1000);
-  }
+  // 퀴즈를 푸는 동안 서버에저 제한시간을 측정한다.
+  // 측정하는 동안에는 SSE를 시도한다.
 
   //퀴즈를 보내고 나서 타이머 재기 시작
   // 타이머가 끝나면 이벤트 발생 - 타이머 종료 알림
+
+  private async storeQuizToRedis(classId: number) {
+    const cachedQuizData = await this.redisService.get(`classId=${classId}`);
+
+    if (cachedQuizData) {
+      const quizData = JSON.parse(cachedQuizData);
+      return quizData;
+    }
+
+    const quizData = await this.gameService.cachingQuizData(classId);
+
+    await this.redisService.set(`class:${classId}`, JSON.stringify(quizData), 'EX', 604800);
+
+    return quizData;
+  }
 }
