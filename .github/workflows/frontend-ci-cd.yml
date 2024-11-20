@@ -44,6 +44,11 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_CLIENT_PASSWORD }}
 
+      - name: Create .env file
+        run: |
+          echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" >> packages/client/.env
+          echo "VITE_CLIENT_URL=${{ secrets.VITE_CLIENT_URL }}" >> packages/client/.env
+
       - name: Docker build
         run: docker build -t ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }} -f Dockerfile.fe .
 
@@ -83,7 +88,7 @@ jobs:
             docker rm you-quiz-fe || true
 
             docker pull ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
-            docker run -d --name you-quiz-fe -p 80:4173 ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
+            docker run -d --name you-quiz-fe --env-file /root/.env -p 80:4173 ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
 
       - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
         run: |
