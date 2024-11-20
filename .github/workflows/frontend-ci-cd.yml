@@ -44,6 +44,11 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_CLIENT_PASSWORD }}
 
+      - name: Create .env file
+        run: |
+          echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" >> packages/client/.env
+          echo "VITE_CLIENT_URL=${{ secrets.VITE_CLIENT_URL }}" >> packages/client/.env
+
       - name: Docker build
         run: docker build -t ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }} -f Dockerfile.fe .
 
