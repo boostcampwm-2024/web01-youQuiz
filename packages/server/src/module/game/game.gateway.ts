@@ -128,6 +128,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }, timeLimit * 1000);
   }
 
+  @SubscribeMessage('start quiz')
+  async handleStartQuiz(client: Socket, payload: any) {
+    const { sid, pinCode } = payload;
+
+    const { pinCode: storedPinCode } = JSON.parse(
+      await this.redisService.get(`master_sid=${pinCode}`),
+    );
+
+    if (storedPinCode !== pinCode) {
+      console.log('Invalid pinCode');
+    }
+
+    this.server.to(pinCode).emit('start quiz', { isStarted: true });
+  }
+
   //퀴즈를 보내고 나서 타이머 재기 시작
   // 타이머가 끝나면 이벤트 발생 - 타이머 종료 알림
 }
