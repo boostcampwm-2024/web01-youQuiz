@@ -83,7 +83,7 @@ jobs:
             docker rm you-quiz-fe || true
 
             docker pull ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
-            docker run -d --name you-quiz-fe -p 80:4173 ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
+            docker run -d --name you-quiz-fe --env-file /root/.env -p 80:4173 ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
 
       - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
         run: |
