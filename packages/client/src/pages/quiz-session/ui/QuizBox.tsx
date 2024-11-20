@@ -9,15 +9,16 @@ interface ReactionData {
 interface QuizBoxProps {
   reactionStats: ReactionData;
   setReactionStats: Dispatch<SetStateAction<ReactionData>>;
+  quiz: QuizData;
 }
 
-export default function QuizBox({ reactionStats, setReactionStats }: QuizBoxProps) {
+export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizBoxProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
   const socket = getQuizSocket();
-
+  console.log(quiz);
   const handleSelectAnswer = (idx: number) => {
     setSelectedAnswer((prev) => {
       if (prev.includes(idx)) {
@@ -80,32 +81,22 @@ export default function QuizBox({ reactionStats, setReactionStats }: QuizBoxProp
           </div>
           {/* 문제 */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">
-              Python의 기본 자료형에 대한 설명으로 올바른 것은?
-            </h2>
-            <p className="text-gray-600">
-              다음 중 Python의 기본 자료형(Data Type)에 대한 설명으로 가장 적절한 것을 고르시오.
-            </p>
+            <h2 className="text-xl font-bold mb-4">{quiz?.content}</h2>
           </div>
           {/* 선택지 */}
           <div className="space-y-4">
-            {[
-              '문자열(string)은 변경 가능한(mutable) 자료형이다.',
-              '튜플(tuple)은 변경 불가능한(immutable) 자료형이다.',
-              '리스트(list)는 변경 불가능한(immutable) 자료형이다.',
-              '딕셔너리(dictionary)는 정렬된 자료형이다.',
-            ].map((answer, idx) => (
+            {quiz?.choices.map((choice, idx) => (
               <button
-                key={idx}
-                onClick={() => handleSelectAnswer(idx)}
+                key={choice.id}
+                onClick={() => handleSelectAnswer(choice.id)}
                 className={`w-full p-4 text-left rounded-xl border transition-all ${
-                  selectedAnswer.includes(idx)
+                  selectedAnswer.includes(choice.id)
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-blue-200'
                 }`}
               >
                 <span className="font-medium mr-3">{String.fromCharCode(65 + idx)}.</span>
-                {answer}
+                {choice.content}
               </button>
             ))}
           </div>
