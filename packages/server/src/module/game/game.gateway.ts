@@ -97,8 +97,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameInfo.participantList.push(nickname);
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    // client.emit('nickname', gameInfo.participantList);
-    // client.to(pinCode).emit('nickname', gameInfo.participantList);
     this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
@@ -108,14 +106,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    // client.emit('nickname', gameInfo.participantList);
-    // client.to(pinCode).emit('nickname', gameInfo.participantList);
     this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
   @SubscribeMessage('show quiz')
   async handleShowQuiz(client: Socket, payload: any) {
-    // const isMaster = await this.
+    // master 여부 판단
 
     const { pinCode } = payload;
     // 게임 현재 상태 가져오기
@@ -127,17 +123,32 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
     const currentQuizData = quizData[currentOrder];
+    const currentTimeLimit = currentQuizData.timeLimit;
 
-    this.server.to(pinCode).emit('show quiz', currentQuizData);
-
-    // gameInfo.currentOrder += 1;
+    gameInfo.currentOrder += 1;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    // setTimeout(() => {
-    //   this.startTimer(pinCode, currentQuizData.timeLimit);
-    // }, 2000);
+    this.server.to(pinCode).emit('show quiz', currentQuizData);
+    const startTime = Date.now();
+    await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
+    // 타이머 싱크 시작 - 1초 주기로 이벤트 currentTimeLimtd사용
+  }
 
-    // redis currentOrder + 1
+  // timelimit을 파라미터로 입력 받아서 1초 간격으로 실행
+  async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
+    const intervalId = setInterval(() => {
+      const currentTime = Date.now();
+      const elapsedTime = startTime - currentTime;
+      const remainingTime = (timeLimit + 2) * 1000 - elapsedTime;
+      if (remainingTime <= 0) {
+        // time end
+        this.server.to(pinCode).emit('time end', { isEnd: true });
+        clearInterval(intervalId);
+        return;
+      }
+      //sync
+      this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
+    }, 1000);
   }
 
   // 퀴즈를 푸는 동안 서버에저 제한시간을 측정한다.
