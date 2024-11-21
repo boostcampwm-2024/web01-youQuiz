@@ -7,6 +7,7 @@ export function getQuizSocket(): Socket {
   if (!socket) {
     socket = io(`${import.meta.env.VITE_SERVER_URL}/game`, {
       auth: { sid: getCookie('sid') },
+      transports: ['websocket'],
     });
   }
   return socket;

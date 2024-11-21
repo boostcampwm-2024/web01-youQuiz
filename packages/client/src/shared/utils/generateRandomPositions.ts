@@ -1,3 +1,5 @@
+import { toastController } from '@/features/toast/model/toastController';
+
 interface Coordinates {
   x: number;
   y: number;
@@ -21,42 +23,36 @@ export function generateRandomPositions({
   to,
   count,
   buttonSize,
-  spacing = 10,
 }: GenerateRandomPositionsProps) {
+  const toast = toastController();
   const positions: Coordinates[] = [];
-  const { x: fromX, y: fromY } = from;
-  const { x: toX, y: toY } = to;
-  const { width: buttonWidth, height: buttonHeight } = buttonSize;
+  const spacing = 5;
 
-  const isOverlap = (x: number, y: number) => {
-    return positions.some((position) => {
+  const isOverlap = (x: number, y: number, existingPositions: Coordinates[]) => {
+    return existingPositions.some((pos) => {
       return (
-        x < position.x + buttonWidth + spacing &&
-        x + buttonWidth + spacing > position.x &&
-        y < position.y + buttonHeight + spacing &&
-        y + buttonHeight + spacing > position.y
+        x < pos.x + buttonSize.width + spacing &&
+        x + buttonSize.width + spacing > pos.x &&
+        y < pos.y + buttonSize.height + spacing &&
+        y + buttonSize.height + spacing > pos.y
       );
     });
   };
 
-  let attempts = 0;
-  const maxAttempts = 100;
-
   for (let i = 0; i < count; i++) {
     let x, y;
-
+    let attempts = 0;
     do {
-      x = Math.floor(Math.random() * (toX - fromX - buttonWidth - spacing) + fromX);
-      y = Math.floor(Math.random() * (toY - fromY - buttonHeight - spacing) + fromY);
+      x = Math.floor(Math.random() * (to.x - from.x - buttonSize.width - spacing)) + from.x;
+      y = Math.floor(Math.random() * (to.y - from.y - buttonSize.height - spacing)) + from.y;
       attempts++;
+    } while (isOverlap(x, y, positions) && attempts < 100);
 
-      if (attempts >= maxAttempts) {
-        console.warn('최대 시도 횟수에 도달했습니다. 더 이상 충돌 없는 위치를 찾을 수 없습니다.');
-        break;
-      }
-    } while (isOverlap(x, y));
-
-    positions.push({ x, y });
+    if (attempts < 100) {
+      positions.push({ x, y });
+    } else {
+      toast.error('버튼을 배치할 수 없습니다.');
+    }
   }
 
   return positions;
