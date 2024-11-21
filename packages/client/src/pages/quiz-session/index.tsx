@@ -35,7 +35,6 @@ export default function QuizSession() {
         setQuiz(currentQuizData);
         setIsLoading(true);
         setIsQuizEnd(false);
-        console.log(response);
         resolve(currentQuizData);
       };
       socket.on('show quiz', handleShowQuiz);
@@ -62,10 +61,6 @@ export default function QuizSession() {
         toast.error('문제 로딩에 실패했습니다.');
         setIsLoading(false);
       });
-
-    socket.on('tick', (response) => {
-      console.log('tick', response);
-    });
 
     socket.on('timer end', () => {
       setIsQuizEnd(true);

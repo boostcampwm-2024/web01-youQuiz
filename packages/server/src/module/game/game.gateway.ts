@@ -124,12 +124,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
     const currentQuizData = quizData[currentOrder];
-    const currentTimeLimit = currentQuizData.timeLimit;
+    const currentTimeLimit = currentQuizData['timeLimit'];
 
     const choicesLength = currentQuizData['choices'].length;
+    console.log(choicesLength);
 
     const choiceStatus = new Map(Array.from({ length: choicesLength }, (_, index) => [index, 0]));
-    console.log(choiceStatus); ///////////////////////
+    console.log(choiceStatus);
 
     const gameStatus = {
       totalSubmit: 0,
@@ -138,7 +139,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       choiceStatus,
       submitHistory: [],
     };
-    console.log(gameStatus); ///////////////////////
     await this.redisService.set(
       `gameId=${pinCode}:quizId=${currentOrder}`,
       JSON.stringify(gameStatus),
@@ -227,7 +227,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const totalSubmit = gameStatus.totalSubmit;
 
     //totalCorrect
+    console.log(selectedAnswer);
     const isFlag = selectedAnswer.every((answer) => {
+      console.log('여기에요', answer);
       return currentChoicesData[answer]['isCorrect'];
     });
     if (isFlag) {
