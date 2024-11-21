@@ -4,7 +4,9 @@ let socket: Socket | null = null;
 
 export function getQuizSocket(): Socket {
   if (!socket) {
-    socket = io(`${import.meta.env.VITE_SERVER_URL}/game`);
+    socket = io(`${import.meta.env.VITE_SERVER_URL}/game`, {
+      transports: ['websocket'],
+    });
   }
   return socket;
 }
