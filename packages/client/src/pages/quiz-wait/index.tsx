@@ -8,6 +8,7 @@ import { getCookie } from '@/shared/utils/cookie';
 import { toastController } from '@/features/toast/model/toastController';
 import LoadingSpinner from '@/shared/assets/icons/loading-alt-loop.svg?react';
 import { useGetUserType } from '@/shared/hooks/useGetUserType';
+import { apiClient } from '@/shared/api';
 
 const GUEST_DISPLAY_SIZE = { width: 940, height: 568 };
 const SPACING = 10;
@@ -26,18 +27,27 @@ export default function QuizWait() {
   const socket = getQuizSocket();
   const navigate = useNavigate();
   const toast = toastController();
+  const [userType, setUserType] = useState<string>('');
 
-  const { data: userType } = useGetUserType({ pinCode: pinCode!, sid: getCookie('sid')! });
+  // const { data: userType } = useGetUserType({ pinCode: pinCode!, sid: getCookie('sid')! });
 
   useEffect(() => {
     socket.on('nickname', (response) => {
       setGuests([...response]);
     });
 
+    const fetchUserType = async () => {
+      const response = await apiClient.get(`/games/${pinCode}/sid/${getCookie('sid')}`);
+      console.log(response);
+      setUserType(response.type);
+    };
+
     socket.on('start quiz', (response) => {
       console.log('start quiz', response);
       navigate(`/quiz/session/${pinCode}/1`);
     });
+
+    fetchUserType();
   }, []);
 
   useLayoutEffect(() => {
