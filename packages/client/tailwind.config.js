@@ -46,6 +46,7 @@ export default {
         'progress-20s': 'progress 20s linear forwards',
         'progress-30s': 'progress 30s linear forwards',
         'slide-out': 'slide-out 0.5s ease-in forwards',
+        'spin-slow': 'spin-slow 6s linear infinite',
       },
       keyframes: {
         progress: {
@@ -74,6 +75,10 @@ export default {
             transform: 'translateY(-100px)',
             opacity: 0,
           },
+        },
+        'spin-slow': {
+          from: { transform: 'rotate(0deg)' },
+          to: { transform: 'rotate(360deg)' },
         },
       },
     },
