@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 import { toastController } from '@/features/toast/model/toastController';
+import { apiClient } from '@/shared/api';
 
 const GUEST_DISPLAY_SIZE = { width: 1020, height: 576 };
 const SPACING = 10;
@@ -24,11 +25,24 @@ export default function QuizWait() {
   const socket = getQuizSocket();
   const navigate = useNavigate();
   const toast = toastController();
+  const [userType, setUserType] = useState<string>('');
 
   useEffect(() => {
     socket.on('nickname', (response) => {
       setGuests([...response]);
     });
+
+    socket.on('start quiz', (response) => {
+      console.log('start quiz', response);
+      navigate(`/quiz/session/${pinCode}/1`);
+    });
+
+    const getUserType = async () => {
+      const response = await apiClient.get(`/games/${pinCode}/sid/${getCookie('sid')}`);
+      console.log(response);
+      setUserType(response.type);
+    };
+    getUserType();
   }, []);
 
   useLayoutEffect(() => {
@@ -55,8 +69,8 @@ export default function QuizWait() {
   };
 
   const handleQuizStart = () => {
-    socket.emit('master entry', { classId: '123', sid: getCookie('sid') });
-    navigate('/quiz/session');
+    socket.emit('start quiz', { sid: getCookie('sid'), pinCode });
+    navigate(`/quiz/session/host/${pinCode}/1`);
   };
 
   return (
@@ -90,15 +104,17 @@ export default function QuizWait() {
             </div>
           ))}
         </div>
-        <div className="flex justify-end min-w-full">
-          <CustomButton
-            type="full"
-            color="primary"
-            label="퀴즈 시작하기"
-            size="md"
-            onClick={handleQuizStart}
-          />
-        </div>
+        {userType === 'master' && (
+          <div className="flex justify-end min-w-full">
+            <CustomButton
+              type="full"
+              color="primary"
+              label="퀴즈 시작하기"
+              size="md"
+              onClick={handleQuizStart}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
