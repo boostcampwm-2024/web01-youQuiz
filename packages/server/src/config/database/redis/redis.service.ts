@@ -6,8 +6,12 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 export class RedisService {
   constructor(@InjectRedis() private readonly redis: Redis) {}
 
-  async set(key: string, value: string): Promise<void> {
-    await this.redis.set(key, value);
+  async set(key: string, value: string, ex?: 'EX', expireInSeconds?: number): Promise<void> {
+    if (expireInSeconds) {
+      await this.redis.set(key, value, ex, expireInSeconds);
+    } else {
+      await this.redis.set(key, value);
+    }
   }
 
   async get(key: string): Promise<string | null> {

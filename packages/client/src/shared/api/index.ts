@@ -1,5 +1,7 @@
 // TODO: env 파일로 관리하기
-const BASE_URL = `${import.meta.env.VITE_SERVER_URL}/api` || 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_SERVER_URL
+  ? `${import.meta.env.VITE_SERVER_URL}/api`
+  : 'http://localhost:3000/api';
 
 interface FetchOptions extends Omit<RequestInit, 'body'> {
   headers?: Record<string, string>;

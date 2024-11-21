@@ -58,4 +58,18 @@ export class GameService {
       console.error('error: ', error);
     }
   }
+
+  async checkSidType(sid: string) {
+    try {
+      const keyIds = ['master', 'participant'];
+
+      for (const keyId of keyIds) {
+        if (await this.redisService.get(`${keyId}_sid=${sid}`)) {
+          return { type: keyId };
+        }
+      }
+    } catch (error) {
+      console.error('error: ', error);
+    }
+  }
 }
