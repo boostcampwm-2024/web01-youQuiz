@@ -30,7 +30,7 @@ export default function Router() {
         <Route path="/guest/questions" element={<GuestQnA />} />
       </Route>
       <Route path="/quiz/question" element={<QuizQuestion />} />
-      <Route path="quiz/session/host/:pinCode/:id" element={<QuizMasterSession />} />
+      <Route path="/quiz/session/host/:pinCode/:id" element={<QuizMasterSession />} />
       <Route path={'*'} element={<NotFound />} />
     </Routes>
   );

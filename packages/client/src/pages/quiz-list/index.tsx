@@ -68,7 +68,7 @@ export default function QuizList() {
     setCookie('sid', sid);
 
     const pinCode = await waitForSocketEvent('pincode', socket);
-    setCookie('pincode', pinCode);
+    setCookie('pinCode', pinCode);
 
     navigate(`/quiz/wait/${pinCode}`);
   };
