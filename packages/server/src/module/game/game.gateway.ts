@@ -120,6 +120,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { classId, currentOrder, quizMaxNum } = gameInfo;
     // 캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
+
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
     const currentQuizData = quizData[currentOrder];
@@ -128,25 +129,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameInfo.currentOrder += 1;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    this.server.to(pinCode).emit('show quiz', currentQuizData);
+    const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
+    this.server.to(pinCode).emit('show quiz', { currentQuizData, isLast });
+
     const startTime = Date.now();
     await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
-    // 타이머 싱크 시작 - 1초 주기로 이벤트 currentTimeLimtd사용
   }
 
   // timelimit을 파라미터로 입력 받아서 1초 간격으로 실행
   async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
     const intervalId = setInterval(() => {
       const currentTime = Date.now();
-      const elapsedTime = startTime - currentTime;
+      const elapsedTime = currentTime - startTime;
       const remainingTime = (timeLimit + 2) * 1000 - elapsedTime;
       if (remainingTime <= 0) {
-        // time end
         this.server.to(pinCode).emit('time end', { isEnd: true });
         clearInterval(intervalId);
         return;
       }
-      //sync
       this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
     }, 1000);
   }
@@ -167,9 +167,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.to(pinCode).emit('start quiz', { isStarted: true });
   }
 
-  //퀴즈를 보내고 나서 타이머 재기 시작
-  // 타이머가 끝나면 이벤트 발생 - 타이머 종료 알림
-
   private async storeQuizToRedis(classId: number) {
     const cachedQuizData = await this.redisService.get(`classId=${classId}`);
 
@@ -180,7 +177,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const quizData = await this.gameService.cachingQuizData(classId);
 
-    await this.redisService.set(`class:${classId}`, JSON.stringify(quizData), 'EX', 604800);
+    await this.redisService.set(`classId=${classId}`, JSON.stringify(quizData), 'EX', 604800);
 
     return quizData;
   }
