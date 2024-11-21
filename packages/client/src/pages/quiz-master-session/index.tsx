@@ -6,6 +6,7 @@ import ProgressBar from '@/shared/ui/progress-bar/ProgressBar';
 import { CustomButton } from '@/shared/ui/buttons';
 import AnswerGraph from '@/pages/quiz-master-session/ui/AnswerChart';
 import RecentSubmittedAnswers from './ui/RecentSubmittedAnswers';
+import { getQuizSocket } from '@/shared/utils/socket';
 
 interface AnswerStat {
   answer: string;
@@ -47,7 +48,8 @@ const statisticsCardItems = [
 const limitedTime = 20;
 
 export default function QuizMasterSession() {
-  const { id } = useParams();
+  const { pinCode, id } = useParams();
+  const socket = getQuizSocket();
 
   const [answerStats, setAnswerStats] = useState<AnswerStat[]>([
     { answer: '1번', count: 10, color: '#3B82F6' },
@@ -75,7 +77,21 @@ export default function QuizMasterSession() {
     });
   };
 
+  const handleNextQuiz = () => {
+    socket.emit('start quiz', { pinCode });
+  };
+
   useEffect(() => {
+    socket.emit('show quiz', { pinCode });
+
+    socket.emit('total status', { pinCode }, (response: any) => {
+      console.log(response);
+    });
+
+    socket.on('timer end', (response) => {
+      console.log(response);
+    });
+
     const timer = setInterval(() => {
       tick();
     }, 1000);
@@ -92,7 +108,7 @@ export default function QuizMasterSession() {
           <div>
             <p className="font-bold text-gray-500 mb-2">제한 시간 {time}</p>
             <div className="mb-2">
-              <CustomButton label="다음 퀴즈" type="full" />
+              <CustomButton label="다음 퀴즈" type="full" onClick={handleNextQuiz} />
             </div>
           </div>
         </div>
