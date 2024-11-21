@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useState, useRef, useEffect, useCallback } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
+import { getCookie } from '@/shared/utils/cookie';
 interface ReactionData {
   easy: number;
   hard: number;
@@ -29,7 +30,10 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
   };
 
   const handleSubmit = () => {
-    socket.emit('submit answer', { selectAnswer: selectedAnswer });
+    socket.emit('submit answer', {
+      selectAnswer: selectedAnswer,
+      sid: getCookie('sid'),
+    });
     console.log(selectedAnswer);
     setHasSubmitted(true);
   };
@@ -66,6 +70,19 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
 
     socket.on('submit answer', handleSubmitUpdate);
 
+    socket.on('timer tick', (response) => {
+      console.log('timer tick', response);
+    });
+
+    if (hasSubmitted) {
+      socket.on('submit status', (response) => {
+        console.log('submit status', response);
+      });
+    }
+
+    socket.on('timer end', (response) => {
+      console.log('timer end', response);
+    });
     return () => {
       socket.off('emoji', handleReactionUpdate);
     };
