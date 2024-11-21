@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { getQuizSocket } from '@/shared/utils/socket';
 import QuizBackground from './ui/QuizBackground';
 import QuizBox from './ui/QuizBox';
+import QuizEnd from './ui/QuizEnd';
 import QuizHeader from './ui/QuizHeader';
 import QuizLoading from './ui/QuizLoading';
 import { toastController } from '@/features/toast/model/toastController';
@@ -13,6 +14,7 @@ export default function QuizSession() {
   const socket = getQuizSocket();
   const toast = toastController();
   const [isLoading, setIsLoading] = useState(true);
+  const [isQuizEnd, setIsQuizEnd] = useState(false);
   const [reactionStats, setReactionStats] = useState({
     easy: 0,
     hard: 0,
@@ -27,10 +29,11 @@ export default function QuizSession() {
   const easyPercentage = totalReactions ? (reactionStats.easy / totalReactions) * 100 : 50;
 
   useEffect(() => {
-    socket.emit('show quiz', { pinCode }); // 지워야 됨
     const quizPromise = new Promise((resolve, reject) => {
       const handleShowQuiz = (data: QuizData) => {
         setQuiz(data);
+        setIsLoading(true);
+        setIsQuizEnd(false);
         resolve(data);
       };
       socket.on('show quiz', handleShowQuiz);
@@ -58,8 +61,8 @@ export default function QuizSession() {
         setIsLoading(false);
       });
 
-    socket.emit('timeout', (response: any) => {
-      console.log(response);
+    socket.on('timer end', () => {
+      setIsQuizEnd(true);
     });
   }, []);
 
@@ -74,6 +77,7 @@ export default function QuizSession() {
           <QuizBox reactionStats={reactionStats} setReactionStats={setReactionStats} quiz={quiz} />
         </div>
       )}
+      {isQuizEnd && <QuizEnd />}
     </>
   );
 }
