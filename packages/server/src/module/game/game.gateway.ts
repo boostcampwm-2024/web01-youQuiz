@@ -25,9 +25,29 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly gameService: GameService,
   ) {}
 
-  // 클라이언트가 연결했을 때 처리하는 메서드
   async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    // 클라이언트의 인증 정보에서 SID 가져오기
+    const { sid } = client.handshake?.auth;
+    if (!sid) {
+      return;
+    }
+
+    // SID 타입 확인
+    const sidType = await this.gameService.checkSidType(sid);
+    const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+
+    // Redis에서 데이터 가져오기
+    const data = await this.redisService.get(key);
+    if (data) {
+      const { pinCode } = JSON.parse(data);
+      client.join(pinCode); // Room에 소켓 추가
+
+      const gameInfoJson = await this.redisService.get(`gameId=${pinCode}`);
+      if (gameInfoJson) {
+        const gameInfo = JSON.parse(gameInfoJson);
+        client.emit('nickname', gameInfo.participantList);
+      }
+    }
   }
 
   // 클라이언트가 연결을 끊었을 때 처리하는 메서드
@@ -101,15 +121,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 게임 현재 상태 가져오기
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    const { classId, currentOrder, participantList } = gameInfo;
+    const { classId, currentOrder, quizMaxNum } = gameInfo;
     // 캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
     const currentQuizData = quizData[currentOrder];
 
-    // client.emit('show quiz', currentQuizData);
-    // client.to(pinCode).emit('show quiz', currentQuizData);
     this.server.to(pinCode).emit('show quiz', currentQuizData);
 
     // gameInfo.currentOrder += 1;
