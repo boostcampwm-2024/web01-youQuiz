@@ -9,15 +9,12 @@ export default function QuizLoading() {
         <div className="flex justify-center items-end gap-20 mb-12 border-2 bg-gradient-to-b from-blue-50 to-white rounded-2xl p-4">
           <div className="flex flex-col items-center gap-2">
             <div className="h-24 w-12 bg-gradient-to-t from-blue-200 to-blue-100 rounded-base" />
-            <span>2</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <div className="h-32 w-12 bg-gradient-to-t from-blue-300 to-blue-200 rounded-base" />
-            <span>1</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <div className="h-20 w-12 bg-gradient-to-t from-blue-100 to-blue-50 rounded-base" />
-            <span>3</span>
           </div>
         </div>
 
