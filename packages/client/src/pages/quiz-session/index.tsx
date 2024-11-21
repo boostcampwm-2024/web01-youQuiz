@@ -30,11 +30,13 @@ export default function QuizSession() {
 
   useEffect(() => {
     const quizPromise = new Promise((resolve, reject) => {
-      const handleShowQuiz = (data: QuizData) => {
-        setQuiz(data);
+      const handleShowQuiz = (response: any) => {
+        const { currentQuizData, isLast } = response;
+        setQuiz(currentQuizData);
         setIsLoading(true);
         setIsQuizEnd(false);
-        resolve(data);
+        console.log(response);
+        resolve(currentQuizData);
       };
       socket.on('show quiz', handleShowQuiz);
 
@@ -61,9 +63,17 @@ export default function QuizSession() {
         setIsLoading(false);
       });
 
+    socket.on('tick', (response) => {
+      console.log('tick', response);
+    });
+
     socket.on('timer end', () => {
       setIsQuizEnd(true);
     });
+
+    return () => {
+      socket.off('timer end', () => {});
+    };
   }, []);
 
   return (
