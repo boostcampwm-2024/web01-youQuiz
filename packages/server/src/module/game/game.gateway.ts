@@ -126,6 +126,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const currentQuizData = quizData[currentOrder];
     const currentTimeLimit = currentQuizData.timeLimit;
 
+    const choicesLength = currentQuizData['choices'].length;
+
+    const choiceStatus = new Map(Array.from({ length: choicesLength }, (_, index) => [index, 0]));
+    console.log(choiceStatus); ///////////////////////
+
+    const gameStatus = {
+      totalSubmit: 0,
+      totalCorrect: 0,
+      totalTime: 0,
+      choiceStatus,
+      submitHistory: [],
+    };
+    console.log(gameStatus); ///////////////////////
+    await this.redisService.set(
+      `gameId=${pinCode}:quizId=${currentOrder}`,
+      JSON.stringify(gameStatus),
+    );
+
     gameInfo.currentOrder += 1;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
@@ -180,5 +198,75 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await this.redisService.set(`classId=${classId}`, JSON.stringify(quizData), 'EX', 604800);
 
     return quizData;
+  }
+
+  @SubscribeMessage('submit answer')
+  async handleSubmitAnswer(client: Socket, payload: any) {
+    const { pinCode, sid, selectedAnswer, submitTime } = payload;
+
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
+    // 현재 퀴즈 데이터 가져옴
+    const { classId, currentOrder, participantList } = gameInfo;
+    const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
+    const currentQuizData = quizData[currentOrder - 1];
+
+    // 현재 퀴즈의 초이스 데이터 가져옴
+    const currentChoicesData = currentQuizData['choices'];
+
+    const gameStatus = JSON.parse(
+      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
+    );
+
+    // 제출 기록 저장 [[nickname, solveTime]]
+    gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
+    const submitHistory = gameStatus.submitHistory;
+
+    //totalSubmit
+    gameStatus.totalSubmit += 1;
+    const totalSubmit = gameStatus.totalSubmit;
+
+    //totalCorrect
+    const isFlag = selectedAnswer.every((answer) => {
+      return currentChoicesData[answer]['isCorrect'];
+    });
+    if (isFlag) {
+      gameStatus.totalCorrect += 1;
+    }
+    const totalCorrect = gameStatus.totalCorrect;
+
+    // totaltime
+    gameStatus.totalTime += submitTime;
+    const totalTime = gameStatus.totalTime;
+
+    // choiceStatus
+    for (const answer of selectedAnswer) {
+      gameStatus.choiceStatus[answer] += 1;
+    }
+    const choiceStatus = gameStatus.choiceStatus;
+
+    const participantNum = participantList.length;
+
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+    await this.redisService.set(
+      `gameId=${pinCode}:quizId=${currentOrder}`,
+      JSON.stringify(gameStatus),
+    );
+
+    const solveRate = (totalCorrect / totalSubmit) * 100;
+    const averageTime = (totalTime / totalSubmit) * 100;
+    const participantRate = (totalSubmit / participantNum) * 100;
+    const participantStatic = { totalSubmit, solveRate, averageTime, participantRate };
+
+    const masterStatic = {
+      totalSubmit,
+      solveRate,
+      averageTime,
+      participantRate,
+      choiceStatus,
+      submitHistory,
+    };
+    client.to(pinCode).emit('participant static', participantStatic);
+    this.server.to(pinCode).emit('master static', masterStatic);
   }
 }
