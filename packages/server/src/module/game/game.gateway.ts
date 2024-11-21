@@ -97,8 +97,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameInfo.participantList.push(nickname);
     this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    // client.emit('nickname', gameInfo.participantList);
-    // client.to(pinCode).emit('nickname', gameInfo.participantList);
     this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
@@ -108,14 +106,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    // client.emit('nickname', gameInfo.participantList);
-    // client.to(pinCode).emit('nickname', gameInfo.participantList);
     this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
 
   @SubscribeMessage('show quiz')
   async handleShowQuiz(client: Socket, payload: any) {
-    // const isMaster = await this.
+    // master 여부 판단
 
     const { pinCode } = payload;
     // 게임 현재 상태 가져오기
@@ -124,20 +120,53 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { classId, currentOrder, quizMaxNum } = gameInfo;
     // 캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
+
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
     const currentQuizData = quizData[currentOrder];
+    const currentTimeLimit = currentQuizData.timeLimit;
 
-    this.server.to(pinCode).emit('show quiz', currentQuizData);
+    const choicesLength = currentQuizData['choices'].length;
 
-    // gameInfo.currentOrder += 1;
+    const choiceStatus = new Map(Array.from({ length: choicesLength }, (_, index) => [index, 0]));
+    console.log(choiceStatus); ///////////////////////
+
+    const gameStatus = {
+      totalSubmit: 0,
+      totalCorrect: 0,
+      totalTime: 0,
+      choiceStatus,
+      submitHistory: [],
+    };
+    console.log(gameStatus); ///////////////////////
+    await this.redisService.set(
+      `gameId=${pinCode}:quizId=${currentOrder}`,
+      JSON.stringify(gameStatus),
+    );
+
+    gameInfo.currentOrder += 1;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    // setTimeout(() => {
-    //   this.startTimer(pinCode, currentQuizData.timeLimit);
-    // }, 2000);
+    const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
+    this.server.to(pinCode).emit('show quiz', { currentQuizData, isLast });
 
-    // redis currentOrder + 1
+    const startTime = Date.now();
+    await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
+  }
+
+  // timelimit을 파라미터로 입력 받아서 1초 간격으로 실행
+  async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
+    const intervalId = setInterval(() => {
+      const currentTime = Date.now();
+      const elapsedTime = currentTime - startTime;
+      const remainingTime = (timeLimit + 2) * 1000 - elapsedTime;
+      if (remainingTime <= 0) {
+        this.server.to(pinCode).emit('time end', { isEnd: true });
+        clearInterval(intervalId);
+        return;
+      }
+      this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
+    }, 1000);
   }
 
   // 퀴즈를 푸는 동안 서버에저 제한시간을 측정한다.
@@ -156,9 +185,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.to(pinCode).emit('start quiz', { isStarted: true });
   }
 
-  //퀴즈를 보내고 나서 타이머 재기 시작
-  // 타이머가 끝나면 이벤트 발생 - 타이머 종료 알림
-
   private async storeQuizToRedis(classId: number) {
     const cachedQuizData = await this.redisService.get(`classId=${classId}`);
 
@@ -169,8 +195,78 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const quizData = await this.gameService.cachingQuizData(classId);
 
-    await this.redisService.set(`class:${classId}`, JSON.stringify(quizData), 'EX', 604800);
+    await this.redisService.set(`classId=${classId}`, JSON.stringify(quizData), 'EX', 604800);
 
     return quizData;
+  }
+
+  @SubscribeMessage('submit answer')
+  async handleSubmitAnswer(client: Socket, payload: any) {
+    const { pinCode, sid, selectedAnswer, submitTime } = payload;
+
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
+    // 현재 퀴즈 데이터 가져옴
+    const { classId, currentOrder, participantList } = gameInfo;
+    const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
+    const currentQuizData = quizData[currentOrder - 1];
+
+    // 현재 퀴즈의 초이스 데이터 가져옴
+    const currentChoicesData = currentQuizData['choices'];
+
+    const gameStatus = JSON.parse(
+      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
+    );
+
+    // 제출 기록 저장 [[nickname, solveTime]]
+    gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
+    const submitHistory = gameStatus.submitHistory;
+
+    //totalSubmit
+    gameStatus.totalSubmit += 1;
+    const totalSubmit = gameStatus.totalSubmit;
+
+    //totalCorrect
+    const isFlag = selectedAnswer.every((answer) => {
+      return currentChoicesData[answer]['isCorrect'];
+    });
+    if (isFlag) {
+      gameStatus.totalCorrect += 1;
+    }
+    const totalCorrect = gameStatus.totalCorrect;
+
+    // totaltime
+    gameStatus.totalTime += submitTime;
+    const totalTime = gameStatus.totalTime;
+
+    // choiceStatus
+    for (const answer of selectedAnswer) {
+      gameStatus.choiceStatus[answer] += 1;
+    }
+    const choiceStatus = gameStatus.choiceStatus;
+
+    const participantNum = participantList.length;
+
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+    await this.redisService.set(
+      `gameId=${pinCode}:quizId=${currentOrder}`,
+      JSON.stringify(gameStatus),
+    );
+
+    const solveRate = (totalCorrect / totalSubmit) * 100;
+    const averageTime = (totalTime / totalSubmit) * 100;
+    const participantRate = (totalSubmit / participantNum) * 100;
+    const participantStatic = { totalSubmit, solveRate, averageTime, participantRate };
+
+    const masterStatic = {
+      totalSubmit,
+      solveRate,
+      averageTime,
+      participantRate,
+      choiceStatus,
+      submitHistory,
+    };
+    client.to(pinCode).emit('participant static', participantStatic);
+    this.server.to(pinCode).emit('master static', masterStatic);
   }
 }
