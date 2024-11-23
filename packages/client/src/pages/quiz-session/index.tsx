@@ -35,7 +35,6 @@ export default function QuizSession() {
         setQuiz(currentQuizData);
         setIsLoading(true);
         setIsQuizEnd(false);
-        console.log(response);
         resolve(currentQuizData);
       };
       socket.on('show quiz', handleShowQuiz);

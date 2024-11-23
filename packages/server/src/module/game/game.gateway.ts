@@ -124,12 +124,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
     const currentQuizData = quizData[currentOrder];
-    const currentTimeLimit = currentQuizData.timeLimit;
+    const currentTimeLimit = currentQuizData['timeLimit'];
 
     const choicesLength = currentQuizData['choices'].length;
 
-    const choiceStatus = new Map(Array.from({ length: choicesLength }, (_, index) => [index, 0]));
-    console.log(choiceStatus); ///////////////////////
+    const choiceStatus = Object.fromEntries(
+      Array.from({ length: choicesLength }, (_, i) => [i, 0]),
+    );
 
     const gameStatus = {
       totalSubmit: 0,
@@ -138,7 +139,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       choiceStatus,
       submitHistory: [],
     };
-    console.log(gameStatus); ///////////////////////
     await this.redisService.set(
       `gameId=${pinCode}:quizId=${currentOrder}`,
       JSON.stringify(gameStatus),
@@ -208,18 +208,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
     // 현재 퀴즈 데이터 가져옴
     const { classId, currentOrder, participantList } = gameInfo;
+    const submittedQuizOrder = currentOrder - 1;
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
-    const currentQuizData = quizData[currentOrder - 1];
+    const currentQuizData = quizData[submittedQuizOrder];
 
     // 현재 퀴즈의 초이스 데이터 가져옴
     const currentChoicesData = currentQuizData['choices'];
 
     const gameStatus = JSON.parse(
-      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
+      await this.redisService.get(`gameId=${pinCode}:quizId=${submittedQuizOrder}`),
     );
 
     // 제출 기록 저장 [[nickname, solveTime]]
-    gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
+    gameStatus['submitHistory'].push([pariticipantInfo.nickname, submitTime]);
     const submitHistory = gameStatus.submitHistory;
 
     //totalSubmit
@@ -227,7 +228,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const totalSubmit = gameStatus.totalSubmit;
 
     //totalCorrect
+    console.log(selectedAnswer);
     const isFlag = selectedAnswer.every((answer) => {
+      console.log('여기에요', answer);
       return currentChoicesData[answer]['isCorrect'];
     });
     if (isFlag) {
@@ -256,9 +259,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const solveRate = (totalCorrect / totalSubmit) * 100;
     const averageTime = (totalTime / totalSubmit) * 100;
     const participantRate = (totalSubmit / participantNum) * 100;
-    const participantStatic = { totalSubmit, solveRate, averageTime, participantRate };
+    const participantStatistics = { totalSubmit, solveRate, averageTime, participantRate };
 
-    const masterStatic = {
+    const masterStatistics = {
       totalSubmit,
       solveRate,
       averageTime,
@@ -266,7 +269,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       choiceStatus,
       submitHistory,
     };
-    client.to(pinCode).emit('participant static', participantStatic);
-    this.server.to(pinCode).emit('master static', masterStatic);
+    console.log(participantStatistics);
+    this.server.to(pinCode).emit('participant statistics', participantStatistics);
+    this.server.to(pinCode).emit('master statistics', masterStatistics);
   }
 }

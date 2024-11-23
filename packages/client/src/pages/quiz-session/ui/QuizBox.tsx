@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useState, useRef, useEffect, useCallback } fr
 
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
+import { useParams } from 'react-router-dom';
 interface ReactionData {
   easy: number;
   hard: number;
@@ -14,12 +15,13 @@ interface QuizBoxProps {
 }
 
 export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizBoxProps) {
+  const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
   const socket = getQuizSocket();
-  console.log(quiz);
+  const [tick, setTick] = useState({ currentTime: 0, elapsedTime: 0, remainingTime: 0 });
   const handleSelectAnswer = (idx: number) => {
     setSelectedAnswer((prev) => {
       if (prev.includes(idx)) {
@@ -31,8 +33,10 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
 
   const handleSubmit = () => {
     socket.emit('submit answer', {
-      selectAnswer: selectedAnswer,
+      selectedAnswer: selectedAnswer,
       sid: getCookie('sid'),
+      pinCode: pinCode,
+      submitTime: tick.elapsedTime,
     });
     console.log(selectedAnswer);
     setHasSubmitted(true);
@@ -61,27 +65,19 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
     setReactionStats(data);
   }, []);
 
-  const handleSubmitUpdate = useCallback(() => {
-    // 제출자에게 제출 완료에 대한 피드백 보여주기
-  }, []);
-
   useEffect(() => {
     socket.on('emoji', handleReactionUpdate);
 
-    socket.on('submit answer', handleSubmitUpdate);
-
     socket.on('timer tick', (response) => {
-      console.log('timer tick', response);
+      setTick(response);
     });
 
-    if (hasSubmitted) {
-      socket.on('submit status', (response) => {
-        console.log('submit status', response);
-      });
-    }
+    socket.on('participant statistics', (response) => {
+      console.log('participant statistics', response);
+    });
 
-    socket.on('timer end', (response) => {
-      console.log('timer end', response);
+    socket.on('time end', (response) => {
+      console.log('time end', response);
     });
     return () => {
       socket.off('emoji', handleReactionUpdate);
@@ -94,7 +90,7 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-12">
           <div className="flex items-center justify-between mb-6">
             <span className="text-sm text-gray-500">Question 1/10</span>
-            <span className="text-sm text-gray-500">난이도</span>
+            <span className="text-sm text-gray-500">난이도 {tick.remainingTime}</span>
           </div>
           {/* 문제 */}
           <div className="mb-8">
@@ -105,9 +101,9 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
             {quiz?.choices.map((choice, idx) => (
               <button
                 key={choice.id}
-                onClick={() => handleSelectAnswer(choice.id)}
+                onClick={() => handleSelectAnswer(idx)}
                 className={`w-full p-4 text-left rounded-xl border transition-all ${
-                  selectedAnswer.includes(choice.id)
+                  selectedAnswer.includes(idx)
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-blue-200'
                 }`}
