@@ -1,6 +1,6 @@
 const QuizLoading = () => {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-white">
+    <div className="h-[calc(100vh-60px)] w-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-white">
       <div className="relative p-12 rounded-3xl bg-white/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.05)] border border-white/20">
         <div className="relative flex flex-col items-center">
           <div className="relative w-32 h-32">
