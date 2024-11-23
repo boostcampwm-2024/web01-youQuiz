@@ -9,90 +9,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: [self-hosted, client] # client 레이블이 있는 self-hosted runner 사용
 
     steps:
       - name: 소스 코드 불러오기
         uses: actions/checkout@v4
-
-      - name: Node.js 설정
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.9.0'
-
-      - name: client 의존성 설치
-        run: yarn install
-
-    # e2e 테스트 추가 후 설정 예정
-    #   - name: BE e2e 테스트 실행
-    #     run: yarn test:e2e
-    #     working-directory: packages/BE
-
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: success()
-
-    steps:
-      - name: 소스 코드 불러오기
-        uses: actions/checkout@v4
-
-      - name: docker hub login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_CLIENT_PASSWORD }}
 
       - name: Create .env file
         run: |
           echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" >> packages/client/.env
           echo "VITE_CLIENT_URL=${{ secrets.VITE_CLIENT_URL }}" >> packages/client/.env
 
-      - name: Docker build
-        run: docker build -t ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }} -f Dockerfile.fe .
-
-      - name: Push to docker hub
-        run: docker push ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
-
-      - name: Github Actions Public IP 가져오기
-        id: ip
+      - name: 기존 컨테이너 정리
         run: |
-          PUBLIC_IP=$(curl -s https://ifconfig.me)
-          echo "::set-output name=public_ip::$PUBLIC_IP"
+          docker stop you-quiz-fe || true
+          docker rm you-quiz-fe || true
+          docker image prune -f
 
-      - name: NCP CLI 설치 및 자격 증명
+      - name: Docker 빌드 및 실행
         run: |
-          cd ~
-          wget https://www.ncloud.com/api/support/download/5/65
-          unzip 65
-          mkdir ~/.ncloud
-          echo -e "[DEFAULT]\nncloud_access_key_id = ${{ secrets.NCP_ACCESS_KEY_ID }}\nncloud_secret_access_key = ${{ secrets.NCP_SECRET_ACCESS_KEY }}\nncloud_api_url = ${{ secrets.NCP_API_URL }}" >> ~/.ncloud/configure
-
-      - name: Github Actions IP를 ACG, ACL 규칙에 추가
-        run: |
-          chmod -R 777 ~/cli_linux
-          cd ~/cli_linux
-          ./ncloud vserver addAccessControlGroupInboundRule --regionCode KR --vpcNo ${{ secrets.NCP_VPC_ID }} --accessControlGroupNo ${{ secrets.NCP_AGC_ID }} --accessControlGroupRuleList "protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}'"
-          ./ncloud vpc addNetworkAclInboundRule --regionCode KR --networkAclNo ${{ secrets.NCP_ACL_ID }} --networkAclRuleList "priority='${{ secrets.FE_NCP_ACL_PRIORITY}}', protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}', ruleActionCode='ALLOW'"
-
-      - name: NCP 서버에 SSH로 접속 후 배포
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.NCP_CLIENT_HOST}}
-          username: ${{ secrets.NCP_CLIENT_USERNAME}}
-          password: ${{ secrets.NCP_CLIENT_PASSWORD}}
-          port: ${{ secrets.NCP_SERVER_PORT}}
-          script: |
-            docker stop you-quiz-fe || true
-            docker rm you-quiz-fe || true
-
-            docker pull ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
-            docker run -d --name you-quiz-fe --env-file /root/.env -p 80:4173 ${{ secrets.DOCKER_HUB_CLIENT_USERNAME }}/you-quiz-fe:${{ github.run_number }}
-
-      - name: Github Actions IP를 ACG, ACL 규칙에서 삭제
-        run: |
-          chmod -R 777 ~/cli_linux
-          cd ~/cli_linux
-          ./ncloud vserver removeAccessControlGroupInboundRule --regionCode KR --vpcNo ${{ secrets.NCP_VPC_ID }} --accessControlGroupNo ${{ secrets.NCP_AGC_ID }} --accessControlGroupRuleList "protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}'"
-          ./ncloud vpc removeNetworkAclInboundRule --regionCode KR --networkAclNo ${{ secrets.NCP_ACL_ID }} --networkAclRuleList "priority='${{ secrets.FE_NCP_ACL_PRIORITY}}', protocolTypeCode='TCP', ipBlock='${{ steps.ip.outputs.public_ip }}/32', portRange='${{ secrets.SSH_PORT }}', ruleActionCode='ALLOW'"
+          docker build -t you-quiz-fe:${{ github.run_number }} -f Dockerfile.fe .
+          docker run -d \
+            --name you-quiz-fe \
+            --env-file packages/client/.env \
+            -p 80:4173 \
+            you-quiz-fe:${{ github.run_number }}
