@@ -72,8 +72,8 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
       setTick(response);
     });
 
-    socket.on('participant static', (response) => {
-      console.log('participant static', response);
+    socket.on('participant statistics', (response) => {
+      console.log('participant statistics', response);
     });
 
     socket.on('time end', (response) => {
