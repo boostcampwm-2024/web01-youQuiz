@@ -1,4 +1,4 @@
-export interface ParticipantStatisticsResponse {
+export interface MasterStatisticsResponse {
   totalSubmit: number;
   solveRate: number;
   averageTime: number;
