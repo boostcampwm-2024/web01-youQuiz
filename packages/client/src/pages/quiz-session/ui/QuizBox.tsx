@@ -3,25 +3,46 @@ import { Dispatch, SetStateAction, useState, useRef, useEffect, useCallback } fr
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 import { useParams } from 'react-router-dom';
+import AfterQuizSubmit from './AfterQuizSubmit';
+import QuizBackground from './QuizBackground';
 interface ReactionData {
   easy: number;
   hard: number;
 }
 
-interface QuizBoxProps {
-  reactionStats: ReactionData;
-  setReactionStats: Dispatch<SetStateAction<ReactionData>>;
-  quiz: QuizData;
+export interface StatisticsData {
+  averageTime: number;
+  participantRate: number;
+  solveRate: number;
+  totalSubmit: number;
 }
 
-export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizBoxProps) {
+interface QuizBoxProps {
+  quiz: QuizData;
+  tick: { currentTime: number; elapsedTime: number; remainingTime: number };
+}
+
+export default function QuizBox({ quiz, tick }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [reactionStats, setReactionStats] = useState<ReactionData>({
+    easy: 0,
+    hard: 0,
+  });
+  const [participantStatistics, setParticipantStatistics] = useState<StatisticsData>({
+    averageTime: 0,
+    participantRate: 0,
+    solveRate: 0,
+    totalSubmit: 0,
+  });
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
   const socket = getQuizSocket();
-  const [tick, setTick] = useState({ currentTime: 0, elapsedTime: 0, remainingTime: 0 });
+
+  const totalReactions = reactionStats.easy + reactionStats.hard;
+  const easyPercentage = totalReactions ? (reactionStats.easy / totalReactions) * 100 : 50;
+
   const handleSelectAnswer = (idx: number) => {
     setSelectedAnswer((prev) => {
       if (prev.includes(idx)) {
@@ -38,7 +59,6 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
       pinCode: pinCode,
       submitTime: tick.elapsedTime,
     });
-    console.log(selectedAnswer);
     setHasSubmitted(true);
   };
 
@@ -65,27 +85,23 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
     setReactionStats(data);
   }, []);
 
+  const handleParticipantStatistics = (response: StatisticsData) => {
+    setParticipantStatistics(response);
+  };
+
   useEffect(() => {
     socket.on('emoji', handleReactionUpdate);
+    socket.on('participant statistics', handleParticipantStatistics);
 
-    socket.on('timer tick', (response) => {
-      setTick(response);
-    });
-
-    socket.on('participant statistics', (response) => {
-      console.log('participant statistics', response);
-    });
-
-    socket.on('time end', (response) => {
-      console.log('time end', response);
-    });
     return () => {
       socket.off('emoji', handleReactionUpdate);
+      socket.off('participant statistics', handleParticipantStatistics);
     };
   }, []);
 
   return (
     <>
+      <QuizBackground easyPercentage={easyPercentage} />
       <div className="relative z-10 p-6 max-w-4xl mx-auto mb-8">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-12">
           <div className="flex items-center justify-between mb-6">
@@ -154,6 +170,8 @@ export default function QuizBox({ reactionStats, setReactionStats, quiz }: QuizB
           </button>
         </div>
       </div>
+
+      {<AfterQuizSubmit {...participantStatistics} />}
     </>
   );
 }
