@@ -1,9 +1,10 @@
 import { Choice } from './choice.interface';
+import { QuizType } from '../../types/quiz.types';
 
 export interface QuizData {
   id: number;
   content: string;
-  quizType: 'MC' | 'TF';
+  quizType: QuizType;
   timeLimit: number;
   point: number;
   position: number;

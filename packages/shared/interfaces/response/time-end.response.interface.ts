@@ -1,3 +1,3 @@
 export interface TimeEndResponse {
-  timeEnd: boolean;
+  isEnd: boolean;
 }
