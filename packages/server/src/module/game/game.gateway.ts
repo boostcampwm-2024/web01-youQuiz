@@ -138,7 +138,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       totalTime: 0,
       choiceStatus,
       submitHistory: [],
-      emojiStatus: { easy: 0, hard: 0 }, ///////////안터페이스 추가
+      emojiStatus: { easy: 0, hard: 0 },
     };
     await this.redisService.set(
       `gameId=${pinCode}:quizId=${currentOrder}`,
@@ -230,9 +230,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const totalSubmit = gameStatus.totalSubmit;
 
     //totalCorrect
-    console.log(selectedAnswer);
     const isFlag = selectedAnswer.every((answer) => {
-      console.log('여기에요', answer);
       return currentChoicesData[answer]['isCorrect'];
     });
     if (isFlag) {
@@ -273,7 +271,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       submitHistory,
       participantLength,
     };
-    console.log(participantStatistics);
     client.to(pinCode).emit('total submit count', { totalSubmit });
     this.server.to(pinCode).emit('participant statistics', participantStatistics);
     this.server.to(pinCode).emit('master statistics', masterStatistics);
