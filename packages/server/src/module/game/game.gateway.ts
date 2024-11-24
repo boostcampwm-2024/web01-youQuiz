@@ -138,6 +138,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       totalTime: 0,
       choiceStatus,
       submitHistory: [],
+      emojiStatus: { easy: 0, hard: 0 }, ///////////안터페이스 추가
     };
     await this.redisService.set(
       `gameId=${pinCode}:quizId=${currentOrder}`,
@@ -212,6 +213,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
     const currentQuizData = quizData[submittedQuizOrder];
 
+    const participantLength = participantList.length;
     // 현재 퀴즈의 초이스 데이터 가져옴
     const currentChoicesData = currentQuizData['choices'];
 
@@ -261,6 +263,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const participantRate = (totalSubmit / participantNum) * 100;
     const participantStatistics = { totalSubmit, solveRate, averageTime, participantRate };
 
+    ///participant length 넘기기
     const masterStatistics = {
       totalSubmit,
       solveRate,
@@ -268,9 +271,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantRate,
       choiceStatus,
       submitHistory,
+      participantLength,
     };
     console.log(participantStatistics);
+    client.to(pinCode).emit('total submit count', { totalSubmit });
     this.server.to(pinCode).emit('participant statistics', participantStatistics);
     this.server.to(pinCode).emit('master statistics', masterStatistics);
+  }
+
+  @SubscribeMessage('emoji')
+  async handleEmoji(client: Socket, payload: any) {
+    const { pinCode, currentOrder, emoji } = payload;
+    const gameStatus = JSON.parse(
+      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
+    );
+    gameStatus.emojiStatus[emoji] += 1;
+    await this.redisService.set(
+      `gameId=${pinCode}:quizId=${currentOrder}`,
+      JSON.stringify(gameStatus),
+    );
+    this.server.to(pinCode).emit('emoji', gameStatus.emojiStatus);
   }
 }
