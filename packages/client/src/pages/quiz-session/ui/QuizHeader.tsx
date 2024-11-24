@@ -31,7 +31,7 @@ export default function QuizHeader({ tick }: QuizHeaderProps) {
         <div className="text-lg text-black-400 font-semibold">
           {submitStatus.count} / {submitStatus.total}명 제출
         </div>
-        <div className="text-bold-lg">{tick.remainingTime}초 남음</div>
+        <div className="text-bold-lg">{Math.floor(tick.remainingTime / 1000)}초 남음</div>
       </div>
     </div>
   );
