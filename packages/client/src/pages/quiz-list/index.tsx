@@ -51,7 +51,6 @@ export default function QuizList() {
   const [selectedQuizIndex, setSelectedQuizIndex] = useState(-1);
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
-  const socket = getQuizSocket();
 
   const handleSelectQuiz = (index: number) => {
     if (selectedQuizIndex === index) {
@@ -62,6 +61,7 @@ export default function QuizList() {
   };
 
   const handleQuizStart = async () => {
+    const socket = getQuizSocket();
     socket.emit('master entry', { classId: 1 });
     /**비동기 작업 */
     const sid = await waitForSocketEvent('session', socket);
