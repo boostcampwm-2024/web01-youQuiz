@@ -5,8 +5,13 @@ interface Choice {
   isCorrect: boolean;
   position: number;
 }
+
 interface QuizData {
-  id: string;
+  id: number;
   content: string;
+  quizType: QuizType;
+  timeLimit: number;
+  point: number;
+  position: number;
   choices: Choice[];
 }

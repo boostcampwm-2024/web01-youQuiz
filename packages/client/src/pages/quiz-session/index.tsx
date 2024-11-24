@@ -1,24 +1,31 @@
 import { useState, useEffect } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
-import QuizBackground from './ui/QuizBackground';
+import { useNavigate } from 'react-router-dom';
 import QuizBox from './ui/QuizBox';
 import QuizEnd from './ui/QuizEnd';
 import QuizHeader from './ui/QuizHeader';
 import QuizLoading from './ui/QuizLoading';
 import { toastController } from '@/features/toast/model/toastController';
 
+const INITIAL_QUIZ_DATA: QuizData = {
+  id: 0,
+  content: '',
+  quizType: '',
+  timeLimit: 0,
+  point: 0,
+  position: 0,
+  choices: [],
+};
+
 export default function QuizSession() {
   const socket = getQuizSocket();
   const toast = toastController();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isQuizEnd, setIsQuizEnd] = useState(false);
   const [tick, setTick] = useState({ currentTime: 0, elapsedTime: 0, remainingTime: 0 });
-  const [quiz, setQuiz] = useState<QuizData>({
-    id: '',
-    content: '',
-    choices: [],
-  });
+  const [quiz, setQuiz] = useState<QuizData>(INITIAL_QUIZ_DATA);
 
   const handleTick = (response: any) => {
     setTick(response);
@@ -26,6 +33,7 @@ export default function QuizSession() {
 
   const handleTimeEnd = () => {
     setIsQuizEnd(true);
+    console.log('TIME END');
   };
 
   useEffect(() => {
@@ -35,6 +43,7 @@ export default function QuizSession() {
         setQuiz(currentQuizData);
         setIsLoading(true);
         setIsQuizEnd(false);
+        console.log('ON SHOW QUIZ', currentQuizData);
         resolve(currentQuizData);
       };
       socket.on('show quiz', handleShowQuiz);
@@ -50,11 +59,16 @@ export default function QuizSession() {
     });
 
     const timerPromise = new Promise((resolve) => {
-      setTimeout(resolve, 2000);
+      const timer = setTimeout(resolve, 2000);
+
+      return () => {
+        clearTimeout(timer);
+      };
     });
 
     Promise.all([quizPromise, timerPromise])
       .then(() => {
+        console.log('show quiz success');
         setIsLoading(false);
       })
       .catch(() => {
@@ -69,7 +83,7 @@ export default function QuizSession() {
       socket.off('time end', handleTimeEnd);
       socket.off('timer tick', handleTick);
     };
-  }, []);
+  }, [quiz]);
 
   return (
     <>

@@ -42,7 +42,7 @@ export default function QuizMasterSession() {
   const [participantStatistics, setParticipantStatistics] = useState<MasterStatistics>(
     initialParticipantStatistics,
   );
-  const [quizData, setQuizData] = useState<QuizData>(initialQuizData);
+  const [quizData, setQuizData] = useState(initialQuizData);
   const [tick, setTick] = useState(initialTick);
 
   const initQuizData = () => {
