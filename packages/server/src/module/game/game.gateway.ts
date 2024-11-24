@@ -10,6 +10,8 @@ import { RedisService } from '../../config/database/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './games/game.service';
 
+// socket - sid 맵핑
+
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -145,11 +147,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       JSON.stringify(gameStatus),
     );
 
+    const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
+    this.server.to(pinCode).emit('show quiz', { quizMaxNum, currentQuizData, isLast });
+
     gameInfo.currentOrder += 1;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
-    const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
-    this.server.to(pinCode).emit('show quiz', { currentQuizData, isLast });
 
     const startTime = Date.now();
     await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
