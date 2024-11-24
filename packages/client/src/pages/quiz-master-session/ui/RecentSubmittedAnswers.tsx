@@ -18,6 +18,8 @@ export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubm
     const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const recentHistory = userSubmitHistory.slice(0, 4);
   return (
     <div>
       <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -25,7 +27,7 @@ export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubm
           <h3 className="font-semibold">최근 제출 답안</h3>
         </div>
         <div className="divide-y">
-          {userSubmitHistory.map((user, index) => (
+          {recentHistory.map((user, index) => (
             <div
               key={user[0]}
               className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -40,7 +42,7 @@ export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubm
                   {user[0][0]}
                 </div>
                 <div>
-                  <p className="font-medium">학생 {user[0]}</p>
+                  <p className="font-medium">{user[0]}님</p>
                   <p className="text-sm text-gray-500">{time}초 전 제출</p>
                 </div>
               </div>
