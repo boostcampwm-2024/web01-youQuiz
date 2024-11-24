@@ -33,7 +33,6 @@ export default function QuizSession() {
 
   const handleTimeEnd = () => {
     setIsQuizEnd(true);
-    console.log('TIME END');
   };
 
   useEffect(() => {
@@ -68,7 +67,6 @@ export default function QuizSession() {
 
     Promise.all([quizPromise, timerPromise])
       .then(() => {
-        console.log('show quiz success');
         setIsLoading(false);
       })
       .catch(() => {
