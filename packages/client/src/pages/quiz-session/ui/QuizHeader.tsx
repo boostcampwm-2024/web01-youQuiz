@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
 
-export default function QuizHeader() {
+interface QuizHeaderProps {
+  tick: { currentTime: number; elapsedTime: number; remainingTime: number };
+}
+
+export default function QuizHeader({ tick }: QuizHeaderProps) {
   const socket = getQuizSocket();
   const [submitStatus, setSubmitStatus] = useState<{ count: number; total: number }>({
     count: 0,
@@ -27,7 +31,7 @@ export default function QuizHeader() {
         <div className="text-lg text-black-400 font-semibold">
           {submitStatus.count} / {submitStatus.total}명 제출
         </div>
-        <div className="text-bold-lg">남은 시간</div>
+        <div className="text-bold-lg">{tick.remainingTime}초 남음</div>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { getQuizSocket } from '@/shared/utils/socket';
 import QuizBackground from './ui/QuizBackground';
@@ -10,23 +9,24 @@ import QuizLoading from './ui/QuizLoading';
 import { toastController } from '@/features/toast/model/toastController';
 
 export default function QuizSession() {
-  const { pinCode } = useParams();
   const socket = getQuizSocket();
   const toast = toastController();
   const [isLoading, setIsLoading] = useState(true);
   const [isQuizEnd, setIsQuizEnd] = useState(false);
-  const [reactionStats, setReactionStats] = useState({
-    easy: 0,
-    hard: 0,
-  });
+  const [tick, setTick] = useState({ currentTime: 0, elapsedTime: 0, remainingTime: 0 });
   const [quiz, setQuiz] = useState<QuizData>({
     id: '',
     content: '',
     choices: [],
   });
 
-  const totalReactions = reactionStats.easy + reactionStats.hard;
-  const easyPercentage = totalReactions ? (reactionStats.easy / totalReactions) * 100 : 50;
+  const handleTick = (response: any) => {
+    setTick(response);
+  };
+
+  const handleTimeEnd = () => {
+    setIsQuizEnd(true);
+  };
 
   useEffect(() => {
     const quizPromise = new Promise((resolve, reject) => {
@@ -62,24 +62,22 @@ export default function QuizSession() {
         setIsLoading(false);
       });
 
-    socket.on('timer end', () => {
-      setIsQuizEnd(true);
-    });
+    socket.on('timer tick', handleTick);
+    socket.on('time end', handleTimeEnd);
 
     return () => {
-      socket.off('timer end', () => {});
+      socket.off('time end', handleTimeEnd);
+      socket.off('timer tick', handleTick);
     };
   }, []);
 
   return (
     <>
-      {isLoading ? (
-        <QuizLoading />
-      ) : (
-        <div>
-          <QuizHeader />
-          <QuizBackground easyPercentage={easyPercentage} />
-          <QuizBox reactionStats={reactionStats} setReactionStats={setReactionStats} quiz={quiz} />
+      {isLoading && !isQuizEnd && <QuizLoading />}
+      {!isLoading && !isQuizEnd && (
+        <div className="relative w-full">
+          <QuizHeader tick={tick} />
+          <QuizBox quiz={quiz} tick={tick} />
         </div>
       )}
       {isQuizEnd && <QuizEnd />}

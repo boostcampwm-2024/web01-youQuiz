@@ -80,6 +80,21 @@ export default {
           from: { transform: 'rotate(0deg)' },
           to: { transform: 'rotate(360deg)' },
         },
+        floatDown: {
+          '0%': {
+            transform: 'translateY(-100px)',
+            opacity: 0,
+          },
+          '100%': {
+            transform: 'translateY(0)',
+            opacity: 1,
+          },
+        },
+        swing: {
+          '0%': { transform: 'rotate(0deg) translateY(0)' },
+          '50%': { transform: 'rotate(30deg) translateY(-20px)' },
+          '100%': { transform: 'rotate(0deg) translateY(0)' },
+        },
       },
     },
   },
