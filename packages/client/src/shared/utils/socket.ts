@@ -6,7 +6,7 @@ let socket: Socket | null = null;
 export function getQuizSocket(): Socket {
   if (!socket) {
     socket = io(`${import.meta.env.VITE_SERVER_URL}/game`, {
-      auth: { sid: getCookie('sid') },
+      auth: { sid: getCookie('sid')! },
       transports: ['websocket'],
     });
   }
