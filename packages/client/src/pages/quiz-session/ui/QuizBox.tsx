@@ -1,9 +1,8 @@
-import { Dispatch, SetStateAction, useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 import { useParams } from 'react-router-dom';
-import AfterQuizSubmit from './AfterQuizSubmit';
 import QuizBackground from './QuizBackground';
 interface ReactionData {
   easy: number;
@@ -170,8 +169,6 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
           </button>
         </div>
       </div>
-
-      {<AfterQuizSubmit {...participantStatistics} />}
     </>
   );
 }
