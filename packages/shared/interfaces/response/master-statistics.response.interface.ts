@@ -5,4 +5,5 @@ export interface MasterStatisticsResponse {
   participantRate: number;
   choiceStatus: { [key: number]: number };
   submitHistory: [string, number][];
+  participantLength: number;
 }
