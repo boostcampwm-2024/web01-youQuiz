@@ -281,7 +281,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantLength,
     };
 
-    client.to(pinCode).emit('total submit count', { totalSubmit });
+    client.emit('my submit rank', { totalSubmit });
     this.server.to(pinCode).emit('participant statistics', participantStatistics);
     this.server.to(pinCode).emit('master statistics', masterStatistics);
   }
