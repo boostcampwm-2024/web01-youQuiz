@@ -3569,6 +3569,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@youquiz/shared@workspace:*, @youquiz/shared@workspace:packages/shared":
+  version: 0.0.0-use.local
+  resolution: "@youquiz/shared@workspace:packages/shared"
+  languageName: unknown
+  linkType: soft
+
 "abbrev@npm:^2.0.0":
   version: 2.0.0
   resolution: "abbrev@npm:2.0.0"
@@ -4508,6 +4514,7 @@ __metadata:
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
     "@vitejs/plugin-react": "npm:^4.3.3"
+    "@youquiz/shared": "workspace:*"
     autoprefixer: "npm:^10.4.20"
     eslint: "npm:^9.13.0"
     eslint-plugin-react-hooks: "npm:^5.0.0"
