@@ -1,3 +1,4 @@
+import { toastController } from '@/features/toast/model/toastController';
 import { useCreateClass } from '@/shared/hooks/classes';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,40 +12,58 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
   const [description, setDescription] = useState('');
 
   const navigate = useNavigate();
+  const toast = toastController();
   const mutation = useCreateClass();
 
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleConfirmClick();
+    }
+  };
+
   const handleConfirmClick = () => {
-    // TODO: 서버로 퀴즈 제목 전송
+    if (!title || !description) {
+      toast.warning('제목과 설명을 입력해주세요');
+      return;
+    }
     mutation.mutate(
       { title, description },
       {
         onSuccess: () => {
           onClose();
-          navigate('/quiz/create');
+          // TODO: 퀴즈 생성 페이지로 이동, POST API 리턴값에 id가 있어야 함
+          //navigate(`/quiz/create/${data.id}`);
+          navigate('/quiz/create/1');
         },
       },
     );
   };
   return (
     <div
-      className="w-[480px] h-[172px] flex flex-col items-center justify-center gap-6 p-5 bg-white rounded-lg border border-gray-200"
+      className="w-[480px] h-[250px] flex flex-col items-center justify-center gap-4 p-5 bg-white rounded-lg border border-gray-200"
       onClick={(e) => e.stopPropagation()}
     >
+      <h1 className="text-xl font-bold">클래스 정보를 입력해주세요</h1>
       <input
         type="text"
-        placeholder="퀴즈 제목을 입력하세요"
-        className="w-full h-10 px-3 rounded-lg border border-gray-200"
+        placeholder="클래스 제목을 입력하세요"
+        className="w-full h-10 p-3 rounded-lg border border-gray-200"
         onChange={(e) => setTitle(e.target.value)}
         value={title}
+        onKeyDown={handleEnterKeyPress}
       />
       <input
         type="text"
-        placeholder="퀴즈 설명을 입력하세요"
-        className="w-full h-10 px-3 rounded-lg border border-gray-200"
+        placeholder="클래스 설명을 입력하세요"
+        className="w-full h-10 p-3 rounded-lg border border-gray-200"
         onChange={(e) => setDescription(e.target.value)}
         value={description}
+        onKeyDown={handleEnterKeyPress}
       />
-      <button className="h-10 px-6 bg-primary text-white rounded-lg" onClick={handleConfirmClick}>
+      <button
+        className="w-36 h-10 px-6 bg-primary text-white rounded-lg"
+        onClick={handleConfirmClick}
+      >
         확인
       </button>
     </div>
