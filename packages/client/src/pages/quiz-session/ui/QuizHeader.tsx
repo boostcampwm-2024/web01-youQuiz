@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
+import { TimerTickResponse } from '@youquiz/shared/interfaces/response';
 
 interface QuizHeaderProps {
-  tick: { currentTime: number; elapsedTime: number; remainingTime: number };
+  tick: TimerTickResponse;
 }
 
 export default function QuizHeader({ tick }: QuizHeaderProps) {

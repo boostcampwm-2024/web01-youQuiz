@@ -5,37 +5,24 @@ import { getCookie } from '@/shared/utils/cookie';
 import { useParams } from 'react-router-dom';
 import AfterQuizSubmit from './AfterQuizSubmit';
 import QuizBackground from './QuizBackground';
-interface ReactionData {
-  easy: number;
-  hard: number;
-}
-
-export interface StatisticsData {
-  averageTime: number;
-  participantRate: number;
-  solveRate: number;
-  totalSubmit: number;
-}
-
+import {
+  TimerTickResponse,
+  ParticipantStatisticsResponse,
+} from '@youquiz/shared/interfaces/response';
+import { INITIAL_PARTICIPANT_STATISTICS, INITIAL_EMOJI } from '@/shared/constants/initialState';
 interface QuizBoxProps {
   quiz: QuizData;
-  tick: { currentTime: number; elapsedTime: number; remainingTime: number };
+  tick: TimerTickResponse;
 }
 
 export default function QuizBox({ quiz, tick }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [reactionStats, setReactionStats] = useState<ReactionData>({
-    easy: 0,
-    hard: 0,
-  });
-  const [participantStatistics, setParticipantStatistics] = useState<StatisticsData>({
-    averageTime: 0,
-    participantRate: 0,
-    solveRate: 0,
-    totalSubmit: 0,
-  });
+  const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
+  const [participantStatistics, setParticipantStatistics] = useState<ParticipantStatisticsResponse>(
+    INITIAL_PARTICIPANT_STATISTICS,
+  );
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
   const socket = getQuizSocket();
@@ -57,7 +44,7 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
       selectedAnswer: selectedAnswer,
       sid: getCookie('sid'),
       pinCode: pinCode,
-      submitTime: tick.elapsedTime,
+      submitTime: tick.elaspedTime,
     });
     setHasSubmitted(true);
   };
@@ -81,11 +68,14 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
     }, 1000);
   };
 
-  const handleReactionUpdate = useCallback((data: ReactionData) => {
-    setReactionStats({ easy: data.easy, hard: data.hard });
+  const handleReactionUpdate = useCallback((response: { easy: number; hard: number }) => {
+    setReactionStats({
+      easy: response.easy,
+      hard: response.hard,
+    });
   }, []);
 
-  const handleParticipantStatistics = (response: StatisticsData) => {
+  const handleParticipantStatistics = (response: ParticipantStatisticsResponse) => {
     setParticipantStatistics(response);
   };
 
