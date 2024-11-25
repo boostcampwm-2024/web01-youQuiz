@@ -26,7 +26,7 @@ export default function MainPage() {
   };
 
   const handleCreateQuiz = () => {
-    navigate('quiz/create');
+    navigate('quiz-list');
   };
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100 flex flex-col items-center justify-center p-8 overflow-hidden">
