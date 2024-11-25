@@ -61,6 +61,7 @@ export default function QuizCreateSection({
             placeholder="문제를 입력해주세요"
             type="box"
             onSubmit={(value) => onQuizUpdate({ ...quizData, content: value })}
+            initialValue={quizData.content}
           />
         </p>
         <div className="flex flex-col gap-4 w-full mt-10">
@@ -76,6 +77,7 @@ export default function QuizCreateSection({
               onKeyDown={(e) => {
                 handleKeyDown(index, e);
               }}
+              value={choice.content}
             />
           ))}
         </div>
