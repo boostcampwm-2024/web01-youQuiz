@@ -20,7 +20,7 @@ export default function Router() {
       <Route path="/" element={<MainPage />} />
       <Route element={<HostLayout />}>
         <Route path="/quiz-list" element={<QuizList />} />
-        <Route path="/quiz/create" element={<QuizCreatePage />} />
+        <Route path="/quiz/create/:classId" element={<QuizCreatePage />} />
         <Route path="/questions" element={<QnA />} />
       </Route>
       <Route element={<GuestLayout />}>
