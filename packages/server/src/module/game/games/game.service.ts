@@ -4,7 +4,7 @@ import { ClassRepository } from '../../quiz/quizzes/repositories/class.repositor
 import { QuizRepository } from '../../quiz/quizzes/repositories/quiz.repository';
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { Quiz } from 'src/module/quiz/quizzes/entities/quiz.entity';
-import { identity } from 'rxjs';
+// import { RANK_THREE } from '@shared/constants/game.constants';
 
 @Injectable()
 export class GameService {
@@ -71,5 +71,19 @@ export class GameService {
     } catch (error) {
       console.error('error: ', error);
     }
+  }
+
+  async getRank(key: string, participantNum: number) {
+    const result = await this.redisService.zrevrange(key, 0, participantNum);
+    const formattedRank = [];
+
+    const adjustedCount = participantNum * 2;
+    for (let i = 0; i < adjustedCount; i += 2) {
+      const sid = result[i];
+      const score = result[i + 1];
+      formattedRank.push([sid, score]);
+    }
+
+    return formattedRank;
   }
 }

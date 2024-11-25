@@ -10,8 +10,6 @@ import { RedisService } from '../../config/database/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './games/game.service';
 
-// socket - sid 맵핑
-
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -69,7 +67,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 방장이 게임을 나가도 재접속이 가능하며, 게임은 지속된다.
     const { classId } = payload;
 
-    // 방장의 세션 ID와 핀코드를 생성
     const masterSid = uuidv4();
     const pinCode = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
     const socketId = client.id;
@@ -123,9 +120,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('show quiz')
   async handleShowQuiz(client: Socket, payload: any) {
-    // master 여부 판단
     const { pinCode } = payload;
-    // 게임 현재 상태 가져오기
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
     const { classId, currentOrder, quizMaxNum } = gameInfo;
@@ -174,7 +169,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         gameInfo.currentOrder += 1;
         await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
+        /////////////////////////////////////////////////
+        await this.gameService.getRank(
+          `gameId=${pinCode}:ranking`,
+          gameInfo.participantList.length,
+        ); ///////////////////////////////////////////
         this.server.to(pinCode).emit('time end', { isEnd: true });
         clearInterval(intervalId);
         return;
@@ -217,14 +216,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
     const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
+
     // 현재 퀴즈 데이터 가져옴
     const { classId, currentOrder, participantList } = gameInfo;
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
     const currentQuizData = quizData[currentOrder];
 
     const participantLength = participantList.length;
+
     // 현재 퀴즈의 초이스 데이터 가져옴
     const currentChoicesData = currentQuizData['choices'];
+    const { point, timeLimit } = currentQuizData;
 
     const gameStatus = JSON.parse(
       await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
@@ -239,12 +241,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const totalSubmit = gameStatus.totalSubmit;
 
     //totalCorrect
-    const isFlag = selectedAnswer.every((answer) => {
+    const isFlag = selectedAnswer.every((answer: number) => {
       return currentChoicesData[answer].isCorrect;
     });
+
     if (isFlag) {
       gameStatus.totalCorrect += 1;
     }
+
+    const processedPoint = this.calculatePoints(isFlag, submitTime, timeLimit, point);
+    console.log('processedPoint:', processedPoint, 'type:', typeof processedPoint);
+    console.log('sid', sid);
+    await this.redisService.zincrby(`gameId=${pinCode}:ranking`, processedPoint, sid);
+
     const totalCorrect = gameStatus.totalCorrect;
 
     // totaltime
@@ -281,7 +290,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantLength,
     };
 
-    client.emit('my submit rank', { totalSubmit });
+    client.emit('my submit rank', { totalSubmit }); ///////////////////////////////////////
     this.server.to(pinCode).emit('participant statistics', participantStatistics);
     this.server.to(pinCode).emit('master statistics', masterStatistics);
   }
@@ -298,5 +307,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       JSON.stringify(gameStatus),
     );
     this.server.to(pinCode).emit('emoji', gameStatus.emojiStatus);
+  }
+
+  calculatePoints(isFlag: boolean, submitTime: number, timeLimit: number, point: number) {
+    if (isFlag) {
+      const ratio = (timeLimit - submitTime) / timeLimit;
+      return Math.floor(ratio * point);
+    }
+    return 0;
   }
 }
