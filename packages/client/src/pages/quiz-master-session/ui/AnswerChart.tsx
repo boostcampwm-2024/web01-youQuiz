@@ -1,3 +1,5 @@
+import { MasterStatisticsResponse } from '@youquiz/shared/interfaces/response';
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -10,7 +12,7 @@ import {
 } from 'recharts';
 
 interface AnswerStatProps {
-  answerStats: Record<`${0 | 1 | 2 | 3}`, number>;
+  answerStats: MasterStatisticsResponse['choiceStatus'];
 }
 
 export default function AnswerGraph({ answerStats }: AnswerStatProps) {
