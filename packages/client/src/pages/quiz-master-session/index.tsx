@@ -24,6 +24,7 @@ export default function QuizMasterSession() {
     useState<MasterStatisticsResponse>(INITIAL_MASTER_STATISTICS);
   const [quizData, setQuizData] = useState<QuizData>(INITIAL_QUIZ_DATA);
   const [tick, setTick] = useState<TimerTickResponse>(INITIAL_TICK);
+  const [quizIndex, setQuizIndex] = useState(0);
 
   const initQuizData = () => {
     setQuizData(INITIAL_QUIZ_DATA);
@@ -32,8 +33,9 @@ export default function QuizMasterSession() {
   };
 
   const handleNextQuiz = () => {
-    socket.emit('show quiz', { pinCode });
     initQuizData();
+    setQuizIndex((prev) => prev + 1);
+    socket.emit('show quiz', { pinCode });
   };
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function QuizMasterSession() {
           <div>
             <h1 className="text-xl font-bold mb-2">실시간 통계</h1>
             <p className="text-2xl font-bold mb-2">
-              Q{quizData.id}. {quizData.content}
+              Q{quizIndex + 1}. {quizData.content}
             </p>
           </div>
           <div>
