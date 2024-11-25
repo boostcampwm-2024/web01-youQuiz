@@ -1,5 +1,5 @@
 export interface TimerTickResponse {
   curretTime: number;
-  elaspedTime: number;
+  elapsedTime: number;
   remainingTime: number;
 }

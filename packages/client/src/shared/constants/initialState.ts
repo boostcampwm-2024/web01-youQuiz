@@ -17,7 +17,7 @@ export const INITIAL_QUIZ_DATA: QuizData = {
 
 export const INITIAL_TICK: TimerTickResponse = {
   curretTime: 0,
-  elaspedTime: 0,
+  elapsedTime: 0,
   remainingTime: 0,
 };
 
