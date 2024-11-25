@@ -1,4 +1,3 @@
-// TODO: env 파일로 관리하기
 const BASE_URL = import.meta.env.VITE_SERVER_URL
   ? `${import.meta.env.VITE_SERVER_URL}/api`
   : 'http://localhost:3000/api';
@@ -31,7 +30,8 @@ async function sendRequest(endPoint: string, options: FetchOptions = {}, timeout
     const response = await fetch(`${BASE_URL}${endPoint}`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        // TODO: 추후 로그인 로직 추가 시 사용
+        // Authorization: `Bearer ${localStorage.getItem('token')}`,
         ...headers,
       },
       // axios처럼 객체를 body로 받을 수 있도록 설정
@@ -44,10 +44,10 @@ async function sendRequest(endPoint: string, options: FetchOptions = {}, timeout
     });
 
     if (!response.ok) {
-      const errorMessage = await response.text();
+      const errorMessage = await parseResponseText(response);
       throw new Error(errorMessage || 'API 요청 실패');
     }
-    return response.json();
+    return parseResponse(response);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('요청 시간이 초과되었습니다.');
@@ -55,5 +55,29 @@ async function sendRequest(endPoint: string, options: FetchOptions = {}, timeout
     throw error;
   } finally {
     clearTimeout(timeoutId);
+  }
+}
+
+async function parseResponse(response: Response) {
+  const contentType = response.headers.get('Content-Type') || '';
+  if (contentType.includes('application/json')) {
+    try {
+      return await response.json();
+    } catch {
+      return {};
+    }
+  } else if (contentType.includes('text')) {
+    return await response.text();
+  } else {
+    return null;
+  }
+}
+
+// 에러 메시지 안전하게 처리
+async function parseResponseText(response: Response) {
+  try {
+    return await response.text();
+  } catch {
+    return '서버로부터 응답을 받지 못했습니다.';
   }
 }
