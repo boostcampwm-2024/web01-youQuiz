@@ -39,9 +39,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
 
     // Redis에서 데이터 가져오기
-    const data = await this.redisService.get(key);
+    const data = JSON.parse(await this.redisService.get(key));
+
     if (data) {
-      const { pinCode } = JSON.parse(data);
+      const { pinCode } = data;
+      data['socketId'] = client.id;
+
+      await this.redisService.set(key, JSON.stringify(data));
       client.join(pinCode); // Room에 소켓 추가
 
       const gameInfoJson = await this.redisService.get(`gameId=${pinCode}`);
@@ -56,6 +60,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(client: Socket) {
     //대기 중에 사람이 나갈 경우 갱신해주는 부분 추가 필요
     console.log(`Client disconnected: ${client.id}`);
+
+    // 마스터 참여자 여부에 따라서 disconnection 관리 로직 다를듯
   }
 
   @SubscribeMessage('master entry')
@@ -66,10 +72,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 방장의 세션 ID와 핀코드를 생성
     const masterSid = uuidv4();
     const pinCode = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
+    const socketId = client.id;
+
+    const masterinfo = { pinCode, socketId };
 
     client.join(pinCode); // pinCode로 되어 있는 roomd을 들어감
 
-    this.redisService.set(`master_sid=${masterSid}`, JSON.stringify({ pinCode }));
+    this.redisService.set(`master_sid=${masterSid}`, JSON.stringify(masterinfo));
 
     const quizData = await this.storeQuizToRedis(classId);
     const quizMaxNum = quizData.length;
@@ -87,7 +96,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('participant entry')
   async handleParticipantEntry(client: Socket, payload: any) {
     const { pinCode, nickname } = payload;
-    const clientInfo = { pinCode, nickname };
+    const socketId = client.id;
+    const clientInfo = { pinCode, nickname, socketId };
 
     client.join(pinCode);
 
