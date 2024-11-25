@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -17,6 +18,11 @@ import { UpdateQuizListRequestDto } from './dto/update-quizlist.request.dto';
 @Controller('api')
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
+
+  @Get('classes')
+  async getClasses() {
+    return await this.quizService.getClasses();
+  }
 
   // class 생성
   @Post('classes')

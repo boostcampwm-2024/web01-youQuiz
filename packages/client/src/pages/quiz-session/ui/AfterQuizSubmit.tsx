@@ -1,8 +1,7 @@
-import { StatisticsData } from './QuizBox';
 import StatisticsGroup from '@/pages/quiz-master-session/ui/StatisticsGroup';
-
+import { ParticipantStatisticsResponse } from '@youquiz/shared/interfaces/response';
 interface AfterQuizSubmitProps {
-  participantStatistics: StatisticsData;
+  participantStatistics: ParticipantStatisticsResponse;
 }
 
 export default function AfterQuizSubmit({ participantStatistics }: AfterQuizSubmitProps) {

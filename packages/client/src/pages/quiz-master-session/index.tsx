@@ -5,50 +5,30 @@ import AnswerGraph from '@/pages/quiz-master-session/ui/AnswerChart';
 import RecentSubmittedAnswers from './ui/RecentSubmittedAnswers';
 import { getQuizSocket } from '@/shared/utils/socket';
 import StatisticsGroup from './ui/StatisticsGroup';
-
-interface MasterStatistics {
-  averageTime: number;
-  choiceStatus: Record<`${0 | 1 | 2 | 3}`, number>;
-  participantRate: number;
-  solveRate: number;
-  submitHistory: [string, number][];
-  totalSubmit: number;
-}
-
-const initialParticipantStatistics: MasterStatistics = {
-  averageTime: 0,
-  choiceStatus: { 0: 0, 1: 0, 2: 0, 3: 0 },
-  participantRate: 0,
-  solveRate: 0,
-  submitHistory: [],
-  totalSubmit: 0,
-};
-
-const initialQuizData = {
-  id: '',
-  content: '',
-  choices: [],
-};
-
-const initialTick = {
-  currentTime: 0,
-  elapsedTime: 0,
-  remainingTime: 0,
-};
+import { QuizData } from '@youquiz/shared/interfaces/utils/quizdata.interface';
+import {
+  TimerTickResponse,
+  MasterStatisticsResponse,
+  ShowQuizResponse,
+} from '@youquiz/shared/interfaces/response';
+import {
+  INITIAL_QUIZ_DATA,
+  INITIAL_TICK,
+  INITIAL_MASTER_STATISTICS,
+} from '@/shared/constants/initialState';
 
 export default function QuizMasterSession() {
   const { pinCode } = useParams();
   const socket = getQuizSocket();
-  const [participantStatistics, setParticipantStatistics] = useState<MasterStatistics>(
-    initialParticipantStatistics,
-  );
-  const [quizData, setQuizData] = useState(initialQuizData);
-  const [tick, setTick] = useState(initialTick);
+  const [masterStatistics, setMasterStatistics] =
+    useState<MasterStatisticsResponse>(INITIAL_MASTER_STATISTICS);
+  const [quizData, setQuizData] = useState<QuizData>(INITIAL_QUIZ_DATA);
+  const [tick, setTick] = useState<TimerTickResponse>(INITIAL_TICK);
 
   const initQuizData = () => {
-    setQuizData(initialQuizData);
-    setParticipantStatistics(initialParticipantStatistics);
-    setTick(initialTick);
+    setQuizData(INITIAL_QUIZ_DATA);
+    setMasterStatistics(INITIAL_MASTER_STATISTICS);
+    setTick(INITIAL_TICK);
   };
 
   const handleNextQuiz = () => {
@@ -59,18 +39,26 @@ export default function QuizMasterSession() {
   useEffect(() => {
     socket.emit('show quiz', { pinCode });
 
-    socket.on('show quiz', (response) => {
+    const handleShowQuiz = (response: ShowQuizResponse) => {
       const { currentQuizData } = response;
       setQuizData(currentQuizData);
-    });
-
-    socket.on('master statistics', (response: MasterStatistics) => {
-      setParticipantStatistics(response);
-    });
-
-    socket.on('timer tick', (response) => {
+    };
+    const handleMasterStatistics = (response: MasterStatisticsResponse) => {
+      setMasterStatistics(response);
+    };
+    const handleTimerTick = (response: TimerTickResponse) => {
       setTick(response);
-    });
+    };
+
+    socket.on('show quiz', handleShowQuiz);
+    socket.on('master statistics', handleMasterStatistics);
+    socket.on('timer tick', handleTimerTick);
+
+    return () => {
+      socket.off('show quiz', handleShowQuiz);
+      socket.off('master statistics', handleMasterStatistics);
+      socket.off('timer tick', handleTimerTick);
+    };
   }, []);
 
   return (
@@ -96,10 +84,10 @@ export default function QuizMasterSession() {
           </div>
         </div>
       </div>
-      <StatisticsGroup participantStatistics={participantStatistics} />
+      <StatisticsGroup participantStatistics={masterStatistics} />
       <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[650px]">
-        <AnswerGraph answerStats={participantStatistics.choiceStatus} />
-        <RecentSubmittedAnswers userSubmitHistory={participantStatistics.submitHistory} />
+        <AnswerGraph answerStats={masterStatistics.choiceStatus} />
+        <RecentSubmittedAnswers userSubmitHistory={masterStatistics.submitHistory} />
       </div>
     </div>
   );

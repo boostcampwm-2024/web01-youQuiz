@@ -21,11 +21,16 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "server",\
       "reference": "workspace:packages/server"\
+    },\
+    {\
+      "name": "@youquiz/shared",\
+      "reference": "workspace:packages/shared"\
     }\
   ],\
   "enableTopLevelFallback": true,\
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "fallbackExclusionList": [\
+    ["@youquiz/shared", ["workspace:packages/shared"]],\
     ["client", ["workspace:packages/client"]],\
     ["server", ["workspace:packages/server"]],\
     ["you-quiz", ["workspace:."]]\
@@ -5619,6 +5624,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@youquiz/shared", [\
+      ["workspace:packages/shared", {\
+        "packageLocation": "./packages/shared/",\
+        "packageDependencies": [\
+          ["@youquiz/shared", "workspace:packages/shared"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["abbrev", [\
       ["npm:2.0.0", {\
         "packageLocation": "./.yarn/cache/abbrev-npm-2.0.0-0eb38a17e5-f742a5a107.zip/node_modules/abbrev/",\
@@ -6770,6 +6784,7 @@ const RAW_RUNTIME_STATE =
           ["@types/react", "npm:18.3.12"],\
           ["@types/react-dom", "npm:18.3.1"],\
           ["@vitejs/plugin-react", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:4.3.3"],\
+          ["@youquiz/shared", "workspace:packages/shared"],\
           ["autoprefixer", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:10.4.20"],\
           ["eslint", "virtual:2f269365646b8d09f6936dfe6dc3a3e0ca188b3f700f26d42301b8857e8ace9dafa6101cc53bb2105734bd71d66261ca95369af54b15ece07b52d54b4a34ab23#npm:9.14.0"],\
           ["eslint-plugin-react-hooks", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:5.0.0"],\
