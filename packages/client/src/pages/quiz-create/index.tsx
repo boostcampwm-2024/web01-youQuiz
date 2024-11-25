@@ -53,7 +53,7 @@ export default function QuizCreatePage() {
   };
 
   return (
-    <div className="flex flex-col w-full mt-6 mr-6">
+    <div className="flex flex-col w-full mt-6 mx-6">
       <div className=" flex gap-4 bg-white rounded-base p-4 mb-4">
         <button className="text-weak-md" onClick={handlePreQuiz}>
           이전 문제
@@ -63,7 +63,6 @@ export default function QuizCreatePage() {
         </button>
         <div className="flex-1 flex justify-end text-weak-md">문제 유형</div>
       </div>
-
       <QuizCreateSection
         key={currentQuizIndex}
         currentQuizIndex={currentQuizIndex}
