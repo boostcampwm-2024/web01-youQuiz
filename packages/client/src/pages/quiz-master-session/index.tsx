@@ -37,12 +37,12 @@ const initialTick = {
 };
 
 export default function QuizMasterSession() {
-  const { pinCode, id } = useParams();
+  const { pinCode } = useParams();
   const socket = getQuizSocket();
   const [participantStatistics, setParticipantStatistics] = useState<MasterStatistics>(
     initialParticipantStatistics,
   );
-  const [quizData, setQuizData] = useState<QuizData>(initialQuizData);
+  const [quizData, setQuizData] = useState(initialQuizData);
   const [tick, setTick] = useState(initialTick);
 
   const initQuizData = () => {
@@ -80,7 +80,7 @@ export default function QuizMasterSession() {
           <div>
             <h1 className="text-xl font-bold mb-2">실시간 통계</h1>
             <p className="text-2xl font-bold mb-2">
-              Q{id}. {quizData.content}
+              Q{quizData.id}. {quizData.content}
             </p>
           </div>
           <div>

@@ -1,16 +1,17 @@
 import StatisticsCard from './StatisticsCard';
 
-interface MasterStatistics {
+interface ParticipantStatistics {
   averageTime: number;
-  choiceStatus: Record<`${0 | 1 | 2 | 3}`, number>;
   participantRate: number;
   solveRate: number;
-  submitHistory: [string, number][];
   totalSubmit: number;
 }
-
+interface MasterStatistics extends ParticipantStatistics {
+  submitHistory: [string, number][];
+  choiceStatus: Record<`${0 | 1 | 2 | 3}`, number>;
+}
 interface StatisticsGroupProps {
-  participantStatistics: MasterStatistics;
+  participantStatistics: MasterStatistics | ParticipantStatistics;
 }
 
 export default function StatisticsGroup({ participantStatistics }: StatisticsGroupProps) {

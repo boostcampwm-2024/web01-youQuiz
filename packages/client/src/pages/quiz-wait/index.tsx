@@ -7,7 +7,6 @@ import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 import { toastController } from '@/features/toast/model/toastController';
 import LoadingSpinner from '@/shared/assets/icons/loading-alt-loop.svg?react';
-import { useGetUserType } from '@/shared/hooks/useGetUserType';
 import { apiClient } from '@/shared/api';
 
 const GUEST_DISPLAY_SIZE = { width: 940, height: 568 };

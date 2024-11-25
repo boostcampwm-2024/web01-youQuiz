@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 import { useParams } from 'react-router-dom';
+import AfterQuizSubmit from './AfterQuizSubmit';
 import QuizBackground from './QuizBackground';
 interface ReactionData {
   easy: number;
@@ -62,9 +63,9 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
   };
 
   const handleReaction = (reaction: 'easy' | 'hard') => {
-    setReactionStats({ ...reactionStats, [reaction]: reactionStats[reaction] + 1 });
     handleFloatUp(reaction);
-    socket.emit('emoji', { reaction });
+
+    socket.emit('emoji', { pinCode: pinCode, currentOrder: quiz.position, emoji: reaction });
   };
 
   const handleFloatUp = (reaction: 'easy' | 'hard') => {
@@ -81,7 +82,7 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
   };
 
   const handleReactionUpdate = useCallback((data: ReactionData) => {
-    setReactionStats(data);
+    setReactionStats({ easy: data.easy, hard: data.hard });
   }, []);
 
   const handleParticipantStatistics = (response: StatisticsData) => {
@@ -104,8 +105,14 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
       <div className="relative z-10 p-6 max-w-4xl mx-auto mb-8">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-12">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-sm text-gray-500">Question 1/10</span>
-            <span className="text-sm text-gray-500">난이도 {tick.remainingTime}</span>
+            <span className="text-sm text-gray-500">Question {quiz.position}/10</span>
+            <span className="text-sm text-gray-500">
+              난이도
+              <div className="flex items-center">
+                <div className="w-12 h-2 bg-gradient-to-t from-blue-200 to-blue-100 rounded-base" />
+                <div className="w-12 h-2 bg-gradient-to-t from-blue-200 to-blue-100 rounded-base" />
+              </div>
+            </span>
           </div>
           {/* 문제 */}
           <div className="mb-8">
@@ -169,6 +176,7 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
           </button>
         </div>
       </div>
+      {hasSubmitted && <AfterQuizSubmit participantStatistics={participantStatistics} />}
     </>
   );
 }
