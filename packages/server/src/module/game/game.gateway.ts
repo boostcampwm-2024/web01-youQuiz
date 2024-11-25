@@ -76,18 +76,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const masterinfo = { pinCode, socketId };
 
-    client.join(pinCode); // pinCode로 되어 있는 roomd을 들어감
+    client.join(pinCode);
 
-    this.redisService.set(`master_sid=${masterSid}`, JSON.stringify(masterinfo));
+    await this.redisService.set(`master_sid=${masterSid}`, JSON.stringify(masterinfo));
 
     const quizData = await this.storeQuizToRedis(classId);
-    const quizMaxNum = quizData.length;
+    const quizMaxNum = quizData.length - 1;
 
     // 퀴즈 개수를 저장.
     const gameInfo = { classId, currentOrder: 0, quizMaxNum, participantList: [] };
 
     // 게임 정보를 저장
-    this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
     client.emit('session', masterSid);
     client.emit('pincode', pinCode);
@@ -102,12 +102,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join(pinCode);
 
     const participantSid = uuidv4();
-    this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
+    await this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
     client.emit('session', participantSid);
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
     gameInfo.participantList.push(nickname);
-    this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
     this.server.to(pinCode).emit('nickname', gameInfo.participantList);
   }
@@ -124,7 +124,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('show quiz')
   async handleShowQuiz(client: Socket, payload: any) {
     // master 여부 판단
-
     const { pinCode } = payload;
     // 게임 현재 상태 가져오기
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
@@ -160,20 +159,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
     this.server.to(pinCode).emit('show quiz', { quizMaxNum, currentQuizData, isLast });
 
-    gameInfo.currentOrder += 1;
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
     const startTime = Date.now();
     await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
   }
 
   // timelimit을 파라미터로 입력 받아서 1초 간격으로 실행
   async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
-    const intervalId = setInterval(() => {
+    const intervalId = setInterval(async () => {
       const currentTime = Date.now();
       const elapsedTime = currentTime - startTime;
       const remainingTime = (timeLimit + 2) * 1000 - elapsedTime;
       if (remainingTime <= 0) {
+        const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+
+        gameInfo.currentOrder += 1;
+        await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+
         this.server.to(pinCode).emit('time end', { isEnd: true });
         clearInterval(intervalId);
         return;
@@ -181,9 +182,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
     }, 1000);
   }
-
-  // 퀴즈를 푸는 동안 서버에저 제한시간을 측정한다.
-  // 측정하는 동안에는 SSE를 시도한다.
 
   @SubscribeMessage('start quiz')
   async handleStartQuiz(client: Socket, payload: any) {
@@ -221,20 +219,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
     // 현재 퀴즈 데이터 가져옴
     const { classId, currentOrder, participantList } = gameInfo;
-    const submittedQuizOrder = currentOrder - 1;
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
-    const currentQuizData = quizData[submittedQuizOrder];
+    const currentQuizData = quizData[currentOrder];
 
     const participantLength = participantList.length;
     // 현재 퀴즈의 초이스 데이터 가져옴
     const currentChoicesData = currentQuizData['choices'];
 
     const gameStatus = JSON.parse(
-      await this.redisService.get(`gameId=${pinCode}:quizId=${submittedQuizOrder}`),
+      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
     );
 
     // 제출 기록 저장 [[nickname, solveTime]]
-    gameStatus['submitHistory'].push([pariticipantInfo.nickname, submitTime]);
+    gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
     const submitHistory = gameStatus.submitHistory;
 
     //totalSubmit
@@ -243,7 +240,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     //totalCorrect
     const isFlag = selectedAnswer.every((answer) => {
-      return currentChoicesData[answer]['isCorrect'];
+      return currentChoicesData[answer].isCorrect;
     });
     if (isFlag) {
       gameStatus.totalCorrect += 1;
@@ -262,18 +259,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const participantNum = participantList.length;
 
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
     await this.redisService.set(
       `gameId=${pinCode}:quizId=${currentOrder}`,
       JSON.stringify(gameStatus),
     );
 
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+
     const solveRate = (totalCorrect / totalSubmit) * 100;
     const averageTime = (totalTime / totalSubmit) * 100;
     const participantRate = (totalSubmit / participantNum) * 100;
-    const participantStatistics = { totalSubmit, solveRate, averageTime, participantRate };
 
-    ///participant length 넘기기
+    const participantStatistics = { totalSubmit, solveRate, averageTime, participantRate };
     const masterStatistics = {
       totalSubmit,
       solveRate,
@@ -283,6 +280,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       submitHistory,
       participantLength,
     };
+
     client.to(pinCode).emit('total submit count', { totalSubmit });
     this.server.to(pinCode).emit('participant statistics', participantStatistics);
     this.server.to(pinCode).emit('master statistics', masterStatistics);
