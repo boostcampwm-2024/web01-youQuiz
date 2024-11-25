@@ -7,6 +7,7 @@ import { CreateClassRequestDto } from './dto/create-class.request.dto';
 import { CreateQuizListRequestDto } from './dto/create-quizlist.request.dto';
 import { ResponseDto } from '../../utils/dto/response.dto';
 import { Quiz } from './entities/quiz.entity';
+import { ClassResponseDto } from './dto/class.response.dto';
 import { UpdateClassRequestDto } from './dto/update-class.request.dto';
 import { UpdateQuizRequestDto } from './dto/update-quiz.request.dto';
 import { UpdateQuizListRequestDto } from './dto/update-quizlist.request.dto';
@@ -19,6 +20,11 @@ export class QuizService {
     private readonly classRepository: ClassRepository,
     private readonly dataSource: DataSource,
   ) {}
+
+  async getClasses(): Promise<ClassResponseDto[]> {
+    const classes = await this.classRepository.findAll();
+    return classes.map(ClassResponseDto.fromEntity);
+  }
 
   async createClass(createClassRequestDto: CreateClassRequestDto): Promise<void> {
     try {
