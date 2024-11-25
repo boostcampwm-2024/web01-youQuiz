@@ -1,6 +1,4 @@
-import { CustomButton, BackButton } from '../buttons';
-import LogoutIcon from '../../assets/icons/logout.svg?react';
-import ToolIcon from '../../assets/icons/tool.svg?react';
+import { BackButton } from '../buttons';
 
 interface HeaderProps {
   classTitle: string;
@@ -14,10 +12,6 @@ export default function Header({ classTitle }: HeaderProps) {
         <div className="flex items-center gap-8">
           <BackButton />
           <h1 className="text-bold-xl">{classTitle}</h1>
-        </div>
-        <div className="flex gap-4">
-          <CustomButton label="LOGOUT" type="outline" Icon={LogoutIcon} />
-          <CustomButton label="SETTINGS" type="outline" Icon={ToolIcon} />
         </div>
       </section>
     </div>
