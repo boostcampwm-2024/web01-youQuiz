@@ -1,5 +1,9 @@
 import { QuizData } from '@youquiz/shared/interfaces/utils/quizdata.interface';
-import { MasterStatisticsResponse, TimerTickResponse } from '@youquiz/shared/interfaces/response';
+import {
+  MasterStatisticsResponse,
+  ParticipantStatisticsResponse,
+  TimerTickResponse,
+} from '@youquiz/shared/interfaces/response';
 
 export const INITIAL_QUIZ_DATA: QuizData = {
   id: 0,
@@ -25,4 +29,16 @@ export const INITIAL_MASTER_STATISTICS: MasterStatisticsResponse = {
   solveRate: 0,
   submitHistory: [],
   totalSubmit: 0,
+};
+
+export const INITIAL_PARTICIPANT_STATISTICS: ParticipantStatisticsResponse = {
+  averageTime: 0,
+  participantRate: 0,
+  solveRate: 0,
+  totalSubmit: 0,
+};
+
+export const INITIAL_EMOJI = {
+  easy: 0,
+  hard: 0,
 };
