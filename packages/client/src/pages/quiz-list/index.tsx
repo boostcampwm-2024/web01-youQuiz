@@ -23,9 +23,9 @@ export default function QuizList() {
     setSelectedClassIndex(index);
   };
 
-  const handleQuizStart = async () => {
+  const handleQuizStart = async (id: number) => {
     const socket = getQuizSocket();
-    socket.emit('master entry', { classId: 1 });
+    socket.emit('master entry', { classId: id });
     /**비동기 작업 */
     const sid = await waitForSocketEvent('session', socket);
     setCookie('sid', sid);
@@ -50,7 +50,7 @@ export default function QuizList() {
                   type="full"
                   label="퀴즈 시작하기"
                   color="secondary"
-                  onClick={handleQuizStart}
+                  onClick={() => handleQuizStart(quiz.id)}
                 />
                 <button type="button" onClick={() => handleSelectClass(index)}>
                   <DownArrowIcon
@@ -60,6 +60,7 @@ export default function QuizList() {
                 </button>
               </div>
             </div>
+            {/* TODO: GET quiz 연결 후 추가 */}
             {/* {selectedClassIndex === index && (
             <div
               className={`flex flex-col gap-3 p-6 mt-4 border ${selectedClassIndex === index ? 'border-secondary' : 'border-border'} rounded-base bg-white`}
