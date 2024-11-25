@@ -24,7 +24,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@youquiz/shared": ["../shared/*"]
     }
   },
   "include": ["src", "svg.d.ts"],
