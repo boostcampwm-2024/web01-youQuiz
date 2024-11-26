@@ -15,7 +15,9 @@ import {
   INITIAL_QUIZ_DATA,
   INITIAL_TICK,
   INITIAL_MASTER_STATISTICS,
+  INITIAL_EMOJI,
 } from '@/shared/constants/initialState';
+import EmojiChart from './ui/EmojiChart';
 
 export default function QuizMasterSession() {
   const { pinCode } = useParams();
@@ -25,6 +27,7 @@ export default function QuizMasterSession() {
   const [quizData, setQuizData] = useState<QuizData>(INITIAL_QUIZ_DATA);
   const [tick, setTick] = useState<TimerTickResponse>(INITIAL_TICK);
   const [quizIndex, setQuizIndex] = useState(0);
+  const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
 
   const initQuizData = () => {
     setQuizData(INITIAL_QUIZ_DATA);
@@ -33,6 +36,7 @@ export default function QuizMasterSession() {
   };
 
   const handleNextQuiz = () => {
+    if (tick.remainingTime !== 0) return;
     initQuizData();
     setQuizIndex((prev) => prev + 1);
     socket.emit('show quiz', { pinCode });
@@ -52,9 +56,14 @@ export default function QuizMasterSession() {
       setTick(response);
     };
 
+    const handleReactionUpdate = (response: { easy: number; hard: number }) => {
+      setReactionStats(response);
+    };
+
     socket.on('show quiz', handleShowQuiz);
     socket.on('master statistics', handleMasterStatistics);
     socket.on('timer tick', handleTimerTick);
+    socket.on('emoji', handleReactionUpdate);
 
     return () => {
       socket.off('show quiz', handleShowQuiz);
@@ -89,7 +98,10 @@ export default function QuizMasterSession() {
       <StatisticsGroup participantStatistics={masterStatistics} />
       <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[650px]">
         <AnswerGraph answerStats={masterStatistics.choiceStatus} />
-        <RecentSubmittedAnswers userSubmitHistory={masterStatistics.submitHistory} />
+        <div>
+          <RecentSubmittedAnswers userSubmitHistory={masterStatistics.submitHistory} />
+          <EmojiChart reactionStats={reactionStats} />
+        </div>
       </div>
     </div>
   );
