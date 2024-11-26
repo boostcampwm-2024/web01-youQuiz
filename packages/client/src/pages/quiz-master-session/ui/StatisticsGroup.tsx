@@ -30,13 +30,13 @@ export default function StatisticsGroup({ participantStatistics }: StatisticsGro
     },
     {
       title: '평균 풀이 시간',
-      value: participantStatistics.averageTime / 100000,
+      value: Number(participantStatistics.averageTime.toFixed(1)),
       unit: '초',
       color: 'text-orange-500',
     },
     {
       title: '평균 참여율',
-      value: participantStatistics.participantRate,
+      value: Number(participantStatistics.participantRate.toFixed(1)),
       unit: '%',
       color: 'text-purple-500',
     },
