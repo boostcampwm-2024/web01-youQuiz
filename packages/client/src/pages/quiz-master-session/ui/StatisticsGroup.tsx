@@ -24,7 +24,7 @@ export default function StatisticsGroup({ participantStatistics }: StatisticsGro
     },
     {
       title: '정답률',
-      value: participantStatistics.solveRate,
+      value: Number(participantStatistics.solveRate.toFixed(1)),
       unit: '%',
       color: 'text-blue-500',
     },
