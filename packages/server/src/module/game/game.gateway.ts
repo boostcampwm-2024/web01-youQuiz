@@ -101,6 +101,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const participantSid = uuidv4();
     await this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
     client.emit('session', participantSid);
+    await this.redisService.zincrby(`gameId=${pinCode}:ranking`, 0, participantSid);
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
     gameInfo.participantList.push(nickname);
