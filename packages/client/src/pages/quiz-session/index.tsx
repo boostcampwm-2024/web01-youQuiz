@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { getQuizSocket } from '@/shared/utils/socket';
 import QuizBox from './ui/QuizBox';
 import QuizEnd from './ui/QuizEnd';
 import QuizHeader from './ui/QuizHeader';
 import QuizLoading from './ui/QuizLoading';
-import { toastController } from '@/features/toast/model/toastController';
+// import { toastController } from '@/features/toast/model/toastController';
 import { QuizData } from '@youquiz/shared/interfaces/utils/quizdata.interface';
 import { ShowQuizResponse, TimerTickResponse } from '@youquiz/shared/interfaces/response';
 import { INITIAL_QUIZ_DATA, INITIAL_TICK } from '@/shared/constants/initialState';
 
 export default function QuizSession() {
   const socket = getQuizSocket();
-  const toast = toastController();
+  // const toast = toastController();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isQuizEnd, setIsQuizEnd] = useState(false);
   const [tick, setTick] = useState<TimerTickResponse>(INITIAL_TICK);
@@ -52,7 +54,7 @@ export default function QuizSession() {
         setIsLoading(false);
       })
       .catch(() => {
-        toast.error('문제 로딩에 실패했습니다.');
+        // toast.error('문제 로딩에 실패했습니다.');
         setIsLoading(false);
       });
 
@@ -64,6 +66,11 @@ export default function QuizSession() {
       setIsQuizEnd(true);
     };
 
+    const handleQuizEnd = () => {
+      navigate('/quiz/session/end');
+    };
+
+    socket.on('end quiz', handleQuizEnd);
     socket.on('timer tick', handleTick);
     socket.on('time end', handleTimeEnd);
 

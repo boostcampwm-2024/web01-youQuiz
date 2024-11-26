@@ -1,5 +1,7 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
+import { getCookie } from '@/shared/utils/cookie';
 import { CustomButton } from '@/shared/ui/buttons';
 import AnswerGraph from '@/pages/quiz-master-session/ui/AnswerChart';
 import RecentSubmittedAnswers from './ui/RecentSubmittedAnswers';
@@ -19,12 +21,14 @@ import {
 
 export default function QuizMasterSession() {
   const { pinCode } = useParams();
+  const navigate = useNavigate();
   const socket = getQuizSocket();
   const [masterStatistics, setMasterStatistics] =
     useState<MasterStatisticsResponse>(INITIAL_MASTER_STATISTICS);
   const [quizData, setQuizData] = useState<QuizData>(INITIAL_QUIZ_DATA);
   const [tick, setTick] = useState<TimerTickResponse>(INITIAL_TICK);
   const [quizIndex, setQuizIndex] = useState(0);
+  const [isLastQuiz, setIsLastQuiz] = useState(false);
 
   const initQuizData = () => {
     setQuizData(INITIAL_QUIZ_DATA);
@@ -33,6 +37,11 @@ export default function QuizMasterSession() {
   };
 
   const handleNextQuiz = () => {
+    if (isLastQuiz) {
+      socket.emit('end quiz', { pinCode, sid: getCookie('sid') });
+      navigate('/quiz/session/end');
+      return;
+    }
     initQuizData();
     setQuizIndex((prev) => prev + 1);
     socket.emit('show quiz', { pinCode });
@@ -42,8 +51,9 @@ export default function QuizMasterSession() {
     socket.emit('show quiz', { pinCode });
 
     const handleShowQuiz = (response: ShowQuizResponse) => {
-      const { currentQuizData } = response;
+      const { currentQuizData, isLast } = response;
       setQuizData(currentQuizData);
+      setIsLastQuiz(isLast);
     };
     const handleMasterStatistics = (response: MasterStatisticsResponse) => {
       setMasterStatistics(response);
