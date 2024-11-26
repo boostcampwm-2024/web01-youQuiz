@@ -16,7 +16,6 @@ export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubm
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
-    // 새로운 제출 기록을 감지하고 추가
     setHistory((prev) => {
       const newHistory = userSubmitHistory.map(([user, submitTime]) => ({
         user,
@@ -32,6 +31,7 @@ export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubm
       return mergedHistory.slice(0, 4);
     });
   }, [userSubmitHistory]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setHistory((prev) =>
@@ -46,7 +46,7 @@ export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubm
   }, []);
 
   return (
-    <div>
+    <div className="h-2/3 overflow-y-scroll">
       <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-4 border-b border-gray-100">
           <h3 className="font-semibold">최근 제출 답안</h3>
