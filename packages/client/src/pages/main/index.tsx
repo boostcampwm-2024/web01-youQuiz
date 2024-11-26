@@ -66,7 +66,7 @@ export default function MainPage() {
           <input
             type="text"
             placeholder="참가 코드를 입력하세요"
-            className="flex-1 h-14 text-lg rounded-xl border-blue-200 focus:border-blue-400 focus:ring-blue-400 text-blue-600 placeholder:text-blue-300 focus:outline-none"
+            className="flex-1 h-14 text-lg rounded-xl bg-transparent border-blue-200 focus:border-blue-400 focus:ring-blue-400 text-blue-600 placeholder:text-blue-300 focus:outline-none"
             value={pinCode}
             onChange={(e) => setPinCode(e.target.value)}
             onKeyDown={handleKeyDown}
