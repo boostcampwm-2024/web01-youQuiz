@@ -13,7 +13,7 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
 
   const navigate = useNavigate();
   const toast = toastController();
-  const mutation = useCreateClass();
+  const { mutate } = useCreateClass();
 
   const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -26,14 +26,12 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
       toast.warning('제목과 설명을 입력해주세요');
       return;
     }
-    mutation.mutate(
+    mutate(
       { title, description },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           onClose();
-          // TODO: 퀴즈 생성 페이지로 이동, POST API 리턴값에 id가 있어야 함
-          //navigate(`/quiz/create/${data.id}`);
-          navigate('/quiz/create/1');
+          navigate(`/quiz/create/${data.id}`);
         },
       },
     );

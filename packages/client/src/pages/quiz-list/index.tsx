@@ -1,17 +1,22 @@
 import DownArrowIcon from '@/shared/assets/icons/down-arrow.svg?react';
 import { CustomButton } from '@/shared/ui/buttons';
 import Modal from '@/shared/ui/modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import QuizTitleModal from './ui/QuizTitleModal';
 import { useNavigate } from 'react-router-dom';
 import { getQuizSocket } from '@/shared/utils/socket';
 import { setCookie } from '@/shared/utils/cookie';
 import { waitForSocketEvent } from '@/shared/utils/waitForSocketEvent';
 import { useGetClasses } from '@/shared/hooks/classes';
+import { QuizData } from '@/pages/quiz-create';
+import { getQuiz } from '@/shared/api/quizzes';
+
+type QuizList = QuizData[];
 
 export default function QuizList() {
   const { data: classList } = useGetClasses();
   const [selectedClassIndex, setSelectedClassIndex] = useState(-1);
+  const [quizList, setQuizList] = useState<QuizList[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
 
@@ -35,6 +40,25 @@ export default function QuizList() {
 
     navigate(`/quiz/wait/${pinCode}`);
   };
+
+  useEffect(() => {
+    if (!classList) return;
+
+    // Promise.all로 비동기 작업을 병렬 처리
+    const fetchAllQuizzes = async () => {
+      const results = await Promise.all(
+        classList.map(async (quiz) => {
+          const quizData = await getQuiz(quiz.id);
+          return quizData;
+        }),
+      );
+
+      setQuizList(results);
+    };
+
+    fetchAllQuizzes();
+  }, [classList]);
+
   return (
     <div className="flex flex-col gap-10 w-full mt-6 mx-6">
       {classList ? (
@@ -60,18 +84,17 @@ export default function QuizList() {
                 </button>
               </div>
             </div>
-            {/* TODO: GET quiz 연결 후 추가 */}
-            {/* {selectedClassIndex === index && (
-            <div
-              className={`flex flex-col gap-3 p-6 mt-4 border ${selectedClassIndex === index ? 'border-secondary' : 'border-border'} rounded-base bg-white`}
-            >
-              {class.quizzes.map((quizData, index) => (
-                <span key={quizData.content}>
-                  {index + 1}번 문제: {quizData.content}
-                </span>
-              ))}
-            </div>
-          )} */}
+            {selectedClassIndex === index && (
+              <div
+                className={`flex flex-col gap-3 p-6 mt-4 border ${selectedClassIndex === index ? 'border-secondary' : 'border-border'} rounded-base bg-white`}
+              >
+                {quizList[index].map((quizData, index) => (
+                  <span key={quizData.content}>
+                    {index + 1}번 문제: {quizData.content}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         ))
       ) : (

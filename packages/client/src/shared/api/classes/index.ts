@@ -10,11 +10,16 @@ interface CreateClassRequest {
   description: string;
 }
 
+interface CreateClassResponse {
+  id: number;
+  title: string;
+}
+
 export async function getClasses(): Promise<ClassesResponse[]> {
   return await apiClient.get('/classes');
 }
 
-export async function createClass(data: CreateClassRequest) {
+export async function createClass(data: CreateClassRequest): Promise<CreateClassResponse> {
   return await apiClient.post('/classes', {
     body: data,
   });
