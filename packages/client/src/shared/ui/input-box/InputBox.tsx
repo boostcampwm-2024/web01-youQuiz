@@ -8,6 +8,8 @@ interface InputBoxProps {
   button?: boolean;
   /** 인풋 박스 타입 */
   type?: 'box' | 'underline';
+
+  initialValue?: string;
   /** 제출 함수: 입력한 값을 인자로 받습니다. */
   onSubmit: (value: string) => void;
   /** 키 입력 함수 (유저가 Enter를 누르면 호출이 됩니다.) */
@@ -20,10 +22,10 @@ const inputBoxStyles = {
     'min-w-96 w-full h-10 border-b-2 border-weak p-4 text-md-md focus:border-b-primary focus:outline-none',
 };
 export default forwardRef(function InputBox(
-  { placeholder, button, type = 'box', onSubmit, onKeyDown }: InputBoxProps,
+  { placeholder, button, type = 'box', onSubmit, onKeyDown, initialValue }: InputBoxProps,
   ref: React.Ref<HTMLInputElement>,
 ) {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(initialValue ?? '');
   const classes = inputBoxStyles[type];
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -42,7 +44,9 @@ export default forwardRef(function InputBox(
         placeholder={placeholder}
         onChange={(e) => {
           setValue(e.target.value);
+          onSubmit(e.target.value);
         }}
+        value={value}
         onKeyDown={handleKeyDown}
       />
       {button && (

@@ -47,6 +47,7 @@ export default {
         'progress-30s': 'progress 30s linear forwards',
         'slide-out': 'slide-out 0.5s ease-in forwards',
         'spin-slow': 'spin-slow 6s linear infinite',
+        floating: 'floating 5s ease-in-out infinite',
       },
       keyframes: {
         progress: {
@@ -94,6 +95,11 @@ export default {
           '0%': { transform: 'rotate(0deg) translateY(0)' },
           '50%': { transform: 'rotate(30deg) translateY(-20px)' },
           '100%': { transform: 'rotate(0deg) translateY(0)' },
+        },
+        floating: {
+          '0%': { transform: 'translateY(0) rotate(0deg)', opacity: 0.8 },
+          '50%': { transform: 'translateY(-20px) rotate(5deg)', opacity: 1 },
+          '100%': { transform: 'translateY(0) rotate(0deg)', opacity: 0.8 },
         },
       },
     },

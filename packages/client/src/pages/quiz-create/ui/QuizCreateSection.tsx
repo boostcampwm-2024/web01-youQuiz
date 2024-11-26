@@ -39,7 +39,7 @@ export default function QuizCreateSection({
   };
 
   return (
-    <section className="">
+    <section>
       <article className="min-w-content min-h-[532px] flex flex-col gap-1 items-center bg-white rounded-base p-6">
         <p className="self-start relative">
           <span className="text-weak-md mr-3">{`${currentQuizIndex + 1}번 퀴즈`}</span>
@@ -61,6 +61,7 @@ export default function QuizCreateSection({
             placeholder="문제를 입력해주세요"
             type="box"
             onSubmit={(value) => onQuizUpdate({ ...quizData, content: value })}
+            initialValue={quizData.content}
           />
         </p>
         <div className="flex flex-col gap-4 w-full mt-10">
@@ -76,6 +77,7 @@ export default function QuizCreateSection({
               onKeyDown={(e) => {
                 handleKeyDown(index, e);
               }}
+              value={choice.content}
             />
           ))}
         </div>

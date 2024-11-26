@@ -44,7 +44,7 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
       selectedAnswer: selectedAnswer,
       sid: getCookie('sid'),
       pinCode: pinCode,
-      submitTime: tick.elaspedTime,
+      submitTime: tick.elapsedTime,
     });
     setHasSubmitted(true);
   };

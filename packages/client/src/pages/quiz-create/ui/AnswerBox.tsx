@@ -4,6 +4,8 @@ import ToggleButton from '@/shared/ui/buttons/ToggleButton';
 interface AnswerBoxProps {
   /**정답 체크된 상태인지 여부 */
   selected: boolean;
+
+  value?: string;
   /**정답 선택 함수 */
   answerSetter: () => void;
   /**선지 설정 함수 */
@@ -20,6 +22,7 @@ export default function AnswerBox({
   optionSetter,
   inputRef,
   onKeyDown,
+  value,
 }: AnswerBoxProps) {
   return (
     <div className="flex items-center gap-4  ">
@@ -35,6 +38,7 @@ export default function AnswerBox({
           placeholder="선지를 입력해주세요"
           type="underline"
           ref={inputRef}
+          initialValue={value}
           onKeyDown={onKeyDown}
           onSubmit={optionSetter}
         />

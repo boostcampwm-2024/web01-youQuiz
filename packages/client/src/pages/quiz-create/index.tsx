@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { CustomButton } from '@/shared/ui/buttons';
 import PlusIcon from '@/shared/assets/icons/plus.svg?react';
 import QuizCreateSection from './ui/QuizCreateSection';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useCreateQuiz } from '@/shared/hooks/quizzes';
 
 interface Choice {
   content: string;
@@ -33,8 +34,10 @@ const INITIAL_QUIZ_VALUE: QuizData = {
 };
 
 export default function QuizCreatePage() {
+  const { classId } = useParams();
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [quizzes, setQuizzes] = useState<QuizData[]>([INITIAL_QUIZ_VALUE]);
+  const mutation = useCreateQuiz();
   const navigate = useNavigate();
 
   const addNewQuiz = () => {
@@ -52,8 +55,22 @@ export default function QuizCreatePage() {
     setCurrentQuizIndex((prev) => prev + 1);
   };
 
+  const handleCreateQuiz = () => {
+    const quizzesData = {
+      quizzes: quizzes,
+    };
+    mutation.mutate(
+      { quizData: quizzesData, classId: Number(classId) },
+      {
+        onSuccess: () => {
+          navigate('/quiz-list');
+        },
+      },
+    );
+  };
+
   return (
-    <div className="flex flex-col w-full mt-6 mr-6">
+    <div className="flex flex-col w-full mt-6 mx-6">
       <div className=" flex gap-4 bg-white rounded-base p-4 mb-4">
         <button className="text-weak-md" onClick={handlePreQuiz}>
           이전 문제
@@ -63,7 +80,6 @@ export default function QuizCreatePage() {
         </button>
         <div className="flex-1 flex justify-end text-weak-md">문제 유형</div>
       </div>
-
       <QuizCreateSection
         key={currentQuizIndex}
         currentQuizIndex={currentQuizIndex}
@@ -76,7 +92,6 @@ export default function QuizCreatePage() {
           });
         }}
       />
-
       <div className="self-start mt-10">
         <CustomButton
           Icon={PlusIcon}
@@ -92,12 +107,7 @@ export default function QuizCreatePage() {
         />
       </div>
       <div className="self-end mr-6">
-        <CustomButton
-          label="퀴즈 발행하기"
-          onClick={() => {
-            navigate('/quiz-list');
-          }}
-        />
+        <CustomButton label="퀴즈 발행하기" onClick={handleCreateQuiz} />
       </div>
     </div>
   );
