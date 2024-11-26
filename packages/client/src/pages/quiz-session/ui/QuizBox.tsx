@@ -23,6 +23,8 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
   const [participantStatistics, setParticipantStatistics] = useState<ParticipantStatisticsResponse>(
     INITIAL_PARTICIPANT_STATISTICS,
   );
+  const [submitOrder, setSubmitOrder] = useState<number>(0);
+
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
   const socket = getQuizSocket();
@@ -40,12 +42,18 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
   };
 
   const handleSubmit = () => {
-    socket.emit('submit answer', {
-      selectedAnswer: selectedAnswer,
-      sid: getCookie('sid'),
-      pinCode: pinCode,
-      submitTime: tick.elapsedTime,
-    });
+    socket.emit(
+      'submit answer',
+      {
+        selectedAnswer: selectedAnswer,
+        sid: getCookie('sid'),
+        pinCode: pinCode,
+        submitTime: tick.elapsedTime,
+      },
+      (response: any) => {
+        setSubmitOrder(response.submitOrder);
+      },
+    );
     setHasSubmitted(true);
   };
 
@@ -166,7 +174,9 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
           </button>
         </div>
       </div>
-      {hasSubmitted && <AfterQuizSubmit participantStatistics={participantStatistics} />}
+      {hasSubmitted && (
+        <AfterQuizSubmit participantStatistics={participantStatistics} submitOrder={submitOrder} />
+      )}
     </>
   );
 }

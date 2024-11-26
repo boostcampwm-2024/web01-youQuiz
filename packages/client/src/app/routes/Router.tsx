@@ -13,6 +13,7 @@ import QnA from '@/pages/qna';
 import GuestQnA from '@/pages/guest-qna';
 import QuizList from '@/pages/quiz-list';
 import QuizMasterSession from '@/pages/quiz-master-session';
+import Leaderboard from '@/pages/leaderboard';
 
 export default function Router() {
   return (
@@ -31,6 +32,7 @@ export default function Router() {
       </Route>
       <Route path="/quiz/question" element={<QuizQuestion />} />
       <Route path="/quiz/session/host/:pinCode/:id" element={<QuizMasterSession />} />
+      <Route path="/quiz/session/end" element={<Leaderboard />} />
       <Route path={'*'} element={<NotFound />} />
     </Routes>
   );
