@@ -169,11 +169,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         gameInfo.currentOrder += 1;
         await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-        /////////////////////////////////////////////////
-        await this.gameService.getRank(
-          `gameId=${pinCode}:ranking`,
-          gameInfo.participantList.length,
-        ); ///////////////////////////////////////////
         this.server.to(pinCode).emit('time end', { isEnd: true });
         clearInterval(intervalId);
         return;
@@ -290,9 +285,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantLength,
     };
 
-    client.emit('my submit rank', { totalSubmit }); ///////////////////////////////////////
     this.server.to(pinCode).emit('participant statistics', participantStatistics);
     this.server.to(pinCode).emit('master statistics', masterStatistics);
+    return { submitOrder: totalSubmit };
   }
 
   @SubscribeMessage('emoji')
@@ -310,10 +305,40 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   calculatePoints(isFlag: boolean, submitTime: number, timeLimit: number, point: number) {
+    const timeLimitToMs = timeLimit * 1000;
     if (isFlag) {
-      const ratio = (timeLimit - submitTime) / timeLimit;
+      const ratio = (timeLimitToMs - submitTime) / timeLimitToMs;
       return Math.floor(ratio * point);
     }
     return 0;
+  }
+
+  @SubscribeMessage('show ranking')
+  async handleShowRanking(client: Socket, payload: any) {
+    const { pinCode, sid } = payload;
+
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const participantLength = gameInfo.participantList.length;
+
+    const allRankers = await this.gameService.getRank(
+      `gameId=${pinCode}:ranking`,
+      participantLength,
+    );
+
+    const rankerDatas = [];
+    for (let i = 0; i < participantLength; i++) {
+      const sid = allRankers[i][0];
+      const score = allRankers[i][1];
+      const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
+      rankerDatas.push({ nickname, score });
+    }
+
+    const myRank = await this.redisService.zrevrank(`gameId=${pinCode}:ranking`, sid);
+    const myScore = await this.redisService.zscore(`gameId=${pinCode}:ranking`, sid);
+    const { nickname: myNickname } = JSON.parse(
+      await this.redisService.get(`participant_sid=${sid}`),
+    );
+    const response = { rankerDatas, myRank, myScore, myNickname };
+    return response;
   }
 }

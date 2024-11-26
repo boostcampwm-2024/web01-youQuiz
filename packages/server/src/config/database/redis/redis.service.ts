@@ -29,4 +29,12 @@ export class RedisService {
   async zrevrange(key: string, min: number, max: number) {
     return await this.redis.zrevrange(key, min, max, 'WITHSCORES');
   }
+
+  async zrevrank(key: string, member: string) {
+    return await this.redis.zrevrank(key, member);
+  }
+
+  async zscore(key: string, member: string) {
+    return await this.redis.zscore(key, member);
+  }
 }
