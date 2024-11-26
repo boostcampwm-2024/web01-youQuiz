@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Param } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Param, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { QuizRepository } from './repositories/quiz.repository';
 import { ChoiceRepository } from './repositories/choice.repository';
@@ -8,9 +8,11 @@ import { CreateQuizListRequestDto } from './dto/create-quizlist.request.dto';
 import { ResponseDto } from '../../utils/dto/response.dto';
 import { Quiz } from './entities/quiz.entity';
 import { ClassResponseDto } from './dto/class.response.dto';
+import { QuizResponseDto } from './dto/quiz.response.dto';
 import { UpdateClassRequestDto } from './dto/update-class.request.dto';
 import { UpdateQuizRequestDto } from './dto/update-quiz.request.dto';
 import { UpdateQuizListRequestDto } from './dto/update-quizlist.request.dto';
+import { CreateClassResponseDto } from './dto/create-class.response.dto';
 
 @Injectable()
 export class QuizService {
@@ -26,11 +28,23 @@ export class QuizService {
     return classes.map(ClassResponseDto.fromEntity);
   }
 
-  async createClass(createClassRequestDto: CreateClassRequestDto): Promise<void> {
+  async getQuizzesByClassId(classId: number): Promise<any> {
+    const quizzes = await this.quizRepository.findByClassId(classId);
+
+    if (!quizzes || quizzes.length === 0) {
+      throw new NotFoundException(`No quizzes found for classId ${classId}`);
+    }
+
+    return quizzes.map((quiz) => QuizResponseDto.fromEntity(quiz));
+  }
+
+  async createClass(createClassRequestDto: CreateClassRequestDto): Promise<CreateClassResponseDto> {
     try {
-      await this.classRepository.create(createClassRequestDto);
+      const classEntity = await this.classRepository.create(createClassRequestDto);
+      return CreateClassResponseDto.fromEntity(classEntity);
     } catch (error) {
       console.error('error:', error);
+      throw error;
     }
   }
 

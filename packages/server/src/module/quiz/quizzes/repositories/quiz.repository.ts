@@ -37,7 +37,10 @@ export class QuizRepository {
   }
 
   async findByClassId(classId: number): Promise<Quiz[]> {
-    return this.repository.find({ where: { classId } });
+    return this.repository.find({
+      where: { class: { id: classId } },
+      relations: ['choices'],
+    });
   }
 
   async deleteByClassId(classId: number): Promise<void> {

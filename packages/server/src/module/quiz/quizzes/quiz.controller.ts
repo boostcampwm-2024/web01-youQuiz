@@ -24,7 +24,11 @@ export class QuizController {
     return await this.quizService.getClasses();
   }
 
-  // class 생성
+  @Get('classes/:classId/quizzes')
+  async getQuizzes(@Param('classId') classId: number) {
+    return await this.quizService.getQuizzesByClassId(classId);
+  }
+
   @Post('classes')
   @UsePipes(ValidationPipe)
   async createClass(@Body() dto: CreateClassRequestDto) {
