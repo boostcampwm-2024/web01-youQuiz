@@ -341,4 +341,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const response = { rankerDatas, myRank, myScore, myNickname };
     return response;
   }
+
+  @SubscribeMessage('end quiz')
+  async handleEndQuiz(client: Socket, payload: any) {
+    const { sid, pinCode } = payload;
+
+    const { pinCode: storedPinCode } = JSON.parse(await this.redisService.get(`master_sid=${sid}`));
+
+    if (storedPinCode !== pinCode) {
+      console.log('Invalid pinCode');
+    }
+
+    client.to(pinCode).emit('end quiz', { isEnded: true });
+  }
 }
