@@ -10,6 +10,8 @@ import {
   ParticipantStatisticsResponse,
 } from '@youquiz/shared/interfaces/response';
 import { INITIAL_PARTICIPANT_STATISTICS, INITIAL_EMOJI } from '@/shared/constants/initialState';
+import { QuizData } from '@youquiz/shared/interfaces/utils/quizdata.interface';
+
 interface QuizBoxProps {
   quiz: QuizData;
   tick: TimerTickResponse;
