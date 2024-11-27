@@ -232,14 +232,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
     const submitHistory = gameStatus.submitHistory;
 
-    //totalSubmit
     gameStatus.totalSubmit += 1;
     const totalSubmit = gameStatus.totalSubmit;
 
-    //totalCorrect
-    const isFlag = selectedAnswer.every((answer: number) => {
-      return currentChoicesData[answer].isCorrect;
-    });
+    const isFlag = this.matchingAnswer(selectedAnswer, currentChoicesData);
 
     if (isFlag) {
       gameStatus.totalCorrect += 1;
@@ -354,5 +350,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     client.to(pinCode).emit('end quiz', { isEnded: true });
+  }
+
+  matchingAnswer(selectedAnswer: Number[], currentChoicesData) {
+    console.log(typeof currentChoicesData);
+    const correctAnswers = currentChoicesData
+      .map((choice, index) => (choice.isCorrect ? index : null))
+      .filter((index) => index !== null);
+
+    const equals = (a: Number[], b: Number[]) =>
+      a.length === b.length && a.every((v, i) => v === b[i]);
+    correctAnswers.sort();
+    selectedAnswer.sort();
+    return equals(selectedAnswer, correctAnswers);
   }
 }
