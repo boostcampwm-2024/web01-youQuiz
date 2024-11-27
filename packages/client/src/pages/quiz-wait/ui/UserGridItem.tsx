@@ -1,29 +1,54 @@
 import { useRef, useEffect, useState } from 'react';
 
 import { Guest } from '../index';
+import { getQuizSocket } from '@/shared/utils/socket';
+import { useParams } from 'react-router-dom';
 
 interface UserGridItemProps {
   participant: Guest;
   isMine: boolean;
+  otherMessage: string | undefined;
 }
 
 const characterNames = ['강아지', '고양이', '돼지', '토끼', '펭귄', '햄스터'];
 
-export default function UserGridItem({ participant, isMine }: UserGridItemProps) {
+const randomColor = [
+  'bg-red-500',
+  'bg-yellow-500',
+  'bg-green-500',
+  'bg-blue-500',
+  'bg-indigo-500',
+  'bg-purple-500',
+  'bg-pink-500',
+];
+
+export default function UserGridItem({ participant, isMine, otherMessage }: UserGridItemProps) {
+  // 내 메시지, 상대방들 메시지
   const [message, setMessage] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const socket = getQuizSocket();
+  const { pinCode } = useParams();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
+    socket.emit('message', { pinCode, message: e.target.value, position: participant.position });
   };
 
   const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       //메세지 전송
       setIsFocused(false);
-      setMessage('');
+
+      setTimeout(() => {
+        socket.emit('message', {
+          pinCode,
+          message: '',
+          position: participant.position,
+        });
+        setMessage('');
+      }, 1500);
     }
   };
 
@@ -45,8 +70,10 @@ export default function UserGridItem({ participant, isMine }: UserGridItemProps)
     };
   }, []);
 
+  console.log(participant);
+
   return (
-    <div className="relative w-full flex flex-col items-center">
+    <div className="relative w-full h-24 flex flex-col items-center">
       {isMine && isFocused && (
         <>
           <input
@@ -66,8 +93,15 @@ export default function UserGridItem({ participant, isMine }: UserGridItemProps)
           />
         </>
       )}
+      {!isFocused && message && (
+        <div
+          className={`absolute -top-9 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 7]} p-2 rounded-lg shadow-sm text-sm whitespace-nowrap`}
+        >
+          {message}
+        </div>
+      )}
       <div
-        className={`relative w-20 h-20 aspect-square  rounded-full flex items-center justify-center shadow-sm hover:shadow transition-shadow ${
+        className={`relative w-20 h-20 rounded-full aspect-square flex items-center justify-center shadow-sm hover:shadow transition-shadow ${
           isMine ? 'bg-blue-500' : 'bg-white'
         }`}
       >
@@ -76,12 +110,12 @@ export default function UserGridItem({ participant, isMine }: UserGridItemProps)
           alt={`${characterNames[participant.character]}character`}
           className="w-20 h-20 rounded-full"
         />
-        {participant.message && (
-          <input
-            className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white p-2 rounded-lg shadow-sm text-sm whitespace-nowrap"
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
-          />
+        {!isMine && otherMessage && (
+          <div
+            className={`absolute -top-9 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 7]} p-2 rounded-lg shadow-sm text-sm whitespace-nowrap`}
+          >
+            {otherMessage}
+          </div>
         )}
       </div>
       <div className="flex justify-center items-center gap-2 w-full mt-2">
