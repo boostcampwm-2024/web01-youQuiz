@@ -236,14 +236,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const totalSubmit = gameStatus.totalSubmit;
 
     const isFlag = this.matchingAnswer(selectedAnswer, currentChoicesData);
-
     if (isFlag) {
       gameStatus.totalCorrect += 1;
     }
 
     const processedPoint = this.calculatePoints(isFlag, submitTime, timeLimit, point);
-    console.log('processedPoint:', processedPoint, 'type:', typeof processedPoint);
-    console.log('sid', sid);
     await this.redisService.zincrby(`gameId=${pinCode}:ranking`, processedPoint, sid);
 
     const totalCorrect = gameStatus.totalCorrect;
@@ -353,15 +350,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   matchingAnswer(selectedAnswer: Number[], currentChoicesData) {
-    console.log(typeof currentChoicesData);
     const correctAnswers = currentChoicesData
       .map((choice, index) => (choice.isCorrect ? index : null))
       .filter((index) => index !== null);
 
     const equals = (a: Number[], b: Number[]) =>
       a.length === b.length && a.every((v, i) => v === b[i]);
+
     correctAnswers.sort();
     selectedAnswer.sort();
+
     return equals(selectedAnswer, correctAnswers);
   }
 }
