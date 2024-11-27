@@ -9,11 +9,12 @@ import LoadingSpinner from '@/shared/assets/icons/loading-alt-loop.svg?react';
 import { apiClient } from '@/shared/api';
 import UserGridView from './ui/UserGridView';
 
-interface Guest {
+export interface Guest {
   nickname: string;
   character: number;
   message: string;
   position: number;
+  isMine: boolean;
 }
 
 export default function QuizWait() {
