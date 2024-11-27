@@ -24,3 +24,7 @@ export async function createClass(data: CreateClassRequest): Promise<CreateClass
     body: data,
   });
 }
+
+export async function deleteClass(id: number): Promise<void> {
+  return await apiClient.delete(`/classes/${id}`);
+}
