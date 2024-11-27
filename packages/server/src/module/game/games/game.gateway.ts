@@ -6,10 +6,12 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { RedisService } from '../../config/database/redis/redis.service';
+import { RedisService } from '../../../config/database/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
-import { GameService } from './games/game.service';
+import { GameService } from './game.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -299,7 +301,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   calculatePoints(isFlag: boolean, submitTime: number, timeLimit: number, point: number) {
-    const timeLimitToMs = timeLimit * 1000;
+    const timeLimitToMs = (timeLimit + 2) * 1000;
     if (isFlag) {
       const ratio = (timeLimitToMs - submitTime) / timeLimitToMs;
       return Math.floor(ratio * point);

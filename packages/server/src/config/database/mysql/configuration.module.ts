@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
 import databaseConfig from './configuration';
 import { MysqlConfigService } from './configuration.service';
-import { join } from 'path';
 
 @Module({
   imports: [
