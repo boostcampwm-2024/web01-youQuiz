@@ -2,7 +2,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { getCookie } from '@/shared/utils/cookie';
-import { CustomButton } from '@/shared/ui/buttons';
 import AnswerGraph from '@/pages/quiz-master-session/ui/AnswerChart';
 import RecentSubmittedAnswers from './ui/RecentSubmittedAnswers';
 import { getQuizSocket } from '@/shared/utils/socket';
@@ -45,10 +44,11 @@ export default function QuizMasterSession() {
       navigate('/quiz/session/end');
       return;
     }
-    if (tick.remainingTime !== 0) return;
-    initQuizData();
-    setQuizIndex((prev) => prev + 1);
-    socket.emit('show quiz', { pinCode });
+    if (Math.floor(tick.remainingTime / 1000) !== 0) {
+      initQuizData();
+      setQuizIndex((prev) => prev + 1);
+      socket.emit('show quiz', { pinCode });
+    }
   };
 
   useEffect(() => {
@@ -81,7 +81,6 @@ export default function QuizMasterSession() {
       socket.off('timer tick', handleTimerTick);
     };
   }, []);
-
   return (
     <div className="w-screen min-h-screen">
       <div className="p-5">
@@ -100,7 +99,14 @@ export default function QuizMasterSession() {
                 : Math.floor(tick.remainingTime / 1000)}
             </p>
             <div className="mb-2">
-              <CustomButton label="다음 퀴즈" type="full" onClick={handleNextQuiz} />
+              <button
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-blue-300 disabled:cursor-not-allowed disabled:opacity-50
+  `}
+                onClick={handleNextQuiz}
+                disabled={Math.floor(tick.remainingTime / 1000) !== 0}
+              >
+                다음 퀴즈
+              </button>
             </div>
           </div>
         </div>
