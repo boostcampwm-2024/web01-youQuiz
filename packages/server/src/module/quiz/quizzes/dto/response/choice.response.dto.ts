@@ -1,10 +1,18 @@
-import { Choice } from '../entities/choice.entity';
+import { Expose } from 'class-transformer';
+import { Choice } from '../../entities/choice.entity';
 import { ChoiceResponse } from '@shared/interfaces/response/choice.response.interface';
 
 export class ChoiceResponseDto implements ChoiceResponse {
+  @Expose()
   id: number;
+
+  @Expose()
   content: string;
+
+  @Expose()
   isCorrect: boolean;
+
+  @Expose()
   position: number;
 
   static fromEntity(entity: Choice): ChoiceResponseDto {

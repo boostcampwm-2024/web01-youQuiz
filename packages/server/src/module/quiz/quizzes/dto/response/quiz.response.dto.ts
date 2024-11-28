@@ -1,20 +1,35 @@
 import { QuizResponse } from '@shared/interfaces/response/quiz.response.interface';
-import { ChoiceResponseDto } from './choice.response.dto';
-import { Quiz } from '../entities/quiz.entity';
+import { ChoiceResponseDto } from '../response/choice.response.dto';
+import { Quiz } from '../../entities/quiz.entity';
+import { Expose, Type } from 'class-transformer';
 
 export class QuizResponseDto implements QuizResponse {
+  @Expose()
   id: number;
+
+  @Expose()
   content: string;
+
+  @Expose()
   quizType: string;
+
+  @Expose()
   timeLimit: number;
+
+  @Expose()
   point: number;
+
+  @Expose()
   position: number;
+
+  @Expose()
+  @Type(() => ChoiceResponseDto)
   choices: ChoiceResponseDto[];
 
   static fromEntity(entity: Quiz): QuizResponseDto {
     const dto = new QuizResponseDto();
     dto.id = entity.id;
-    dto.content = entity.content; // Assuming `content` maps to `question` in `Quiz` entity
+    dto.content = entity.content;
     dto.quizType = entity.quizType;
     dto.timeLimit = entity.timeLimit;
     dto.point = entity.point;

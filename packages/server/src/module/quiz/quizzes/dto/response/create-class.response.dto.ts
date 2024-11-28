@@ -1,7 +1,12 @@
-import { Class } from '../entities/class.entity';
+import { Expose } from 'class-transformer';
+import { Class } from '../../entities/class.entity';
+import { QuizResponseDto } from './quiz.response.dto';
 
 export class CreateClassResponseDto {
+  @Expose()
   id: number;
+
+  @Expose()
   title: string;
 
   static fromEntity(entity: Class): CreateClassResponseDto {

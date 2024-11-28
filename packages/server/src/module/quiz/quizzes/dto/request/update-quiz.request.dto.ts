@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UpdateChoiceRequestDto } from './update-choice.request.dto';
-import { QuizType } from '../utils/quiz-type.enum';
+import { QuizType } from '../../utils/quiz-type.enum';
 
 export class UpdateQuizRequestDto {
   @IsNumber()
