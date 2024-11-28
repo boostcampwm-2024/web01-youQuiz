@@ -1,8 +1,15 @@
 import { useRef, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { Guest } from '../index';
 import { getQuizSocket } from '@/shared/utils/socket';
-import { useParams } from 'react-router-dom';
+
+import DogImage from '@/shared/assets/characters/강아지.png';
+import CatImage from '@/shared/assets/characters/고양이.png';
+import PigImage from '@/shared/assets/characters/돼지.png';
+import RabbitImage from '@/shared/assets/characters/토끼.png';
+import PenguinImage from '@/shared/assets/characters/펭귄.png';
+import HamsterImage from '@/shared/assets/characters/햄스터.png';
 
 interface UserGridItemProps {
   participant: Guest;
@@ -10,6 +17,7 @@ interface UserGridItemProps {
   otherMessage: string | undefined;
 }
 
+const characters = [DogImage, CatImage, PigImage, RabbitImage, PenguinImage, HamsterImage];
 const characterNames = ['강아지', '고양이', '돼지', '토끼', '펭귄', '햄스터'];
 
 const randomColor = [
@@ -100,7 +108,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
         }`}
       >
         <img
-          src={`/src/shared/assets/characters/${characterNames[participant.character]}.png`}
+          src={characters[participant.character]}
           alt={`${characterNames[participant.character]}character`}
           className="w-20 h-20 rounded-full"
         />
