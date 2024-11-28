@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Choice } from '../entities/choice.entity';
-import { CreateChoiceRequestDto } from '../dto/create-choice.request.dto';
+import { CreateChoiceRequestDto } from '../dto/request/create-choice.request.dto';
 
 @Injectable()
 export class ChoiceRepository {

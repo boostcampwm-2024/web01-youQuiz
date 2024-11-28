@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Quiz } from '../entities/quiz.entity';
 import { Choice } from '../entities/choice.entity';
-import { CreateQuizRequestDto } from '../dto/create-quiz.request.dto';
-import { UpdateQuizRequestDto } from '../dto/update-quiz.request.dto';
+import { CreateQuizRequestDto } from '../dto/request/create-quiz.request.dto';
+import { UpdateQuizRequestDto } from '../dto/request/update-quiz.request.dto';
 
 @Injectable()
 export class QuizRepository {

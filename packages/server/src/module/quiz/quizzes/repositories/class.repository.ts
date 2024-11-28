@@ -22,6 +22,16 @@ export class ClassRepository {
     return this.repository.save(classEntity);
   }
 
+  async findAll(): Promise<Class[]> {
+    return await this.repository.find({
+      relations: {
+        quizzes: {
+          choices: true,
+        },
+      },
+    });
+  }
+
   async findById(id: number): Promise<Class> {
     return this.repository.findOne({ where: { id } });
   }
@@ -42,7 +52,7 @@ export class ClassRepository {
     });
   }
 
-  async findAll(): Promise<Class[]> {
+  async findOne(): Promise<Class[]> {
     return this.repository.find();
   }
 
