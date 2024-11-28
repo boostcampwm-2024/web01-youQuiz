@@ -7,6 +7,8 @@ interface EmojiChartProps {
   reactionStats: ReactionStats;
 }
 
+const DEFAULT_WIDTH = 30;
+
 export default function EmojiChart({ reactionStats }: EmojiChartProps) {
   const totalVotes = reactionStats.easy + reactionStats.hard;
 
@@ -41,7 +43,10 @@ export default function EmojiChart({ reactionStats }: EmojiChartProps) {
           <div
             key={index}
             className="flex flex-col items-center"
-            style={{ width: `${result.percentage}%` }}
+            style={{
+              minWidth: `${DEFAULT_WIDTH}%`,
+              flexGrow: result.percentage,
+            }}
           >
             <span className="font-medium text-lg mb-1" style={{ color: result.textColor }}>
               {result.text}
@@ -57,7 +62,8 @@ export default function EmojiChart({ reactionStats }: EmojiChartProps) {
             className="flex justify-center items-center transition-all duration-300 h-full"
             style={{
               backgroundColor: result.color,
-              width: `${result.percentage}%`,
+              minWidth: `${DEFAULT_WIDTH}%`,
+              flexGrow: result.percentage,
             }}
           >
             <span className="font-medium text-lg" style={{ color: result.textColor }}>

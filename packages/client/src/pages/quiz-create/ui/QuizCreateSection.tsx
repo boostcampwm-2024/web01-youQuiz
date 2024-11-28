@@ -30,7 +30,7 @@ export default function QuizCreateSection({
 
   const updateChoice = (index: number, updates: Partial<(typeof quizData.choices)[0]>) => {
     const updatedChoices = quizData.choices.map((choice, i) =>
-      i === index ? { ...choice, ...updates } : choice,
+      i === index ? { ...choice, ...updates, position: index } : choice,
     );
     onQuizUpdate({
       ...quizData,

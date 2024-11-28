@@ -15,12 +15,6 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
   const toast = toastController();
   const { mutate } = useCreateClass();
 
-  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleConfirmClick();
-    }
-  };
-
   const handleConfirmClick = () => {
     if (!title || !description) {
       toast.warning('제목과 설명을 입력해주세요');
@@ -37,9 +31,13 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
     );
   };
   return (
-    <div
+    <form
       className="w-[480px] h-[250px] flex flex-col items-center justify-center gap-4 p-5 bg-white rounded-lg border border-gray-200"
       onClick={(e) => e.stopPropagation()}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleConfirmClick();
+      }}
     >
       <h1 className="text-xl font-bold">클래스 정보를 입력해주세요</h1>
       <input
@@ -48,7 +46,6 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
         className="w-full h-10 p-3 rounded-lg border border-gray-200"
         onChange={(e) => setTitle(e.target.value)}
         value={title}
-        onKeyDown={handleEnterKeyPress}
       />
       <input
         type="text"
@@ -56,14 +53,10 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
         className="w-full h-10 p-3 rounded-lg border border-gray-200"
         onChange={(e) => setDescription(e.target.value)}
         value={description}
-        onKeyDown={handleEnterKeyPress}
       />
-      <button
-        className="w-36 h-10 px-6 bg-primary text-white rounded-lg"
-        onClick={handleConfirmClick}
-      >
+      <button type="submit" className="w-36 h-10 px-6 bg-primary text-white rounded-lg">
         확인
       </button>
-    </div>
+    </form>
   );
 }

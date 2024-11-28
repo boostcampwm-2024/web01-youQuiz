@@ -1,21 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MysqlConfigModule } from './config/database/mysql/configuration.module';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
 import { QuizModule } from './module/quiz/quiz.module';
-import { GameGateway } from './module/game/game.gateway';
-import { RedisService } from './config/database/redis/redis.service';
-import { RedisModule } from '@nestjs-modules/ioredis'; // 추가
-import { GameService } from './module/game/games/game.service';
-import { GameController } from './module/game/games/game.controller';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { GameModule } from './module/game/game.module';
+import { RedisModule as RedisModuleTEST } from './config/database/redis/redis.module'; //
+
 @Module({
   imports: [
     UserModule,
     QuizModule,
+    GameModule,
+    RedisModuleTEST,
     MysqlConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -37,8 +36,5 @@ import { GameController } from './module/game/games/game.controller';
       url: process.env.REDIS_URL,
     }),
   ],
-  controllers: [AppController, GameController],
-  providers: [AppService, GameGateway, RedisService, GameService],
-  exports: [RedisService],
 })
 export class AppModule {}

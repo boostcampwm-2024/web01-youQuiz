@@ -11,8 +11,13 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, client] # client 레이블이 있는 self-hosted runner 사용
-
     steps:
+      - name: 깃허브 액션 스크립트 파일 실행
+        run: |
+          export RUNNER_ALLOW_RUNASROOT="1"
+          cd actions-runner
+          ./run.sh
+
       - name: 소스 코드 불러오기
         uses: actions/checkout@v4
 

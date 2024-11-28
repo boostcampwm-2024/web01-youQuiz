@@ -30,7 +30,7 @@ export default function StatisticsGroup({ participantStatistics }: StatisticsGro
     },
     {
       title: '평균 풀이 시간',
-      value: Number(participantStatistics.averageTime.toFixed(1)),
+      value: Number((participantStatistics.averageTime / 100000).toFixed(1)),
       unit: '초',
       color: 'text-orange-500',
     },

@@ -45,6 +45,16 @@ export default function QuizCreatePage() {
     setCurrentQuizIndex((prev) => prev + 1);
   };
 
+  const removeQuiz = (index: number) => {
+    if (quizzes.length === 1) return;
+    setCurrentQuizIndex((prev) => prev - 1);
+    setQuizzes((prev) => {
+      const newQuizzes = [...prev];
+      newQuizzes.splice(index, 1);
+      return newQuizzes;
+    });
+  };
+
   const handlePreQuiz = () => {
     if (currentQuizIndex === 0) return;
     setCurrentQuizIndex((prev) => prev - 1);
@@ -92,21 +102,26 @@ export default function QuizCreatePage() {
           });
         }}
       />
-      <div className="self-start mt-10">
-        <CustomButton
-          Icon={PlusIcon}
-          type="outline"
-          size="md"
-          color="primary"
-          label="문제 추가하기"
-          onClick={() => {
-            addNewQuiz();
-            console.log(quizzes);
-            console.log(currentQuizIndex);
-          }}
-        />
-      </div>
-      <div className="self-end mr-6">
+      <div className="flex justify-between mt-10 mr-6">
+        <div className="flex gap-6">
+          <CustomButton
+            Icon={PlusIcon}
+            type="outline"
+            size="md"
+            color="primary"
+            label="문제 추가하기"
+            onClick={addNewQuiz}
+          />
+          <button
+            className="flex items-center min-w-fit h-[44px] px-4 py-2.5 bg-white border-2 border-red-500 text-red-500 rounded-base font-medium leading-none text-md
+            disabled:bg-gray-200 disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed"
+            onClick={() => removeQuiz(currentQuizIndex)}
+            disabled={quizzes.length === 1 || currentQuizIndex === 0}
+          >
+            <PlusIcon className="w-5 h-5 mr-1 transform rotate-45" />
+            문제 삭제하기
+          </button>
+        </div>
         <CustomButton label="퀴즈 발행하기" onClick={handleCreateQuiz} />
       </div>
     </div>

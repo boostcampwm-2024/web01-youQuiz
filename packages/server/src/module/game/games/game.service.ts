@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Param } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ChoiceRepository } from '../../quiz/quizzes/repositories/choice.repository';
 import { ClassRepository } from '../../quiz/quizzes/repositories/class.repository';
 import { QuizRepository } from '../../quiz/quizzes/repositories/quiz.repository';
