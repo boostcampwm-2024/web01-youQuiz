@@ -13,13 +13,9 @@ interface UserGridItemProps {
 const characterNames = ['강아지', '고양이', '돼지', '토끼', '펭귄', '햄스터'];
 
 const randomColor = [
-  'bg-red-500',
-  'bg-yellow-500',
-  'bg-green-500',
-  'bg-blue-500',
-  'bg-indigo-500',
-  'bg-purple-500',
-  'bg-pink-500',
+  'bg-gradient-to-br from-blue-400/80 to-blue-500/80 text-white',
+  'bg-gradient-to-br from-pink-300/80 to-pink-400/80',
+  'bg-gradient-to-br from-yellow-300/80 to-yellow-400/80',
 ];
 
 export default function UserGridItem({ participant, isMine, otherMessage }: UserGridItemProps) {
@@ -71,7 +67,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
   }, []);
 
   return (
-    <div className="relative w-full h-24 flex flex-col items-center">
+    <div key={participant.position} className="relative w-full h-24 flex flex-col items-center">
       {isMine && isFocused && (
         <>
           <input
@@ -93,7 +89,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
       )}
       {!isFocused && message && (
         <div
-          className={`absolute -top-9 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 7]} p-2 rounded-lg shadow-sm text-sm whitespace-nowrap`}
+          className={`flex items-center absolute -top-7 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 3]} px-2 h-6 rounded-lg shadow-sm text-sm font-bold whitespace-nowrap`}
         >
           {message}
         </div>
@@ -110,7 +106,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
         />
         {!isMine && otherMessage && (
           <div
-            className={`absolute -top-9 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 7]} p-2 rounded-lg shadow-sm text-sm whitespace-nowrap`}
+            className={`flex items-center absolute -top-7 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 3]} px-2 h-6 rounded-lg shadow-sm text-sm font-semibold whitespace-nowrap`}
           >
             {otherMessage}
           </div>
@@ -118,7 +114,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
       </div>
       <div className="flex justify-center items-center gap-2 w-full mt-2">
         <div className="w-[10px] h-[10px] rounded-full bg-green-500 animate-blink" />
-        <div className="text-sm text-center truncate">{participant.nickname}</div>
+        <div className="text-sm text-center truncate font-bold">{participant.nickname}</div>
       </div>
     </div>
   );
