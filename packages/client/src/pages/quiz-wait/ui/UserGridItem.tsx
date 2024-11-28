@@ -70,8 +70,6 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
     };
   }, []);
 
-  console.log(participant);
-
   return (
     <div className="relative w-full h-24 flex flex-col items-center">
       {isMine && isFocused && (

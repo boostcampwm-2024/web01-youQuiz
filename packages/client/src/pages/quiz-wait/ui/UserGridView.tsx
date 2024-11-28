@@ -6,9 +6,10 @@ import { getQuizSocket } from '@/shared/utils/socket';
 
 interface UserGridViewProps {
   guests: Guest[];
+  myPosition: number;
 }
 
-export default function UserGridView({ guests }: UserGridViewProps) {
+export default function UserGridView({ guests, myPosition }: UserGridViewProps) {
   const [otherMessage, setOtherMessage] = useState<Map<number, string>>(new Map<number, string>());
 
   const socket = getQuizSocket();
@@ -39,7 +40,7 @@ export default function UserGridView({ guests }: UserGridViewProps) {
           return (
             <UserGridItem
               participant={participant}
-              isMine={participant.isMine}
+              isMine={myPosition === participant.position}
               otherMessage={otherMessage.get(index)}
             />
           );
