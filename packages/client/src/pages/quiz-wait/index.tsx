@@ -19,7 +19,7 @@ export default function QuizWait() {
   const { pinCode } = useParams();
   const [userType, setUserType] = useState<string>('');
   const [guests, setGuests] = useState<Guest[]>([]);
-  const [myPosition, setMyPosition] = useState<number>(0);
+  const [myPosition, setMyPosition] = useState<number>(-1);
 
   const guestLink = `${import.meta.env.VITE_CLIENT_URL}/nickname/${pinCode}`;
   const socket = getQuizSocket();

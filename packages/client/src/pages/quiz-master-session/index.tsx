@@ -20,6 +20,12 @@ import {
 } from '@/shared/constants/initialState';
 import EmojiChart from './ui/EmojiChart';
 
+interface HistoryItem {
+  user: string;
+  submitTime: number;
+  elapsedTime: number;
+}
+
 export default function QuizMasterSession() {
   const { pinCode } = useParams();
   const navigate = useNavigate();
@@ -31,11 +37,14 @@ export default function QuizMasterSession() {
   const [quizIndex, setQuizIndex] = useState(0);
   const [isLastQuiz, setIsLastQuiz] = useState(false);
   const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
   const initQuizData = () => {
     setQuizData(INITIAL_QUIZ_DATA);
     setMasterStatistics(INITIAL_MASTER_STATISTICS);
     setTick(INITIAL_TICK);
+    setHistory([]);
+    setReactionStats(INITIAL_EMOJI);
   };
 
   const handleNextQuiz = () => {
@@ -44,7 +53,7 @@ export default function QuizMasterSession() {
       navigate('/quiz/session/end');
       return;
     }
-    if (Math.floor(tick.remainingTime / 1000) !== 0) {
+    if (Math.floor(tick.remainingTime / 1000) === 0) {
       initQuizData();
       setQuizIndex((prev) => prev + 1);
       socket.emit('show quiz', { pinCode });
@@ -115,7 +124,11 @@ export default function QuizMasterSession() {
       <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[650px]">
         <AnswerGraph answerStats={masterStatistics.choiceStatus} />
         <div>
-          <RecentSubmittedAnswers userSubmitHistory={masterStatistics.submitHistory} />
+          <RecentSubmittedAnswers
+            userSubmitHistory={masterStatistics.submitHistory}
+            history={history}
+            setHistory={setHistory}
+          />
           <EmojiChart reactionStats={reactionStats} />
         </div>
       </div>

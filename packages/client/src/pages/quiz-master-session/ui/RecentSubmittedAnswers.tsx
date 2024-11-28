@@ -1,10 +1,4 @@
-import { useEffect, useState } from 'react';
-
-interface RecentSubmittedAnswersProps {
-  userSubmitHistory: [string, number][];
-}
-
-const randomColor = ['#3B82F6', '#F87171', '#34D399', '#FBBF24'];
+import { useEffect } from 'react';
 
 interface HistoryItem {
   user: string;
@@ -12,9 +6,19 @@ interface HistoryItem {
   elapsedTime: number;
 }
 
-export default function RecentSubmittedAnswers({ userSubmitHistory }: RecentSubmittedAnswersProps) {
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+interface RecentSubmittedAnswersProps {
+  userSubmitHistory: [string, number][];
+  history: HistoryItem[];
+  setHistory: React.Dispatch<React.SetStateAction<HistoryItem[]>>;
+}
 
+const randomColor = ['#3B82F6', '#F87171', '#34D399', '#FBBF24'];
+
+export default function RecentSubmittedAnswers({
+  userSubmitHistory,
+  history,
+  setHistory,
+}: RecentSubmittedAnswersProps) {
   useEffect(() => {
     setHistory((prev) => {
       const newHistory = userSubmitHistory.map(([user, submitTime]) => ({
