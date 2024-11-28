@@ -1,9 +1,19 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, ValidateNested } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
 
-export class ResponseDto {
-  @IsNumber()
+export class ResponseDto<T> {
+  @Expose()
   statusCode: number;
 
-  @IsString()
+  @Expose()
   message: string;
+
+  @Expose()
+  data: T;
+
+  constructor(statusCode: number, message: string, data: T) {
+    this.statusCode = statusCode;
+    this.message = message;
+    this.data = data;
+  }
 }
