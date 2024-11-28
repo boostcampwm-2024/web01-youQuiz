@@ -55,7 +55,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const nicknameEventData = {
           participantList: gameInfo.participantList,
         };
-        client.emit('nickname', nicknameEventData);
+        client.emit('my position', {
+          participantList: gameInfo.participantList,
+          myPosition: position,
+        });
       }
     }
   }
