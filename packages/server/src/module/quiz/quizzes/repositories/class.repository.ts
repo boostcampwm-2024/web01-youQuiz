@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from '../entities/class.entity';
@@ -13,31 +13,62 @@ export class ClassRepository {
   ) {}
 
   async create(classData: Partial<Class>): Promise<Class> {
-    const { title, description } = classData;
-    const classEntity = this.repository.create({
-      title,
-      description,
-      createdAt: new Date(),
-    });
-    return this.repository.save(classEntity);
+    try {
+      const { title, description } = classData;
+      const classEntity = this.repository.create({
+        title,
+        description,
+        createdAt: new Date(),
+      });
+      return this.repository.save(classEntity);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create class');
+    }
   }
 
   async findAll(): Promise<Class[]> {
-    return await this.repository.find({
-      relations: {
-        quizzes: {
-          choices: true,
+    try {
+      const result = await this.repository.find({
+        relations: {
+          quizzes: {
+            choices: true,
+          },
         },
-      },
-    });
+      });
+      if (!result) {
+        throw new NotFoundException(`No classes found`);
+      }
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch classes');
+    }
   }
 
   async findById(id: number): Promise<Class> {
-    return this.repository.findOne({ where: { id } });
+    try {
+      const result = await this.repository.findOne({ where: { id } });
+      if (!result) {
+        throw new NotFoundException(`Class with ID ${id} not found`);
+      }
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch class');
+    }
   }
 
   async findClassById(id: number): Promise<Class> {
-    return this.repository.findOne({ where: { id } });
+    try {
+      const result = await this.repository.findOne({ where: { id } });
+      if (!result) {
+        throw new NotFoundException(`Class with ID ${id} not found`);
+      }
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch class');
+    }
   }
 
   async getOnlyQuiz(id: number) {
