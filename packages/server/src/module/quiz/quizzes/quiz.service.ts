@@ -1,4 +1,11 @@
-import { Injectable, HttpException, HttpStatus, Param, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  Param,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { QuizRepository } from './repositories/quiz.repository';
 import { ChoiceRepository } from './repositories/choice.repository';
@@ -24,6 +31,41 @@ export class QuizService {
     private readonly dataSource: DataSource,
   ) {}
 
+  async createClass(createClassRequestDto: CreateClassRequestDto): Promise<CreateClassResponseDto> {
+    const classEntity = await this.classRepository.create(createClassRequestDto);
+
+    const responseDto = CreateClassResponseDto.fromEntity(classEntity);
+
+    return responseDto;
+  }
+
+  async createQuiz(classId: number, quizData: CreateQuizListRequestDto): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this.classRepository.findClassById(classId);
+      await Promise.all(
+        quizData.quizzes.map(async (quiz) => {
+          const quizEntity = await this.quizRepository.create(classId, quiz);
+          await Promise.all(
+            quiz.choices.map(async (choice) => {
+              await this.choiceRepository.create(quizEntity.id, choice);
+            }),
+          );
+        }),
+      );
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException('Failed to create quiz');
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async getAllClasses(): Promise<GetClassResponseDto[]> {
     const classEntities = await this.classRepository.findAll();
 
@@ -44,133 +86,33 @@ export class QuizService {
     return quizzes.map((quiz) => QuizResponseDto.fromEntity(quiz));
   }
 
-  async createClass(createClassRequestDto: CreateClassRequestDto): Promise<CreateClassResponseDto> {
-    try {
-      const classEntity = await this.classRepository.create(createClassRequestDto);
-      console.log('classEntity:', classEntity); // 저장된 엔티티 확인
+  async updateClass(id: number, updateData: UpdateClassRequestDto): Promise<void> {
+    const classEntity = await this.classRepository.findById(id);
 
-      const responseDto = CreateClassResponseDto.fromEntity(classEntity);
-      console.log('responseDto:', responseDto); // 변환된 DTO 확인
-
-      return responseDto;
-    } catch (error) {
-      console.error('error:', error);
-      throw error;
+    if (!classEntity) {
+      throw new HttpException(`Class with ID ${id} not found`, HttpStatus.NOT_FOUND);
     }
+
+    await this.classRepository.update(id, updateData);
   }
 
-  // // dto가 여러개라서 처리하기 좀 그러네 quiz, choice는 dto가 아니라 인터페이스로 구현하는게 좋지않을까라는 생각...?
-  // async createQuiz(classId: number, quizData: CreateQuizListRequestDto): Promise<ResponseDto> {
-  //   // 그럼 이 컨트롤러에서 dto 구분이 힘들다
-  //   // 너무 이 메서드에 책임이 많은게 아닌가 라는 생각도 든다.
-  //   // const queryRunner = this.dataSource.createQueryRunner();
-  //   // await queryRunner.connect();
-  //   // await queryRunner.startTransaction();
-  //   try {
-  //     // class_id가 유효한지 확인
-  //     const is_valid_class = await this.classRepository.findClassById(classId);
-  //     if (!is_valid_class) {
-  //       throw new Error(`Class with ID ${classId} not found`);
-  //     }
+  async updateQuiz(classId: number, dto: UpdateQuizListRequestDto): Promise<void> {
+    const quizEntity = await this.classRepository.findById(classId);
 
-  //     await Promise.all(
-  //       quizData.quizzes.map(async (quiz) => {
-  //         const quizEntity = await this.quizRepository.create(classId, quiz);
-  //         quiz.choices.map(async (choice) => {
-  //           this.choiceRepository.create(quizEntity.id, choice);
-  //         });
-  //       }),
-  //     );
+    if (!quizEntity) {
+      throw new HttpException(`Quiz with ID ${classId} not found`, HttpStatus.NOT_FOUND);
+    }
 
-  //     // await queryRunner.commitTransaction();
+    await this.quizRepository.updateQuizzes(classId, dto.quizzes);
+  }
 
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'Quiz created successfully',
-  //     };
-  //   } catch (error) {
-  //     // await queryRunner.rollbackTransaction();
-  //     throw new HttpException(
-  //       {
-  //         statusCode: HttpStatus.FORBIDDEN,
-  //         error: `${error}`,
-  //       },
-  //       HttpStatus.FORBIDDEN,
-  //       {
-  //         cause: error,
-  //       },
-  //     );
-  //   }
-  //   // } finally {
-  //   //     await queryRunner.release();
-  //   // }
-  // }
+  async deleteClass(id: number): Promise<void> {
+    const classEntity = await this.classRepository.findClassWithRelations(id);
 
-  // async findAll(): Promise<Quiz[]> {
-  //   return this.quizRepository.findAll();
-  // }
+    if (!classEntity) {
+      throw new NotFoundException(`Class with ID ${id} not found`);
+    }
 
-  // // id에 해당하는 클래스와 퀴즈, 선택지를 삭제한다.
-  // async deleteClass(id: number): Promise<ResponseDto> {
-  //   try {
-  //     const classEntity = await this.classRepository.findClassWithRelations(id);
-
-  //     if (!classEntity) {
-  //       throw new HttpException(`Class with ID ${id} not found`, HttpStatus.NOT_FOUND);
-  //     }
-
-  //     await this.classRepository.deleteWithRelations(classEntity);
-
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'Class and all related entities deleted successfully',
-  //     };
-  //   } catch (error) {
-  //     throw new HttpException(
-  //       {
-  //         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-  //         error: `Failed to delete class: ${error}`,
-  //       },
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //     );
-  //   }
-  // }
-
-  // // id에 해당하는 클래스의 정보를 수정한다.
-  // async updateClass(id: number, updateData: UpdateClassRequestDto): Promise<ResponseDto> {
-  //   try {
-  //     const classEntity = await this.classRepository.findById(id);
-
-  //     if (!classEntity) {
-  //       throw new HttpException(`Class with ID ${id} not found`, HttpStatus.NOT_FOUND);
-  //     }
-
-  //     await this.classRepository.update(id, updateData);
-
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'Class updated successfully',
-  //     };
-  //   } catch (error) {
-  //     throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
-
-  // async updateQuiz(classId: number, dto: UpdateQuizListRequestDto): Promise<ResponseDto> {
-  //   try {
-  //     const quizEntity = await this.classRepository.findById(classId);
-  //     if (!quizEntity) {
-  //       throw new HttpException(`Quiz with ID ${classId} not found`, HttpStatus.NOT_FOUND);
-  //     }
-
-  //     await this.quizRepository.updateQuizzes(classId, dto.quizzes);
-
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'Quiz updated successfully',
-  //     };
-  //   } catch (error) {
-  //     throw new HttpException(`error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
+    await this.classRepository.deleteWithRelations(classEntity);
+  }
 }
