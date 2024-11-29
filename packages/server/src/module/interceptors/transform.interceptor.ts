@@ -12,12 +12,19 @@ export class TransformInterceptor<T extends object> implements NestInterceptor<T
   intercept(context: ExecutionContext, next: CallHandler): Observable<ResponseDto<T>> {
     return next.handle().pipe(
       map((data) => {
+        if (!data) {
+          return new ResponseDto(
+            context.switchToHttp().getResponse().statusCode,
+            this.getResponseMessage(context),
+            null,
+          );
+        }
+
         const transformedData = plainToInstance(this.responseType, data, {
           excludeExtraneousValues: true,
         });
 
         const errors = validateSync(transformedData);
-
         if (errors.length > 0) {
           throw new Error(`Validation failed: ${JSON.stringify(errors)}`);
         }
