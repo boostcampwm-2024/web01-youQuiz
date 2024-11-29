@@ -18,7 +18,7 @@ import { UpdateClassRequestDto } from './dto/request/update-class.request.dto';
 import { UpdateQuizListRequestDto } from './dto/request/update-quizlist.request.dto';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { GetClassResponseDto } from './dto/response/get-class.response.dto';
-// import { ClassResponseDto } from './dto/response/class.response.dto';
+import { ResponseDto } from '../../utils/dto/response.dto';
 
 @Controller('api')
 export class QuizController {
@@ -27,9 +27,7 @@ export class QuizController {
   @Get('classes')
   @UseInterceptors(new TransformInterceptor(GetClassResponseDto))
   async getClasses() {
-    const result = await this.quizService.getAllClasses();
-    console.log('result:', result);
-    return result;
+    return await this.quizService.getAllClasses();
   }
 
   @Get('classes/:classId/quizzes')
@@ -40,35 +38,31 @@ export class QuizController {
 
   @Post('classes')
   @UseInterceptors(new TransformInterceptor(CreateClassResponseDto))
-  @UsePipes(ValidationPipe)
   async createClass(@Body() dto: CreateClassRequestDto) {
-    const result = await this.quizService.createClass(dto);
-    console.log('result:', result);
-    return result;
+    return await this.quizService.createClass(dto);
   }
 
-  // @Delete('classes/:classId')
-  // @UsePipes(ValidationPipe)
-  // @UseInterceptors(new TransformInterceptor(CreateClassResponseDto))
-  // async deleteClass(@Param('classId') classId: number) {
-  //   return await this.quizService.deleteClass(classId);
-  // }
+  @Post('classes/:classId/quizzes')
+  @UseInterceptors(new TransformInterceptor(ResponseDto))
+  async createQuiz(@Param('classId') classId: number, @Body() dto: CreateQuizListRequestDto) {
+    return await this.quizService.createQuiz(classId, dto);
+  }
 
-  // @Post('classes/:classId/quizzes')
-  // @UsePipes(ValidationPipe)
-  // async createQuiz(@Param('classId') classId: number, @Body() dto: CreateQuizListRequestDto) {
-  //   return await this.quizService.createQuiz(classId, dto);
-  // }
+  @Delete('classes/:classId')
+  @UseInterceptors(new TransformInterceptor(ResponseDto))
+  async deleteClass(@Param('classId') classId: number): Promise<void> {
+    return await this.quizService.deleteClass(classId);
+  }
 
-  // @Patch('classes/:classId')
-  // @UsePipes(ValidationPipe)
-  // async updateClass(@Param('classId') classId: number, @Body() dto: UpdateClassRequestDto) {
-  //   return await this.quizService.updateClass(classId, dto);
-  // }
+  @Patch('classes/:classId')
+  @UseInterceptors(new TransformInterceptor(ResponseDto))
+  async updateClass(@Param('classId') classId: number, @Body() dto: UpdateClassRequestDto) {
+    return await this.quizService.updateClass(classId, dto);
+  }
 
-  // @Patch('classes/:classId/quizzes')
-  // @UsePipes(ValidationPipe)
-  // async updateQuiz(@Param('classId') classId: number, @Body() dto: UpdateQuizListRequestDto) {
-  //   return await this.quizService.updateQuiz(classId, dto);
-  // }
+  @Patch('classes/:classId/quizzes')
+  @UseInterceptors(new TransformInterceptor(ResponseDto))
+  async updateQuiz(@Param('classId') classId: number, @Body() dto: UpdateQuizListRequestDto) {
+    return await this.quizService.updateQuiz(classId, dto);
+  }
 }
