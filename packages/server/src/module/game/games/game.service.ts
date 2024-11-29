@@ -28,7 +28,7 @@ export class GameService {
     return classEntity?.quizzes || [];
   }
 
-  transformQuizData(quizlists: Quiz[]) {
+  private transformQuizData(quizlists: Quiz[]) {
     const result = [];
 
     quizlists.forEach((quiz) => {

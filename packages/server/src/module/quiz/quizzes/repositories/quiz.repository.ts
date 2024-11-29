@@ -32,19 +32,6 @@ export class QuizRepository {
     }
   }
 
-  async findById(id: number): Promise<Quiz> {
-    try {
-      const result = this.repository.findOne({ where: { id } });
-      if (!result) {
-        throw new NotFoundException(`Quiz with ID ${id} not found`);
-      }
-      return result;
-    } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch quiz');
-    }
-  }
-
   async findAll(): Promise<Quiz[]> {
     try {
       const result = await this.repository.find();
@@ -71,14 +58,6 @@ export class QuizRepository {
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Failed to fetch quizzes');
-    }
-  }
-
-  async deleteByClassId(classId: number): Promise<void> {
-    try {
-      await this.repository.delete({ classId });
-    } catch (error) {
-      throw new InternalServerErrorException('Failed to delete quizzes');
     }
   }
 

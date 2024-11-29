@@ -72,34 +72,56 @@ export class ClassRepository {
   }
 
   async getOnlyQuiz(id: number) {
-    return this.repository.findOne({
-      where: { id },
-      select: ['quizzes'],
-      relations: {
-        quizzes: {
-          choices: true,
+    try {
+      const result = await this.repository.findOne({
+        where: { id },
+        select: ['quizzes'],
+        relations: {
+          quizzes: {
+            choices: true,
+          },
         },
-      },
-    });
-  }
-
-  async findOne(): Promise<Class[]> {
-    return this.repository.find();
-  }
-
-  async deleteById(id: number): Promise<void> {
-    await this.repository.delete(id);
+      });
+      if (!result) {
+        throw new NotFoundException(`Class with ID ${id} not found`);
+      }
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch class with relations');
+    }
   }
 
   async findClassWithRelations(id: number): Promise<Class> {
-    return this.repository.findOne({
-      where: { id },
-      relations: {
-        quizzes: {
-          choices: true,
+    try {
+      const result = await this.repository.findOne({
+        where: { id },
+        relations: {
+          quizzes: {
+            choices: true,
+          },
         },
-      },
-    });
+      });
+      if (!result) {
+        throw new NotFoundException(`Class with ID ${id} not found`);
+      }
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch class with relations');
+    }
+  }
+
+  async update(id: number, classData: Partial<Class>): Promise<void> {
+    try {
+      const { title, description } = classData;
+      await this.repository.update(id, {
+        title,
+        description,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update class');
+    }
   }
 
   async deleteWithRelations(classEntity: Class): Promise<void> {
@@ -139,13 +161,5 @@ export class ClassRepository {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async update(id: number, classData: Partial<Class>): Promise<void> {
-    const { title, description } = classData;
-    await this.repository.update(id, {
-      title,
-      description,
-    });
   }
 }
