@@ -25,7 +25,7 @@ export default function QuizTitleModal({ onClose }: QuizTitleModalProps) {
       {
         onSuccess: (data) => {
           onClose();
-          navigate(`/quiz/create/${data.id}`);
+          navigate(`/quiz/create/${data.data.id}`);
         },
       },
     );
