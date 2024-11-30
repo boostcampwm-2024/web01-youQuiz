@@ -6,6 +6,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getCookie, setCookie } from '@/shared/utils/cookie';
 import { getQuizSocket } from '@/shared/utils/socket';
 
+const MAX_NICKNAME_LENGTH = 12;
+
 export default function Nickname() {
   const { pinCode } = useParams();
   const [nickname, setNickname] = useState('');
@@ -41,7 +43,7 @@ export default function Nickname() {
           className="flex gap-2 ml-1 items-center text-xl font-bold self-start"
         >
           <TrophyIcon />
-          클래스 이름
+          닉네임
         </label>
         <div className="flex gap-3 items-center w-[650px] h-16 p-4 border-2 rounded-base border-border">
           <div className="flex justify-center items-center w-8 h-8 rounded-full bg-weak">
@@ -55,6 +57,7 @@ export default function Nickname() {
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             onKeyDown={handleKeyDown}
+            maxLength={MAX_NICKNAME_LENGTH}
           />
           <button
             type="button"
@@ -64,7 +67,7 @@ export default function Nickname() {
             onClick={() => handleNicknameSubmit(nickname)}
             disabled={nickname.length === 0}
           >
-            Join
+            참가하기
           </button>
         </div>
       </div>
