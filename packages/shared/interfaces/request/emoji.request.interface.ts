@@ -1,4 +1,7 @@
+import { EmojiType } from '../../types/emoji.types';
+
 export interface EmojiRequest {
-  pinCode: number;
+  pinCode: string;
   currentOrder: number;
+  emoji: EmojiType;
 }
