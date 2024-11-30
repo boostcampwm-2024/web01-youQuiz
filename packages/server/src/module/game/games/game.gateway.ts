@@ -330,27 +330,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { pinCode, sid } = payload;
 
     const participantNumber = await this.redisService.zcard(`gameId=${pinCode}:ranking`);
-
     const allRankers = await this.gameService.getRank(
       `gameId=${pinCode}:ranking`,
       participantNumber,
     );
 
-    const rankerData = [];
-    for (let i = 0; i < participantNumber; i++) {
-      const sid = allRankers[i][0];
-      const score = allRankers[i][1];
-      const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
-      rankerData.push({ nickname, score });
-    }
+    const rankerData = await Promise.all(
+      allRankers.map(async ([sid, score]) => {
+        const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
+        return { nickname, score };
+      }),
+    );
 
     const myRank = await this.redisService.zrevrank(`gameId=${pinCode}:ranking`, sid);
     const myScore = await this.redisService.zscore(`gameId=${pinCode}:ranking`, sid);
     const { nickname: myNickname } = JSON.parse(
       await this.redisService.get(`participant_sid=${sid}`),
     );
-    const response = { rankerData, myRank, myScore, myNickname };
-    return response;
+    const showRankingData = { rankerData, myRank, myScore, myNickname };
+
+    return showRankingData;
   }
 
   @SubscribeMessage('end quiz')
@@ -394,23 +393,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantNumber,
     );
 
-    const rankerData = [];
-    let allParticipantsScore = 0;
+    const rankerData = await Promise.all(
+      allRankers.map(async ([sid, score]) => {
+        const { nickname, character } = JSON.parse(
+          await this.redisService.get(`participant_sid=${sid}`),
+        );
+        return { nickname, score, character };
+      }),
+    );
 
-    for (let i = 0; i < participantNumber; i++) {
-      const sid = allRankers[i][0];
-      const score = allRankers[i][1];
-      allParticipantsScore += Number(score);
-      const { nickname, character } = JSON.parse(
-        await this.redisService.get(`participant_sid=${sid}`),
-      );
-      rankerData.push({ nickname, score, character });
-    }
-
+    const allParticipantsScore = rankerData.reduce((acc, { score }) => acc + Number(score), 0);
     const averageScore = allParticipantsScore / participantNumber;
+
     const leaderboardData = { rankerData, participantNumber, averageScore };
 
-    //TODO: 이벤트 어떤 형식으로 전달할 지 정해야 함
+    // TODO: 이벤트 어떤 형식으로 전달할 지 정해야 함
     return leaderboardData;
   }
 
