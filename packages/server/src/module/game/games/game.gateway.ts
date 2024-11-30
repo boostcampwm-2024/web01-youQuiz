@@ -19,6 +19,9 @@ import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto'
 import { ShowRankingRequestDto } from './dto/request/show-ranking.request.dto';
 import { EndQuizRequestDto } from './dto/request/end-quiz.request.dto';
 import { MessageRequestDto } from './dto/request/message.request.dto';
+import { MASTER_POSITION, QUIZ_WAITING_TIME } from '../../../../../shared/constants/game.constants';
+import { CONNECTION_TYPES } from '../../../../../shared/types/connection.types';
+import { GAMESTATUS_TYPES } from '../../../../../shared/types/gameStatus.types';
 
 @Injectable()
 @WebSocketGateway({
@@ -37,37 +40,29 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
 
   async handleConnection(client: Socket) {
-    // 클라이언트의 인증 정보에서 SID 가져오기
     const { sid } = client.handshake?.auth;
     if (!sid) {
       return;
     }
 
-    // SID 타입 확인
     const sidType = await this.gameService.checkSidType(sid);
     const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
 
-    // Redis에서 데이터 가져오기
     const data = JSON.parse(await this.redisService.get(key));
 
     if (data) {
       const { pinCode, position } = data;
       data['socketId'] = client.id;
-      data['connection'] = 'ON';
+      data['connection'] = CONNECTION_TYPES.ON;
 
       await this.redisService.set(key, JSON.stringify(data));
-      client.join(pinCode); // Room에 소켓 추가
+      client.join(pinCode);
 
       const gameInfoJson = await this.redisService.get(`gameId=${pinCode}`);
       if (gameInfoJson) {
         const gameInfo = JSON.parse(gameInfoJson);
-        const nicknameEventData = {
-          participantList: gameInfo.participantList,
-        };
-        client.emit('my position', {
-          participantList: gameInfo.participantList,
-          myPosition: position,
-        });
+        const myPositionData = { participantList: gameInfo.participantList, myPosition: position };
+        client.emit('my position', myPositionData);
       }
     }
   }
@@ -89,8 +84,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const pinCode = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
     const socketId = client.id;
 
-    const position = -1; /////////////// master의 경우 -1 환경변수 세팅하면 좋을듯
-    const connection = 'ON';
+    const position = MASTER_POSITION;
+    const connection = CONNECTION_TYPES.ON;
 
     const masterinfo = { pinCode, socketId, position, connection };
 
@@ -100,12 +95,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const quizData = await this.storeQuizToRedis(classId);
     const quizMaxNum = quizData.length - 1;
-    const gameStatus = 'WAITING';
+    const gameStatus = GAMESTATUS_TYPES.WAITING;
 
-    // 퀴즈 개수를 저장.
     const gameInfo = { classId, gameStatus, currentOrder: 0, quizMaxNum, participantList: [] };
 
-    // 게임 정보를 저장
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
     client.emit('session', masterSid);
@@ -119,11 +112,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    // character 0-5 랜덤값, position은 participantList의 길이
-    // 만약 participant.length가 29이면 더이상 못들어오도록 막아야함 -> gameState를 업데이트?
+    // 만약 participant.length가 32로 제한이면 더이상 못들어오도록 막아야함 -> gameState를 업데이트?
     const character = Math.floor(Math.random() * 6);
     const position = gameInfo.participantList.length;
-    const connection = 'ON'; // type 설정 해둠 as const ON/OFF
+    const connection = CONNECTION_TYPES.ON; // type 설정 해둠 as const ON/OFF
 
     const clientInfo = { pinCode, nickname, socketId, character, position, connection };
 
@@ -140,8 +132,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
     const nicknameEventData = { participantList: gameInfo.participantList };
+    const myPositionData = { participantList: gameInfo.participantList, myPosition: position };
 
-    client.emit('my position', { participantList: gameInfo.participantList, myPosition: position });
+    client.emit('my position', myPositionData);
     client.to(pinCode).emit('nickname', nicknameEventData);
   }
 
@@ -185,12 +178,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
   }
 
-  // timelimit을 파라미터로 입력 받아서 1초 간격으로 실행
   async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
     const intervalId = setInterval(async () => {
       const currentTime = Date.now();
       const elapsedTime = currentTime - startTime;
-      const remainingTime = (timeLimit + 2) * 1000 - elapsedTime;
+      const remainingTime = (timeLimit + QUIZ_WAITING_TIME) * 1000 - elapsedTime;
       if (remainingTime <= 0) {
         const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
@@ -215,9 +207,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     client.to(pinCode).emit('start quiz', { isStarted: true });
-    // 퀴즈 상태 바꾸기
+
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    gameInfo.gameStatus = 'IN PROGRESS';
+    gameInfo.gameStatus = GAMESTATUS_TYPES.IN_PROGRESS;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
   }
 
@@ -243,14 +235,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
     const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
 
-    // 현재 퀴즈 데이터 가져옴
     const { classId, currentOrder, participantList } = gameInfo;
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
     const currentQuizData = quizData[currentOrder];
 
     const participantLength = participantList.length;
 
-    // 현재 퀴즈의 초이스 데이터 가져옴
     const currentChoicesData = currentQuizData['choices'];
     const { point, timeLimit } = currentQuizData;
 
@@ -258,7 +248,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
     );
 
-    // 제출 기록 저장 [[nickname, solveTime]]
     gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
     const submitHistory = gameStatus.submitHistory;
 
@@ -275,11 +264,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const totalCorrect = gameStatus.totalCorrect;
 
-    // totaltime
     gameStatus.totalTime += submitTime;
     const totalTime = gameStatus.totalTime;
 
-    // choiceStatus
     for (const answer of selectedAnswer) {
       gameStatus.choiceStatus[answer] += 1;
     }
@@ -329,7 +316,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   calculatePoints(isFlag: boolean, submitTime: number, timeLimit: number, point: number) {
-    const timeLimitToMs = (timeLimit + 2) * 1000;
+    const timeLimitToMs = (timeLimit + QUIZ_WAITING_TIME) * 1000;
     if (isFlag) {
       const ratio = (timeLimitToMs - submitTime) / timeLimitToMs;
       return Math.floor(ratio * point);
@@ -377,9 +364,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     client.to(pinCode).emit('end quiz', { isEnded: true });
-    // 퀴즈 상태 바꾸기
+
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    gameInfo.gameStatus = 'END';
+    gameInfo.gameStatus = GAMESTATUS_TYPES.END;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
   }
 
