@@ -1,9 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { createClass, deleteClass, getClasses } from '@/shared/api/classes';
 import { toastController } from '@/features/toast/model/toastController';
 
 export const useGetClasses = () => {
-  const { data } = useQuery({
+  const { data } = useSuspenseQuery({
     queryKey: ['classes'],
     queryFn: () => getClasses(),
   });

@@ -1,8 +1,16 @@
+import { QuizData } from '@/pages/quiz-create';
 import { apiClient } from '..';
 
-interface ClassesResponse {
+interface ClassesData {
   id: number;
   title: string;
+  quizzes: QuizData[];
+}
+
+export interface ClassesResponse {
+  data: ClassesData[];
+  message: string;
+  statusCode: number;
 }
 
 interface CreateClassRequest {
@@ -10,12 +18,18 @@ interface CreateClassRequest {
   description: string;
 }
 
-interface CreateClassResponse {
+interface CreateClassResponseData {
   id: number;
   title: string;
 }
 
-export async function getClasses(): Promise<ClassesResponse[]> {
+interface CreateClassResponse {
+  data: CreateClassResponseData;
+  message: string;
+  statusCode: number;
+}
+
+export async function getClasses(): Promise<ClassesResponse> {
   return await apiClient.get('/classes');
 }
 
