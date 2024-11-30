@@ -11,16 +11,16 @@ import Nickname from '@/pages/nickname';
 import QuizQuestion from '@/pages/quiz-question';
 import QnA from '@/pages/qna';
 import GuestQnA from '@/pages/guest-qna';
-import QuizList from '@/pages/quiz-list';
 import QuizMasterSession from '@/pages/quiz-master-session';
 import Leaderboard from '@/pages/leaderboard';
+import QuizListPage from '@/pages/quiz-list';
 
 export default function Router() {
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route element={<HostLayout />}>
-        <Route path="/quiz-list" element={<QuizList />} />
+        <Route path="/quiz-list" element={<QuizListPage />} />
         <Route path="/quiz/create/:classId" element={<QuizCreatePage />} />
         <Route path="/questions" element={<QnA />} />
       </Route>
