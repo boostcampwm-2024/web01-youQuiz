@@ -6791,6 +6791,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-refresh", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:0.4.14"],\
           ["eslint-plugin-storybook", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:0.10.2"],\
           ["globals", "npm:15.11.0"],\
+          ["lucide-react", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:0.462.0"],\
           ["postcss", "npm:8.4.47"],\
           ["qrcode.react", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:4.1.0"],\
           ["react", "npm:18.3.1"],\
@@ -10641,6 +10642,28 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/lru.min-npm-1.1.1-35796de0f4-9bb1380dd9.zip/node_modules/lru.min/",\
         "packageDependencies": [\
           ["lru.min", "npm:1.1.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["lucide-react", [\
+      ["npm:0.462.0", {\
+        "packageLocation": "./.yarn/cache/lucide-react-npm-0.462.0-8d86403a77-684477fcd1.zip/node_modules/lucide-react/",\
+        "packageDependencies": [\
+          ["lucide-react", "npm:0.462.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:0.462.0", {\
+        "packageLocation": "./.yarn/__virtual__/lucide-react-virtual-1009dce721/0/cache/lucide-react-npm-0.462.0-8d86403a77-684477fcd1.zip/node_modules/lucide-react/",\
+        "packageDependencies": [\
+          ["lucide-react", "virtual:658502eb4296e93abedc18b6aa9b26978f434f08d98e21ebb0e725354b8bb54b62db9c4a1893e460c694ff7500ff5cbafa4457b0dfd26b5838868666c861e990#npm:0.462.0"],\
+          ["@types/react", "npm:18.3.12"],\
+          ["react", "npm:18.3.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/react",\
+          "react"\
         ],\
         "linkType": "HARD"\
       }]\

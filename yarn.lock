@@ -4521,6 +4521,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.14"
     eslint-plugin-storybook: "npm:^0.10.2"
     globals: "npm:^15.11.0"
+    lucide-react: "npm:^0.462.0"
     postcss: "npm:^8.4.47"
     qrcode.react: "npm:^4.1.0"
     react: "npm:^18.3.1"
@@ -7837,6 +7838,15 @@ __metadata:
   version: 1.1.1
   resolution: "lru.min@npm:1.1.1"
   checksum: 10c0/9bb1380dd9fdb155632122dfd2beb26e0c624ac141c4e95d551b66b5c523f2b7c4cdcc0b98a86419d59bc5d3af91c5699439ad06ec07f01b43d5aee51e1b34e8
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.462.0":
+  version: 0.462.0
+  resolution: "lucide-react@npm:0.462.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
+  checksum: 10c0/684477fcd130036c89535ea21a1a35d95fc3e45e41cb5cdcc56702cdb28aa7c8b9f5cfba12123229949d79f6dc19eac27b1d1452a14803a81424d461477c37cf
   languageName: node
   linkType: hard
 
