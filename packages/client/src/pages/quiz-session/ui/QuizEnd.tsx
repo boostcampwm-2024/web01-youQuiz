@@ -25,7 +25,7 @@ export default function QuizEnd() {
   }, []);
 
   return (
-    <div className="min-h-screen  bg-gradient-to-b from-blue-100 to-white p-4">
+    <div className="h-[calc(100vh-78px)] bg-gradient-to-b from-blue-100 to-white p-4">
       <div className="max-w-2xl mx-auto mt-12 p-16 ">
         <div className="text-center mb-8">
           <span className="text-4xl font-semibold text-gray-600">🏆 중 간 점 검</span>
