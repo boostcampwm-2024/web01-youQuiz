@@ -68,21 +68,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  // 클라이언트가 연결을 끊었을 때 처리하는 메서드
   async handleDisconnect(client: Socket) {
-    //대기 중에 사람이 나갈 경우 갱신해주는 부분 추가 필요
+    // TODO: 대기 중에 사람이 나갈 경우 갱신해주는 부분 추가 필요
     console.log(`Client disconnected: ${client.id}`);
-    // connection 상태 변경 필요
+    // TODO: connection 상태 변경 필요
     // 마스터 참여자 여부에 따라서 disconnection 관리 로직 다를듯
   }
 
   @SubscribeMessage('master entry')
   async handleMasterEntry(client: Socket, payload: MasterEntryRequestDto) {
-    // 방장이 게임을 나가도 재접속이 가능하며, 게임은 지속된다.
     const { classId } = payload;
 
     const masterSid = uuidv4();
-    const pinCode = uuidv4().slice(0, 6); // 메소드 분리해서 중복 확인하고 없을 때까지 반복
+    const pinCode = uuidv4().slice(0, 6); //TODO: 메소드 분리해서 중복 확인하고 없을 때까지 반복
     const socketId = client.id;
 
     const position = MASTER_POSITION;
@@ -113,10 +111,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    // 만약 participant.length가 32로 제한이면 더이상 못들어오도록 막아야함 -> gameState를 업데이트?
+    // TODO: 만약 participant.length가 32로 제한이면 더이상 못들어오도록 막아야함 -> gameState를 업데이트?
     const character = Math.floor(Math.random() * 6);
     const position = gameInfo.participantList.length;
-    const connection = CONNECTION_TYPES.ON; // type 설정 해둠 as const ON/OFF
+    const connection = CONNECTION_TYPES.ON;
 
     const clientInfo = { pinCode, nickname, socketId, character, position, connection };
 
@@ -145,7 +143,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
     const { classId, currentOrder, quizMaxNum } = gameInfo;
-    // 캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
+    // TODO:캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
 
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
@@ -335,6 +333,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantNumber,
     );
 
+    console.log(allRankers);
     const rankerData = await Promise.all(
       allRankers.map(async ([sid, score]) => {
         const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
