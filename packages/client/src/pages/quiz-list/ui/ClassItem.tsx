@@ -52,12 +52,12 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
   return (
     <>
       <div
-        className={`flex justify-between items-center min-w-content h-20 bg-white ${
-          selectedClassIndex === index ? 'border-secondary' : 'border-border'
+        className={`flex justify-between items-center min-w-content h-16 bg-white shadow-sm ${
+          selectedClassIndex === index ? 'border-secondary' : 'border-none'
         } border rounded-base p-6 cursor-pointer`}
         onClick={() => handleSelectClass(index)}
       >
-        <span>{quizList.title}</span>
+        <span className="text-lg font-semibold">{quizList.title}</span>
         <div className="flex gap-4">
           <button type="button" onClick={(e) => handleDeleteClass(e, quizList.id)}>
             <BinIcon className="w-5 h-5 text-red-500" />
@@ -77,15 +77,12 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
         </div>
       </div>
       {selectedClassIndex === index && (
-        <div
-          className={`flex flex-col gap-3 p-6 -mt-8 border ${
-            selectedClassIndex === index ? 'border-secondary' : 'border-border'
-          } rounded-base bg-white`}
-        >
+        <div className={`flex flex-col gap-3 p-4 -mt-4 border shadow-sm rounded-base bg-white`}>
           {quizList.quizzes.length === 0 && <span>퀴즈가 없습니다.</span>}
           {quizList.quizzes.map((quizData, quizIndex) => (
             <span key={`${quizData.content} ${quizIndex}`}>
-              {quizIndex + 1}번 문제: {quizData.content}
+              <span className="text-md font-bold text-secondary">Q {quizIndex + 1} : </span>
+              <span className="text-md font-semibold text-gray-600">{quizData.content}</span>
             </span>
           ))}
         </div>

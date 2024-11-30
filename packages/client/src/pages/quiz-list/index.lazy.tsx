@@ -10,11 +10,11 @@ export default function QuizListLazyPage() {
   const [openModal, setOpenModal] = useState(false);
 
   return (
-    <div className="flex flex-col gap-10 w-full mt-6 mx-6">
+    <div className="w-full min-h-[calc(100vh-80px)] px-8 flex flex-col gap-6 mt-6 mx-auto">
       {classList.data.map((item, index) => {
         return <ClassItem key={item.id} quizList={item} index={index} />;
       })}
-      <div className="self-end">
+      <div className="self-end ">
         <CustomButton
           type="outline"
           label="퀴즈 만들기"
