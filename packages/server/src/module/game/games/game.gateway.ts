@@ -22,6 +22,7 @@ import { MessageRequestDto } from './dto/request/message.request.dto';
 import { MASTER_POSITION, QUIZ_WAITING_TIME } from '../../../../../shared/constants/game.constants';
 import { CONNECTION_TYPES } from '../../../../../shared/types/connection.types';
 import { GAMESTATUS_TYPES } from '../../../../../shared/types/gameStatus.types';
+import { LeaderboardRequestDto } from './dto/request/leaderboard.request.dto';
 
 @Injectable()
 @WebSocketGateway({
@@ -328,20 +329,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleShowRanking(client: Socket, payload: ShowRankingRequestDto) {
     const { pinCode, sid } = payload;
 
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    const participantLength = gameInfo.participantList.length;
+    const participantNumber = await this.redisService.zcard(`gameId=${pinCode}:ranking`);
 
     const allRankers = await this.gameService.getRank(
       `gameId=${pinCode}:ranking`,
-      participantLength,
+      participantNumber,
     );
 
-    const rankerDatas = [];
-    for (let i = 0; i < participantLength; i++) {
+    const rankerData = [];
+    for (let i = 0; i < participantNumber; i++) {
       const sid = allRankers[i][0];
       const score = allRankers[i][1];
       const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
-      rankerDatas.push({ nickname, score });
+      rankerData.push({ nickname, score });
     }
 
     const myRank = await this.redisService.zrevrank(`gameId=${pinCode}:ranking`, sid);
@@ -349,7 +349,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { nickname: myNickname } = JSON.parse(
       await this.redisService.get(`participant_sid=${sid}`),
     );
-    const response = { rankerDatas, myRank, myScore, myNickname };
+    const response = { rankerData, myRank, myScore, myNickname };
     return response;
   }
 
@@ -382,6 +382,36 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     selectedAnswer.sort();
 
     return equals(selectedAnswer, correctAnswers);
+  }
+
+  @SubscribeMessage('leaderboard')
+  async handleLeaderboard(client: Socket, payload: LeaderboardRequestDto) {
+    const { pinCode } = payload;
+
+    const participantNumber = await this.redisService.zcard(`gameId=${pinCode}:ranking`);
+    const allRankers = await this.gameService.getRank(
+      `gameId=${pinCode}:ranking`,
+      participantNumber,
+    );
+
+    const rankerData = [];
+    let allParticipantsScore = 0;
+
+    for (let i = 0; i < participantNumber; i++) {
+      const sid = allRankers[i][0];
+      const score = allRankers[i][1];
+      allParticipantsScore += Number(score);
+      const { nickname, character } = JSON.parse(
+        await this.redisService.get(`participant_sid=${sid}`),
+      );
+      rankerData.push({ nickname, score, character });
+    }
+
+    const averageScore = allParticipantsScore / participantNumber;
+    const leaderboardData = { rankerData, participantNumber, averageScore };
+
+    //TODO: 이벤트 어떤 형식으로 전달할 지 정해야 함
+    return leaderboardData;
   }
 
   @SubscribeMessage('message')
