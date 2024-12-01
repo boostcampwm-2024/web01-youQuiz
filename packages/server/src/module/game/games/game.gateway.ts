@@ -19,10 +19,15 @@ import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto'
 import { ShowRankingRequestDto } from './dto/request/show-ranking.request.dto';
 import { EndQuizRequestDto } from './dto/request/end-quiz.request.dto';
 import { MessageRequestDto } from './dto/request/message.request.dto';
-import { MASTER_POSITION, QUIZ_WAITING_TIME } from '@shared/constants/game.constants';
+import { LeaderboardRequestDto } from './dto/request/leaderboard.request.dto';
+import {
+  MASTER_POSITION,
+  QUIZ_WAITING_TIME,
+  INTERVAL_TIME,
+} from '@shared/constants/game.constants';
+import { CONVERT_TO_MS } from '@shared/constants/utils.constants';
 import { CONNECTION_TYPES } from '@shared/types/connection.types';
 import { GAMESTATUS_TYPES } from '@shared/types/gameStatus.types';
-import { LeaderboardRequestDto } from './dto/request/leaderboard.request.dto';
 
 @Injectable()
 @WebSocketGateway({
@@ -192,7 +197,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
       this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
-    }, 1000);
+    }, INTERVAL_TIME);
   }
 
   @SubscribeMessage('start quiz')
@@ -315,7 +320,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   calculatePoints(isFlag: boolean, submitTime: number, timeLimit: number, point: number) {
-    const timeLimitToMs = (timeLimit + QUIZ_WAITING_TIME) * 1000;
+    const timeLimitToMs = (timeLimit + QUIZ_WAITING_TIME) * CONVERT_TO_MS;
     if (isFlag) {
       const ratio = (timeLimitToMs - submitTime) / timeLimitToMs;
       return Math.floor(ratio * point);
@@ -333,7 +338,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       participantNumber,
     );
 
-    console.log(allRankers);
     const rankerData = await Promise.all(
       allRankers.map(async ([sid, score]) => {
         const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
