@@ -50,7 +50,7 @@ export default function QuizMasterSession() {
   const handleNextQuiz = () => {
     if (isLastQuiz) {
       socket.emit('end quiz', { pinCode, sid: getCookie('sid') });
-      navigate('/quiz/session/end');
+      navigate(`/quiz/session/${pinCode}/end`);
       return;
     }
     if (Math.floor(tick.remainingTime / 1000) === 0) {

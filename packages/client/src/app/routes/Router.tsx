@@ -35,7 +35,7 @@ export default function Router() {
 
       <Route path="/quiz/session/host/:pinCode/:id" element={<QuizMasterSession />} />
 
-      <Route path="/quiz/session/end" element={<Leaderboard />} />
+      <Route path="/quiz/session/:pinCode/end" element={<Leaderboard />} />
       <Route path={'*'} element={<NotFound />} />
     </Routes>
   );

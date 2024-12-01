@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { getQuizSocket } from '@/shared/utils/socket';
 import QuizBox from './ui/QuizBox';
@@ -15,6 +15,7 @@ export default function QuizSession() {
   const socket = getQuizSocket();
   // const toast = toastController();
   const navigate = useNavigate();
+  const { pinCode } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [isQuizEnd, setIsQuizEnd] = useState(false);
   const [tick, setTick] = useState<TimerTickResponse>(INITIAL_TICK);
@@ -67,7 +68,7 @@ export default function QuizSession() {
     };
 
     const handleQuizEnd = () => {
-      navigate('/quiz/session/end');
+      navigate(`/quiz/session/${pinCode}/end`);
     };
 
     socket.on('end quiz', handleQuizEnd);
