@@ -4,12 +4,14 @@ import {
   SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './game.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MasterEntryRequestDto } from './dto/request/master-entry.request.dto';
 import { ParticipantEntryRequestDto } from './dto/request/participant-entry.request.dto';
 import { ShowQuizRequestDto } from './dto/request/show-quiz.request.dto';
@@ -28,8 +30,10 @@ import {
 import { CONVERT_TO_MS } from '@shared/constants/utils.constants';
 import { CONNECTION_TYPES } from '@shared/types/connection.types';
 import { GAMESTATUS_TYPES } from '@shared/types/gameStatus.types';
+import { GameGatewayService } from './game.gateway.service';
 
 @Injectable()
+@UsePipes(ValidationPipe)
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -43,6 +47,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly redisService: RedisService,
     private readonly gameService: GameService,
+    private readonly gameGatewayService: GameGatewayService,
   ) {}
 
   async handleConnection(client: Socket) {
@@ -81,342 +86,118 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('master entry')
-  async handleMasterEntry(client: Socket, payload: MasterEntryRequestDto) {
-    const { classId } = payload;
-
-    const masterSid = uuidv4();
-    const pinCode = uuidv4().slice(0, 6); //TODO: 메소드 분리해서 중복 확인하고 없을 때까지 반복
-    const socketId = client.id;
-
-    const position = MASTER_POSITION;
-    const connection = CONNECTION_TYPES.ON;
-
-    const masterinfo = { pinCode, socketId, position, connection };
-
-    client.join(pinCode);
-
-    await this.redisService.set(`master_sid=${masterSid}`, JSON.stringify(masterinfo));
-
-    const quizData = await this.storeQuizToRedis(classId);
-    const quizMaxNum = quizData.length - 1;
-    const gameStatus = GAMESTATUS_TYPES.WAITING;
-
-    const gameInfo = { classId, gameStatus, currentOrder: 0, quizMaxNum, participantList: [] };
-
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
-    client.emit('session', masterSid);
-    client.emit('pincode', pinCode);
+  async handleMasterEntry(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: MasterEntryRequestDto,
+  ) {
+    this.gameGatewayService.handleMasterEntry(client, dto);
   }
 
   @SubscribeMessage('participant entry')
-  async handleParticipantEntry(client: Socket, payload: ParticipantEntryRequestDto) {
-    const { pinCode, nickname } = payload;
-    const socketId = client.id;
-
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-
-    // TODO: 만약 participant.length가 32로 제한이면 더이상 못들어오도록 막아야함 -> gameState를 업데이트?
-    const character = Math.floor(Math.random() * 6);
-    const position = gameInfo.participantList.length;
-    const connection = CONNECTION_TYPES.ON;
-
-    const clientInfo = { pinCode, nickname, socketId, character, position, connection };
-
-    client.join(pinCode);
-
-    const participantSid = uuidv4();
-    await this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
-    client.emit('session', participantSid);
-
-    await this.redisService.zincrby(`gameId=${pinCode}:ranking`, 0, participantSid);
-
-    const pariticipantInfo = { nickname, character, position, connection };
-    gameInfo.participantList.push(pariticipantInfo);
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
-    const nicknameEventData = { participantList: gameInfo.participantList };
-    const myPositionData = { participantList: gameInfo.participantList, myPosition: position };
-
-    client.emit('my position', myPositionData);
-    client.to(pinCode).emit('nickname', nicknameEventData);
+  async handleParticipantEntry(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: ParticipantEntryRequestDto,
+  ) {
+    const response = await this.gameGatewayService.handleParticipantEntry(client, dto);
+    client.emit('my position', response.myPositionData);
+    client.to(dto.pinCode).emit('nickname', response.nicknameEventData);
   }
 
-  @SubscribeMessage('show quiz')
-  async handleShowQuiz(client: Socket, payload: ShowQuizRequestDto) {
-    const { pinCode } = payload;
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+  async handleShowQuiz(@ConnectedSocket() client: Socket, @MessageBody() dto: ShowQuizRequestDto) {
+    const { pinCode } = dto;
 
-    const { classId, currentOrder, quizMaxNum } = gameInfo;
-    // TODO:캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
-    // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
-
-    const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
-
-    const currentQuizData = quizData[currentOrder];
-    const currentTimeLimit = currentQuizData['timeLimit'];
+    const { gameInfo, currentQuizData, currentTimeLimit, isLast } =
+      await this.gameGatewayService.getQuizData(pinCode);
 
     const choicesLength = currentQuizData['choices'].length;
 
-    const choiceStatus = Object.fromEntries(
-      Array.from({ length: choicesLength }, (_, i) => [i, 0]),
+    await this.gameGatewayService.initializeGameStatus(
+      pinCode,
+      gameInfo.currentOrder,
+      choicesLength,
     );
 
-    const gameStatus = {
-      totalSubmit: 0,
-      totalCorrect: 0,
-      totalTime: 0,
-      choiceStatus,
-      submitHistory: [],
-      emojiStatus: { easy: 0, hard: 0 },
-    };
-    await this.redisService.set(
-      `gameId=${pinCode}:quizId=${currentOrder}`,
-      JSON.stringify(gameStatus),
-    );
-
-    const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
-    this.server.to(pinCode).emit('show quiz', { quizMaxNum, currentQuizData, isLast });
+    this.server.to(pinCode).emit('show quiz', {
+      quizMaxNum: gameInfo.quizMaxNum,
+      currentQuizData,
+      isLast,
+    });
 
     const startTime = Date.now();
-    await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
+    this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
   }
 
-  async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
+  private async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
     const intervalId = setInterval(async () => {
       const currentTime = Date.now();
       const elapsedTime = currentTime - startTime;
       const remainingTime = (timeLimit + QUIZ_WAITING_TIME) * 1000 - elapsedTime;
-      if (remainingTime <= 0) {
-        const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-        gameInfo.currentOrder += 1;
-        await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+      if (remainingTime <= 0) {
+        await this.gameGatewayService.updateGameOrder(pinCode);
         this.server.to(pinCode).emit('time end', { isEnd: true });
         clearInterval(intervalId);
         return;
       }
+
       this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
     }, INTERVAL_TIME);
   }
 
   @SubscribeMessage('start quiz')
-  async handleStartQuiz(client: Socket, payload: StartQuizRequestDto) {
-    const { sid, pinCode } = payload;
-
-    const { pinCode: storedPinCode } = JSON.parse(await this.redisService.get(`master_sid=${sid}`));
-
-    if (storedPinCode !== pinCode) {
-      console.log('Invalid pinCode');
-    }
-
-    client.to(pinCode).emit('start quiz', { isStarted: true });
-
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    gameInfo.gameStatus = GAMESTATUS_TYPES.IN_PROGRESS;
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-  }
-
-  private async storeQuizToRedis(classId: number) {
-    const cachedQuizData = await this.redisService.get(`classId=${classId}`);
-
-    if (cachedQuizData) {
-      const quizData = JSON.parse(cachedQuizData);
-      return quizData;
-    }
-
-    const quizData = await this.gameService.cachingQuizData(classId);
-
-    await this.redisService.set(`classId=${classId}`, JSON.stringify(quizData), 'EX', 604800);
-
-    return quizData;
+  async handleStartQuiz(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: StartQuizRequestDto,
+  ) {
+    const response = await this.gameGatewayService.handleStartQuiz(dto);
+    client.to(dto.pinCode).emit('start quiz', response);
   }
 
   @SubscribeMessage('submit answer')
-  async handleSubmitAnswer(client: Socket, payload: SubmitAnswerRequestDto) {
-    const { pinCode, sid, selectedAnswer, submitTime } = payload;
-
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    const pariticipantInfo = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
-
-    const { classId, currentOrder, participantList } = gameInfo;
-    const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
-    const currentQuizData = quizData[currentOrder];
-
-    const participantLength = participantList.length;
-
-    const currentChoicesData = currentQuizData['choices'];
-    const { point, timeLimit } = currentQuizData;
-
-    const gameStatus = JSON.parse(
-      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
-    );
-
-    gameStatus.submitHistory.push([pariticipantInfo.nickname, submitTime]);
-    const submitHistory = gameStatus.submitHistory;
-
-    gameStatus.totalSubmit += 1;
-    const totalSubmit = gameStatus.totalSubmit;
-
-    const isFlag = this.matchingAnswer(selectedAnswer, currentChoicesData);
-    if (isFlag) {
-      gameStatus.totalCorrect += 1;
-    }
-
-    const processedPoint = this.calculatePoints(isFlag, submitTime, timeLimit, point);
-    await this.redisService.zincrby(`gameId=${pinCode}:ranking`, processedPoint, sid);
-
-    const totalCorrect = gameStatus.totalCorrect;
-
-    gameStatus.totalTime += submitTime;
-    const totalTime = gameStatus.totalTime;
-
-    for (const answer of selectedAnswer) {
-      gameStatus.choiceStatus[answer] += 1;
-    }
-    const choiceStatus = gameStatus.choiceStatus;
-
-    const participantNum = participantList.length;
-
-    await this.redisService.set(
-      `gameId=${pinCode}:quizId=${currentOrder}`,
-      JSON.stringify(gameStatus),
-    );
-
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-
-    const solveRate = (totalCorrect / totalSubmit) * 100;
-    const averageTime = (totalTime / totalSubmit) * 100;
-    const participantRate = (totalSubmit / participantNum) * 100;
-
-    const participantStatistics = { totalSubmit, solveRate, averageTime, participantRate };
-    const masterStatistics = {
-      totalSubmit,
-      solveRate,
-      averageTime,
-      participantRate,
-      choiceStatus,
-      submitHistory,
-      participantLength,
-    };
-
-    this.server.to(pinCode).emit('participant statistics', participantStatistics);
-    this.server.to(pinCode).emit('master statistics', masterStatistics);
-    return { submitOrder: totalSubmit };
+  async handleSubmitAnswer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: SubmitAnswerRequestDto,
+  ) {
+    const response = await this.gameGatewayService.handleSubmitAnswer(dto);
+    this.server.to(dto.pinCode).emit('participant statistics', response.participantStatistics);
+    this.server.to(dto.pinCode).emit('master statistics', response.masterStatistics);
+    return response.submitOrder;
   }
 
   @SubscribeMessage('emoji')
-  async handleEmoji(client: Socket, payload: EmojiRequestDto) {
-    const { pinCode, currentOrder, emoji } = payload;
-    const gameStatus = JSON.parse(
-      await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
-    );
-    gameStatus.emojiStatus[emoji] += 1;
-    await this.redisService.set(
-      `gameId=${pinCode}:quizId=${currentOrder}`,
-      JSON.stringify(gameStatus),
-    );
-    this.server.to(pinCode).emit('emoji', gameStatus.emojiStatus);
-  }
-
-  calculatePoints(isFlag: boolean, submitTime: number, timeLimit: number, point: number) {
-    const timeLimitToMs = (timeLimit + QUIZ_WAITING_TIME) * CONVERT_TO_MS;
-    if (isFlag) {
-      const ratio = (timeLimitToMs - submitTime) / timeLimitToMs;
-      return Math.floor(ratio * point);
-    }
-    return 0;
+  async handleEmoji(@ConnectedSocket() client: Socket, @MessageBody() dto: EmojiRequestDto) {
+    const response = await this.gameGatewayService.handleEmoji(dto);
+    this.server.to(dto.pinCode).emit('emoji', response);
   }
 
   @SubscribeMessage('show ranking')
-  async handleShowRanking(client: Socket, payload: ShowRankingRequestDto) {
-    const { pinCode, sid } = payload;
-
-    const participantNumber = await this.redisService.zcard(`gameId=${pinCode}:ranking`);
-    const allRankers = await this.gameService.getRank(
-      `gameId=${pinCode}:ranking`,
-      participantNumber,
-    );
-
-    const rankerData = await Promise.all(
-      allRankers.map(async ([sid, score]) => {
-        const { nickname } = JSON.parse(await this.redisService.get(`participant_sid=${sid}`));
-        return { nickname, score };
-      }),
-    );
-
-    const myRank = await this.redisService.zrevrank(`gameId=${pinCode}:ranking`, sid);
-    const myScore = await this.redisService.zscore(`gameId=${pinCode}:ranking`, sid);
-    const { nickname: myNickname } = JSON.parse(
-      await this.redisService.get(`participant_sid=${sid}`),
-    );
-    const showRankingData = { rankerData, myRank, myScore, myNickname };
-
-    return showRankingData;
+  async handleShowRanking(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: ShowRankingRequestDto,
+  ) {
+    const response = await this.gameGatewayService.handleShowRanking(dto);
+    return response;
   }
 
   @SubscribeMessage('end quiz')
-  async handleEndQuiz(client: Socket, payload: EndQuizRequestDto) {
-    const { sid, pinCode } = payload;
-
-    const { pinCode: storedPinCode } = JSON.parse(await this.redisService.get(`master_sid=${sid}`));
-
-    if (storedPinCode !== pinCode) {
-      console.log('Invalid pinCode');
-    }
-
-    client.to(pinCode).emit('end quiz', { isEnded: true });
-
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-    gameInfo.gameStatus = GAMESTATUS_TYPES.END;
-    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-  }
-
-  matchingAnswer(selectedAnswer: Number[], currentChoicesData) {
-    const correctAnswers = currentChoicesData
-      .map((choice, index) => (choice.isCorrect ? index : null))
-      .filter((index) => index !== null);
-
-    const equals = (a: Number[], b: Number[]) =>
-      a.length === b.length && a.every((v, i) => v === b[i]);
-
-    correctAnswers.sort();
-    selectedAnswer.sort();
-
-    return equals(selectedAnswer, correctAnswers);
+  async handleEndQuiz(@ConnectedSocket() client: Socket, @MessageBody() dto: EndQuizRequestDto) {
+    const response = await this.gameGatewayService.handleEndQuiz(dto);
+    client.to(dto.pinCode).emit('end quiz', response);
   }
 
   @SubscribeMessage('leaderboard')
-  async handleLeaderboard(client: Socket, payload: LeaderboardRequestDto) {
-    const { pinCode } = payload;
-
-    const participantNumber = await this.redisService.zcard(`gameId=${pinCode}:ranking`);
-    const allRankers = await this.gameService.getRank(
-      `gameId=${pinCode}:ranking`,
-      participantNumber,
-    );
-
-    const rankerData = await Promise.all(
-      allRankers.map(async ([sid, score]) => {
-        const { nickname, character } = JSON.parse(
-          await this.redisService.get(`participant_sid=${sid}`),
-        );
-        return { nickname, score, character };
-      }),
-    );
-
-    const allParticipantsScore = rankerData.reduce((acc, { score }) => acc + Number(score), 0);
-    const averageScore = allParticipantsScore / participantNumber;
-
-    const leaderboardData = { rankerData, participantNumber, averageScore };
-
+  async handleLeaderboard(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: LeaderboardRequestDto,
+  ) {
+    const leaderboardData = await this.gameGatewayService.getLeaderBoadrd(dto);
     // TODO: 이벤트 어떤 형식으로 전달할 지 정해야 함
     return leaderboardData;
   }
 
   @SubscribeMessage('message')
-  async handleMessage(client: Socket, payload: MessageRequestDto) {
-    const { pinCode, message, position } = payload;
-    this.server.to(pinCode).emit('message', { message, position });
+  async handleMessage(@ConnectedSocket() client: Socket, @MessageBody() dto: MessageRequestDto) {
+    const response = await this.gameGatewayService.handleMessage(dto);
+    this.server.to(dto.pinCode).emit('message', response);
   }
 }
