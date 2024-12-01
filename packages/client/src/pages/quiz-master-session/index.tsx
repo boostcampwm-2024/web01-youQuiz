@@ -24,6 +24,7 @@ interface HistoryItem {
   user: string;
   submitTime: number;
   elapsedTime: number;
+  displayTime: string;
 }
 
 export default function QuizMasterSession() {
@@ -109,8 +110,7 @@ export default function QuizMasterSession() {
             </p>
             <div className="mb-2">
               <button
-                className={`bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-blue-300 disabled:cursor-not-allowed disabled:opacity-50
-  `}
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-blue-300 disabled:cursor-not-allowed disabled:opacity-50`}
                 onClick={handleNextQuiz}
                 disabled={Math.floor(tick.remainingTime / 1000) !== 0}
               >
@@ -122,7 +122,11 @@ export default function QuizMasterSession() {
       </div>
       <StatisticsGroup participantStatistics={masterStatistics} />
       <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[650px]">
-        <AnswerGraph answerStats={masterStatistics.choiceStatus} />
+        <AnswerGraph
+          answerStats={masterStatistics.choiceStatus}
+          participantCount={masterStatistics.participantLength}
+          quizData={quizData}
+        />
         <div>
           <RecentSubmittedAnswers
             userSubmitHistory={masterStatistics.submitHistory}
