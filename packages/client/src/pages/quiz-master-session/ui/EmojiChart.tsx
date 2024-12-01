@@ -15,7 +15,7 @@ export default function EmojiChart({ reactionStats }: EmojiChartProps) {
   const calculatePercentage = (count: number) => {
     if (totalVotes === 0) return 50;
 
-    return Number(((count / totalVotes) * 100).toFixed(1));
+    return Number(((count / totalVotes) * 100).toFixed(0));
   };
 
   const results = [
