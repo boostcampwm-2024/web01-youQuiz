@@ -81,7 +81,7 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
           {quizList.quizzes.length === 0 && <span>퀴즈가 없습니다.</span>}
           {quizList.quizzes.map((quizData, quizIndex) => (
             <span key={`${quizData.content} ${quizIndex}`}>
-              <span className="text-md font-bold text-secondary">Q {quizIndex + 1} : </span>
+              <span className="text-md font-bold text-secondary">Q{quizIndex + 1}: </span>
               <span className="text-md font-semibold text-gray-600">{quizData.content}</span>
             </span>
           ))}
