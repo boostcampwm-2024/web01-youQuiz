@@ -23,7 +23,7 @@ export const INITIAL_TICK: TimerTickResponse = {
 
 export const INITIAL_MASTER_STATISTICS: MasterStatisticsResponse = {
   averageTime: 0,
-  choiceStatus: { 0: 0, 1: 0, 2: 0, 3: 0 },
+  choiceStatus: {},
   participantLength: 0,
   participantRate: 0,
   solveRate: 0,
