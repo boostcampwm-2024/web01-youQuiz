@@ -1,11 +1,16 @@
 <div align="center">
   <h1>YOU QUIZ?</h1>
 
-<p> 실시간 수업을 도와주는 퀴즈 플랫폼</p>
+<br/>
+<img width="1676" alt="스크린샷 2024-12-01 오후 8 33 25" src="https://github.com/user-attachments/assets/97609207-531f-4f2a-804a-564e4d3e87e6">
+
+
 </div>
 
 > **배포 링크**  
 > https://www.you-quiz.site/
+
+<br/>
 
  <p align=center>
   <a href="https://www.notion.so/1498e498b4af815ab62de893deaee0d0?v=1498e498b4af81a4aa01000c9a21f45e&pvs=4">팀 노션</a>
@@ -17,7 +22,16 @@
   <a href="https://github.com/boostcampwm-2024/web01-youQuiz/wiki/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0">그라운드 룰</a>
   &nbsp; | &nbsp; 
   <a href="https://github.com/boostcampwm-2024/web01-youQuiz/wiki">개발 위키</a>
+
+<div align=center>
+  <a href="https://hits.seeyoufarm.com">
+    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb01-youQuiz&count_bg=%238394CF&title_bg=%235A5A5A&icon=&icon_color=%23EDEDED&title=hits&edge_flat=false" alt="Hits">
+  </a>
+</div>
+    
 </p>
+
+<br/><br/>
 
 ## 📋 목차
 
