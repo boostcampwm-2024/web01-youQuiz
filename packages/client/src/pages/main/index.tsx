@@ -11,6 +11,10 @@ export default function MainPage() {
   const toast = toastController();
 
   const handleClick = async () => {
+    if (!pinCode) {
+      toast.warning('코드를 입력해주세요.');
+      return;
+    }
     const response = await getPincodeExist(pinCode);
     if (response.isExist) {
       navigate(`/nickname/${pinCode}`);
@@ -73,7 +77,6 @@ export default function MainPage() {
           />
           <button
             className={`h-14 px-8 bg-gradient-to-r from-blue-500 to-sky-500 ${pinCode ? 'hover:from-blue-600 hover:to-sky-600' : ''}  rounded-xl text-white shadow-lg shadow-blue-500/30 cursor-pointer`}
-            disabled={!pinCode}
             onClick={handleClick}
           >
             퀴즈 참가하기
