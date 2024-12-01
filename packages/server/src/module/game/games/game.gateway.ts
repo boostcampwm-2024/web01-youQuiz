@@ -19,9 +19,9 @@ import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto'
 import { ShowRankingRequestDto } from './dto/request/show-ranking.request.dto';
 import { EndQuizRequestDto } from './dto/request/end-quiz.request.dto';
 import { MessageRequestDto } from './dto/request/message.request.dto';
-import { MASTER_POSITION, QUIZ_WAITING_TIME } from '../../../../../shared/constants/game.constants';
-import { CONNECTION_TYPES } from '../../../../../shared/types/connection.types';
-import { GAMESTATUS_TYPES } from '../../../../../shared/types/gameStatus.types';
+import { MASTER_POSITION, QUIZ_WAITING_TIME } from '@shared/constants/game.constants';
+import { CONNECTION_TYPES } from '@shared/types/connection.types';
+import { GAMESTATUS_TYPES } from '@shared/types/gameStatus.types';
 import { LeaderboardRequestDto } from './dto/request/leaderboard.request.dto';
 
 @Injectable()
