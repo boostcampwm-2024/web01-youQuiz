@@ -21,78 +21,72 @@
 </p>
 
 
-## ✋팀원 소개
-<div align="center">
-  
-|[FE] J031_김도훈|[FE] J255_최병찬|[BE] J087_도성현|[BE] J289_이채원|
-|--|--|--|--|
-|<img src="https://avatars.githubusercontent.com/u/74540646?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/77400298?v=4" width=150 />|<img src="https://avatars.githubusercontent.com/u/52828205?v=4" width=150 />|<img src="https://avatars.githubusercontent.com/u/99425616?v=4" width=150/>|
-|[@dooohun](https://github.com/dooohun)|[@chan-byeong](https://github.com/chan-byeong)|[@glaxyt](https://github.com/glaxyt)|[@nowChae](https://github.com/nowChae)|
+- [목차](#-목차)
+- [프로젝트 개요](#-프로젝트-개요)
+- [핵심 기능](#-핵심-기능)
+  - [나만의 특별한 퀴즈, 지금 시작해볼까요?](#나만의-특별한-퀴즈-지금-시작해볼까요)
+  - [잠시만요! 친구들과 대화하며 기다려요](#잠시만요-친구들과-대화하며-기다려요)
+  - [다른 참가자들의 반응을 보며 함께 퀴즈를 풀어봐요!](#다른-참가자들의-반응을-보며-함께-퀴즈를-풀어봐요)
+  - [참여자 실시간 두뇌 분석 중!](#참여자-실시간-두뇌-분석-중)
+  - [두구두구! 최종 우승자는?](#두구두구-최종-우승자는)
+- [기술 스택](#기술-스택)
+- [시스템 아키텍처](#-시스템-아키텍처)
+- [공통 기술적 도전](#-공통-기술적-도전)
+- [FE 기술적 도전](#-fe-기술적-도전)
+- [BE 기술적 도전](#-be-기술적-도전)
+- [팀원 소개](#-팀원-소개)
 
-</div>
+<br/>
 
+## 프로젝트 개요
+YOU QUIZ는 실시간으로 함께 퀴즈를 풀며 소통할 수 있는 참여형 퀴즈 플랫폼입니다. 주최자가 생성한 퀴즈를 여러 참가자들이 동시에 풀면서 서로의 반응을 공유하고, 실시간으로 변화하는 통계를 확인할 수 있습니다.
 
+<br/>
 
-## 🚀 프로젝트 기능 소개
-**주최자**
+## 핵심 기능
+### 나만의 특별한 퀴즈, 지금 시작해볼까요?
+> 단 몇 번의 클릭으로 퀴즈를 손쉽게 만들 수 있어요.
+> 객관식, 주관식 문제를 자유롭게 혼합해서 구성해보세요.
+> 제한 시간과 배점을 설정하고, 퀴즈의 난이도를 조절할 수 있습니다.
 
-- 퀴즈 생성 → 게임 발행 → 퀴즈 풀이 관전
+### 잠시만요! 친구들과 대화하며 기다려요
+> 각자의 개성이 담긴 귀여운 캐릭터가 무작위로 배정되며, 내 캐릭터는 파란색 배경으로 돋보입니다.
+> 실시간 채팅으로 다른 참가자들과 자유롭게 대화를 나눠보세요! / 키만 누르면 바로 채팅을 시작할 수 있습니다.
+> Enter 키 한 번으로 대화를 마무리할 수 있어요.
 
-**참가자**
+### 다른 참가자들의 반응을 보며 함께 퀴즈를 풀어봐요!
+> 빠른 정답자가 되어 높은 점수를 획득해보세요!  
+> 이모지로 퀴즈에 대한 여러분의 생각을 표현해보세요. 다른 참가자들의 반응도 실시간으로 확인할 수 있습니다.
 
-- 게임 참가 → 퀴즈 풀이 진행
+### 잠깐! 중간 순위를 확인하실게요~
+> 짜잔! 이번 라운드의 결과가 공개됩니다.
+> 영광의 TOP 3는 누구? 최고 점수 획득자를 함께 축하해주세요!
+> 내 순위와 점수도 확인하고, 다음 라운드를 노려보세요.
 
-### **<게임 대기 페이지 - 공통>**  
-![image](https://github.com/user-attachments/assets/79349eca-55cc-469c-b738-4195e34321eb)
+### 참여자 실시간 두뇌 분석 중!
+> 참가자들의 모든 순간을 한눈에! 실시간으로 업데이트되는 다양한 통계를 확인해보세요.
 
-- 게임 대기 페이지로 들어오면 참여자의 고유의 캐릭터가 배정되고, 자신의 캐릭터는 파란색 배경으로 확인할 수 있습니다.
-- 실시간으로 채팅을 참여할 수 있으며,  `/` 버튼을 눌러서 보내고자하는 텍스트를 실시간으로 전송이 가능합니다.
-- 채팅은 `Enter` 버튼을 눌러 종료할 수 있습니다.
+**확인할 수 있는 재미있는 데이터들**
+  - 순간순간 올라가는 제출 현황
+  - 참가자들의 정답 적중률
+  - 얼마나 빠르게 푸는지 보여주는 평균 풀이 시간
+  - 참가자들의 열정을 보여주는 참여율
+  - 어떤 선택지가 인기있었는지 한눈에 보기
+  - 실시간으로 올라오는 참가자들의 재미있는 반응들
 
-### **<게임 진행 페이지 - 참여자>**  
-![image](https://github.com/user-attachments/assets/0395c21e-c4c6-4479-b50b-d5553bd4daad)
-
-- 정답을 제출한 참여자들은 풀이 시간에 따른 점수를 할당 받습니다.
-- 이모지 기능을 통해서 퀴즈에 대한 참여자들의 반응을 실시간으로 볼 수 있습니다.
-
-### **<정답 제출 후 게임 진행 페이지 - 참여자>**  
-![image](https://github.com/user-attachments/assets/87b490b8-38a5-4f37-884c-bb2d146581ab)
-
-- 실시간으로 변하는 총 제출, 정답률, 평균 풀이 시간, 평균 참여율 정보를 확인할 수 있습니다.
-- 참여자 본인의 제출 등수를 확인할 수 있습니다.
-
-### **<게임 진행 관리 및 통계 페이지 - 주최자>**  
-![image](https://github.com/user-attachments/assets/c13b18bd-d334-4aa6-bc4f-187ff6d90965)
-
-
-- 주최자는 실시간으로 퀴즈를 진행한 참여자들의 제출과 반응을 볼 수 있습니다.
-- 볼 수 있는 통계 항목
-    - 총 제출
-    - 정답률
-    - 평균 풀이 시간
-    - 평균 참여율
-    - 참여자들이 제출한 선택지
-    - 참여자들의 제출 현황
-    - 참여자들의 반응
-
-### **<게임 중간 집계 페이지 - 참여자>**  
-![image](https://github.com/user-attachments/assets/d22a3741-89f5-4d6a-9762-dcb4eaadf8e1)
-
-
-- 퀴즈의 제한시간이 종료된 이후에 해당 화면을 볼 수 있습니다.
-- 게임의 Top3를 점수와 함께 확인할 수 있습니다.
-- 참여자 본인의 등수 및 점수를 확인할 수 있습니다.
+### 두구두구! 최종 우승자는?
+> 모든 라운드의 점수를 합산했습니다.
+> 영광의 우승자와 TOP 3를 확인해보세요!
+> 참가자별 총점과 전체 순위를 한눈에 볼 수 있습니다.
+> 다음 게임에서는 우승자가 되어볼까요?
 
 
 ## ⚒️ 기술 스택
-
-
 
 ### 💻 Common
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white)
 ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=white)
 ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=ESLint&logoColor=white)
-![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=Jest&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat-square&logo=Socket.io&logoColor=white)
 
 ### 🎨 Frontend
@@ -114,4 +108,14 @@
 ![NGINX](https://img.shields.io/badge/NGINX-009639?style=flat-square&logo=NGINX&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=GitHub-Actions&logoColor=white)
 ![Naver Cloud Platform](https://img.shields.io/badge/Naver_Cloud-03C75A?style=flat-square&logo=Naver&logoColor=white)
+
+## ✋팀원 소개
+<div align="center">
+  
+|[FE] J031_김도훈|[FE] J255_최병찬|[BE] J087_도성현|[BE] J289_이채원|
+|--|--|--|--|
+|<img src="https://avatars.githubusercontent.com/u/74540646?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/77400298?v=4" width=150 />|<img src="https://avatars.githubusercontent.com/u/52828205?v=4" width=150 />|<img src="https://avatars.githubusercontent.com/u/99425616?v=4" width=150/>|
+|[@dooohun](https://github.com/dooohun)|[@chan-byeong](https://github.com/chan-byeong)|[@glaxyt](https://github.com/glaxyt)|[@nowChae](https://github.com/nowChae)|
+
+</div>
 

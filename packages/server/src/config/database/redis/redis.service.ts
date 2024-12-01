@@ -37,4 +37,8 @@ export class RedisService {
   async zscore(key: string, member: string) {
     return await this.redis.zscore(key, member);
   }
+
+  async zcard(key: string) {
+    return await this.redis.zcard(key);
+  }
 }

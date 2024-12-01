@@ -17,6 +17,7 @@ interface UserGridItemProps {
   otherMessage: string | undefined;
 }
 
+const MAX_MESSAGE_LENGTH = 15;
 const characters = [DogImage, CatImage, PigImage, RabbitImage, PenguinImage, HamsterImage];
 const characterNames = ['강아지', '고양이', '돼지', '토끼', '펭귄', '햄스터'];
 
@@ -66,6 +67,10 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
           }
         }, 100);
       }
+      if (e.key === 'Escape') {
+        setMessage('');
+        setIsFocused(false);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -83,6 +88,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
             value={message}
             onChange={handleMessageChange}
             onKeyDown={handleEnterKeyDown}
+            maxLength={MAX_MESSAGE_LENGTH}
             className="absolute -top-7 rounded-md shadow-sm outline-none px-2 w-40 h-6 text-sm"
           />
           <div
@@ -114,7 +120,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
         />
         {!isMine && otherMessage && (
           <div
-            className={`flex items-center absolute -top-7 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 3]} px-2 h-6 rounded-lg shadow-sm text-sm font-semibold whitespace-nowrap`}
+            className={`max-w-44 flex items-center absolute -top-7 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 3]} px-2 h-6 rounded-lg shadow-sm text-sm font-semibold whitespace-nowrap overflow-hidden text-overflow-ellipsis`}
           >
             {otherMessage}
           </div>

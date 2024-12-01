@@ -72,7 +72,7 @@ export default function MainPage() {
             onKeyDown={handleKeyDown}
           />
           <button
-            className={`h-14 px-8 bg-gradient-to-r from-blue-500 to-sky-500 ${pinCode ? 'hover:from-blue-600 hover:to-sky-600' : ''}  rounded-xl text-white shadow-lg shadow-blue-500/30`}
+            className={`h-14 px-8 bg-gradient-to-r from-blue-500 to-sky-500 ${pinCode ? 'hover:from-blue-600 hover:to-sky-600' : ''}  rounded-xl text-white shadow-lg shadow-blue-500/30 cursor-pointer`}
             disabled={!pinCode}
             onClick={handleClick}
           >
