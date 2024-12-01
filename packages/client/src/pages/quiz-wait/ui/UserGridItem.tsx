@@ -89,7 +89,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
             onChange={handleMessageChange}
             onKeyDown={handleEnterKeyDown}
             maxLength={MAX_MESSAGE_LENGTH}
-            className="absolute -top-7 rounded-md shadow-sm outline-none px-2 w-40 h-6 text-sm"
+            className="absolute -top-7 rounded-md shadow-sm outline-none px-2 w-32 h-6 text-sm"
           />
           <div
             className="absolute inset-0 -top-1 left-12 w-0 h-0
