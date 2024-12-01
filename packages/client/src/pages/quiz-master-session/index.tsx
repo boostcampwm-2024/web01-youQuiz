@@ -121,7 +121,7 @@ export default function QuizMasterSession() {
         </div>
       </div>
       <StatisticsGroup participantStatistics={masterStatistics} />
-      <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[650px]">
+      <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[calc(100vh-300px)]">
         <AnswerGraph
           answerStats={masterStatistics.choiceStatus}
           participantCount={masterStatistics.participantLength}
