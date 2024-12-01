@@ -1,9 +1,11 @@
+import { formatElapsedTime } from '@/shared/utils/formatElapsedTime';
 import { useEffect } from 'react';
 
 interface HistoryItem {
   user: string;
   submitTime: number;
   elapsedTime: number;
+  displayTime: string;
 }
 
 interface RecentSubmittedAnswersProps {
@@ -29,6 +31,7 @@ export default function RecentSubmittedAnswers({
           user,
           submitTime,
           elapsedTime: existedHistory ? existedHistory.elapsedTime : 0,
+          displayTime: existedHistory ? existedHistory.displayTime : '',
         };
       });
 
@@ -49,6 +52,7 @@ export default function RecentSubmittedAnswers({
         prev.map((item) => ({
           ...item,
           elapsedTime: item.elapsedTime + 1,
+          displayTime: formatElapsedTime(item.elapsedTime + 1),
         })),
       );
     }, 1000);
@@ -79,7 +83,7 @@ export default function RecentSubmittedAnswers({
                 </div>
                 <div>
                   <p className="font-medium">{item.user}님</p>
-                  <p className="text-sm text-gray-500">{item.elapsedTime}초 전 제출</p>
+                  <p className="text-sm text-gray-500">{item.displayTime || '방금 전'}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
