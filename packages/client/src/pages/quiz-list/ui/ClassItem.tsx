@@ -27,7 +27,8 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
   const mutation = useDeleteClass();
   const navigate = useNavigate();
 
-  const handleSelectClass = (index: number) => {
+  const handleSelectClass = (index: number, e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
     setSelectedClassIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
 
@@ -53,7 +54,7 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
     <>
       <div
         className={`flex justify-between items-center min-w-content h-20 bg-white shadow-sm border rounded-base p-6 cursor-pointer`}
-        onClick={() => handleSelectClass(index)}
+        onClick={(e) => handleSelectClass(index, e)}
       >
         <div className="flex flex-col">
           <span className="text-lg font-semibold">{quizList.title}</span>
@@ -72,7 +73,7 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
             color="secondary"
             onClick={() => handleQuizStart(quizList.id)}
           />
-          <button type="button" onClick={() => handleSelectClass(index)}>
+          <button type="button" onClick={(e) => handleSelectClass(index, e)}>
             <DownArrowIcon
               stroke="#000000"
               className={selectedClassIndex === index ? 'rotate-180' : 'rotate-0'}
