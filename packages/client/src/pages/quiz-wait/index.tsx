@@ -1,11 +1,10 @@
-import { CustomButton } from '@/shared/ui/buttons';
-import { QRCodeSVG } from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Copy, Users, PlayCircle } from 'lucide-react';
+
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
 import { toastController } from '@/features/toast/model/toastController';
-import LoadingSpinner from '@/shared/assets/icons/loading-alt-loop.svg?react';
 import { apiClient } from '@/shared/api';
 import UserGridView from './ui/UserGridView';
 
@@ -79,43 +78,49 @@ export default function QuizWait() {
 
   return (
     <div className="flex justify-center gap-6 pt-8">
-      <div className="flex flex-col justify-center items-center gap-16 h-80 bg-white p-10 rounded-xl shadow-md">
-        <QRCodeSVG value={guestLink} />
-        <div>
-          <CustomButton
-            type="full"
-            color="primary"
-            label="COPY LINK!"
-            size="md"
-            onClick={handleCopyLink}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col gap-8 justify-center items-center">
-        <div className="w-[1300px] bg-white rounded-xl shadow-md p-10">
-          <div className="relative flex justify-end items-center mb-4">
-            <p className="font-bold text-2xl absolute inset-0 flex items-center justify-center">
-              참가 대기 중
-            </p>
-            <div className="text-lg font-bold px-3 py-1 rounded-full bg-gray-100">
-              PIN: {pinCode}
+      <div className="flex flex-col gap-6 justify-center items-center">
+        <div className="w-full bg-white rounded-xl shadow-md p-6">
+          <div className="relative flex items-center justify-between mb-4 gap-2">
+            <div className="flex items-center gap-2">
+              <div className="text-lg font-bold px-4 py-2 rounded-xl bg-gray-100">
+                <span className="text-gray-500">Pin : </span>
+                {pinCode}
+              </div>
+              <div
+                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 flex items-center gap-2 cursor-pointer"
+                onClick={handleCopyLink}
+              >
+                <Copy className="w-4 h-4" />
+                링크 복사하기
+              </div>
             </div>
-            <p className="flex items-center gap-2 font-bold text-lg ml-auto">
-              <LoadingSpinner className="animate-spin" />
-              {guests.length === 0 ? 'no' : guests.length} participants
+
+            <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-fit flex items-center gap-2 justify-center font-medium text-md text-gray-700">
+              <span className="text-blue-500 font-bold"> / </span>입력 시 채팅을 칠 수 있어요.
+            </p>
+
+            <p className="flex items-center gap-6 font-bold text-lg">
+              <div className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-2xl">
+                <Users className="w-5 h-5 text-gray-600" />
+                <span className="font-medium text-gray-700">{guests.length}명</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <span className="text-gray-500 font-medium">참가 대기중</span>
+              </div>
             </p>
           </div>
           <UserGridView guests={guests} myPosition={myPosition} />
         </div>
         {userType === 'master' && (
           <div className="flex justify-end min-w-full">
-            <CustomButton
-              type="full"
-              color="primary"
-              label="퀴즈 시작하기"
-              size="md"
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 flex items-center gap-2 cursor-pointer"
               onClick={handleQuizStart}
-            />
+            >
+              <PlayCircle className="w-6 h-6 text-white" />
+              퀴즈 시작하기
+            </button>
           </div>
         )}
       </div>

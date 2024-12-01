@@ -25,14 +25,14 @@ export default function UserGridView({ guests, myPosition }: UserGridViewProps) 
   }, []);
 
   return (
-    <div className="w-full bg-blue-50 rounded-xl shadow-md">
-      <div className="grid grid-cols-7 gap-16 p-8">
-        {Array.from({ length: 28 }).map((_, index) => {
+    <div className="w-full bg-blue-100 rounded-xl shadow-md">
+      <div className="grid grid-cols-8 gap-16 p-8">
+        {Array.from({ length: 32 }).map((_, index) => {
           if (index >= guests.length) {
             return (
               <div key={index} className={`flex flex-col items-center`}>
-                <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
-                <div className="w-16 h-4 bg-gray-200 rounded-md mt-2"></div>
+                <div className="w-20 h-20 bg-white/60 rounded-full"></div>
+                <div className="w-16 h-4 bg-white/60 rounded-md mt-2"></div>
               </div>
             );
           }
