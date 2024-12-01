@@ -36,7 +36,8 @@ export default function AnswerGraph({ answerStats, quizData, participantCount }:
   useEffect(() => {
     if (quizData?.choices) {
       const formattedData = Object.entries(answerStats).map(([key, count]) => ({
-        answer: `1번: ${quizData.choices[parseInt(key)].content}` || `답변 ${key}`,
+        answer:
+          `${parseInt(key) + 1}번: ${quizData.choices[parseInt(key)].content}` || `답변 ${key}`,
         count,
       }));
       setAnswerStatsArray(formattedData);
@@ -53,7 +54,6 @@ export default function AnswerGraph({ answerStats, quizData, participantCount }:
       </div>
     );
   }
-
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={answerStatsArray} barSize={60}>
