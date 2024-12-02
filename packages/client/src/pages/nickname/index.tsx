@@ -1,31 +1,34 @@
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import TrophyIcon from '@/shared/assets/icons/tropyhy.svg?react';
 import AvatarIcon from '@/shared/assets/icons/avatar.svg?react';
 
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getCookie, setCookie } from '@/shared/utils/cookie';
+import { setCookie } from '@/shared/utils/cookie';
 import { getQuizSocket } from '@/shared/utils/socket';
+import { emitEventWithAck } from '@/shared/utils/emitEventWithAck';
+import { toastController } from '@/features/toast/model/toastController';
 
 const MAX_NICKNAME_LENGTH = 12;
 
 export default function Nickname() {
   const { pinCode } = useParams();
-  const [nickname, setNickname] = useState('');
   const navigate = useNavigate();
+  const toast = toastController();
+  const [nickname, setNickname] = useState('');
 
-  const handleNicknameSubmit = (nickname: string) => {
+  const handleNicknameSubmit = async (nickname: string) => {
     const socket = getQuizSocket();
-    const sid = getCookie('sid');
-    if (sid) {
-      socket.emit('participant re-entry', { pinCode: pinCode, nickname: nickname, sid: sid });
-      navigate(`/quiz/wait/${pinCode}`);
-      return;
-    }
-    socket.emit('participant entry', { pinCode: pinCode, nickname: nickname });
-
-    socket.on('session', (response) => {
-      setCookie('sid', response);
+    const sid = await emitEventWithAck<string>(socket, 'session', {
+      pinCode: pinCode,
+      nickname: nickname,
     });
+    if (!sid) {
+      toast.warning('방이 가득 찼습니다.');
+      navigate(`/`);
+    }
+    setCookie('sid', sid);
+    socket.emit('participant notice', { pinCode: pinCode });
     navigate(`/quiz/wait/${pinCode}`);
   };
 

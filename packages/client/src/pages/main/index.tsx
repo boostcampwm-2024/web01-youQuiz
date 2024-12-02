@@ -1,5 +1,5 @@
 import { toastController } from '@/features/toast/model/toastController';
-import { getPincodeExist } from '@/shared/api/games';
+import { getPincodeExist, checkPincodePossible } from '@/shared/api/games';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingSquare from './ui/FloatingSquare';
@@ -11,9 +11,20 @@ export default function MainPage() {
   const toast = toastController();
 
   const handleClick = async () => {
+    if (!pinCode) {
+      toast.warning('코드를 입력해주세요.');
+      return;
+    }
     const response = await getPincodeExist(pinCode);
+
     if (response.isExist) {
-      navigate(`/nickname/${pinCode}`);
+      const checkResponse = await checkPincodePossible(pinCode);
+      console.log(checkResponse);
+      if (checkResponse.isPossible) {
+        navigate(`/nickname/${pinCode}`);
+      } else {
+        toast.warning('방이 가득 찼습니다.');
+      }
       return;
     }
     toast.error('잘못된 코드입니다.');
@@ -73,7 +84,6 @@ export default function MainPage() {
           />
           <button
             className={`h-14 px-8 bg-gradient-to-r from-blue-500 to-sky-500 ${pinCode ? 'hover:from-blue-600 hover:to-sky-600' : ''}  rounded-xl text-white shadow-lg shadow-blue-500/30 cursor-pointer`}
-            disabled={!pinCode}
             onClick={handleClick}
           >
             퀴즈 참가하기
