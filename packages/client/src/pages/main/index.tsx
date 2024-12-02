@@ -1,5 +1,5 @@
 import { toastController } from '@/features/toast/model/toastController';
-import { getPincodeExist } from '@/shared/api/games';
+import { getPincodeExist, checkPincodePossible } from '@/shared/api/games';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingSquare from './ui/FloatingSquare';
@@ -12,8 +12,15 @@ export default function MainPage() {
 
   const handleClick = async () => {
     const response = await getPincodeExist(pinCode);
+
     if (response.isExist) {
-      navigate(`/nickname/${pinCode}`);
+      const checkResponse = await checkPincodePossible(pinCode);
+      console.log(checkResponse);
+      if (checkResponse.isPossible) {
+        navigate(`/nickname/${pinCode}`);
+      } else {
+        toast.warning('방이 가득 찼습니다.');
+      }
       return;
     }
     toast.error('잘못된 코드입니다.');
