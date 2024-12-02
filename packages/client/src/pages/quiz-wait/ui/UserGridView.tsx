@@ -11,21 +11,29 @@ interface UserGridViewProps {
 
 export default function UserGridView({ guests, myPosition }: UserGridViewProps) {
   const [otherMessage, setOtherMessage] = useState<Map<number, string>>(new Map<number, string>());
+  const [masterMessage, setMasterMessage] = useState<string>('');
 
   const socket = getQuizSocket();
 
   useEffect(() => {
     socket.on('message', (response) => {
-      setOtherMessage((prevMap) => {
-        const newMap = new Map(prevMap);
-        newMap.set(response.position, response.message);
-        return newMap;
-      });
+      if (response.position === -1) {
+        setMasterMessage(response.message);
+      } else {
+        setOtherMessage((prevMap) => {
+          const newMap = new Map(prevMap);
+          newMap.set(response.position, response.message);
+          return newMap;
+        });
+      }
     });
   }, []);
 
   return (
-    <div className="w-full bg-blue-100 rounded-xl shadow-md">
+    <div className="relative w-full bg-blue-100 rounded-xl shadow-md">
+      <span className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-4xl font-semibold text-transparent bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text">
+        {masterMessage}
+      </span>
       <div className="grid grid-cols-8 gap-16 p-8">
         {Array.from({ length: 32 }).map((_, index) => {
           if (index >= guests.length) {

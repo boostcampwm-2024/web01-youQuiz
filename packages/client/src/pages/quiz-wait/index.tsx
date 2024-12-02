@@ -7,6 +7,7 @@ import { getCookie } from '@/shared/utils/cookie';
 import { toastController } from '@/features/toast/model/toastController';
 import { apiClient } from '@/shared/api';
 import UserGridView from './ui/UserGridView';
+import MasterChat from './ui/MasterChat';
 
 export interface Guest {
   nickname: string;
@@ -77,7 +78,7 @@ export default function QuizWait() {
   };
 
   return (
-    <div className="flex justify-center gap-6 pt-8">
+    <div className="flex justify-center gap-4 pt-8">
       <div className="flex flex-col gap-6 justify-center items-center">
         <div className="w-full bg-white rounded-xl shadow-md p-6">
           <div className="relative flex items-center justify-between mb-4 gap-2">
@@ -113,7 +114,8 @@ export default function QuizWait() {
           <UserGridView guests={guests} myPosition={myPosition} />
         </div>
         {userType === 'master' && (
-          <div className="flex justify-end min-w-full">
+          <div className="relative flex justify-end min-w-full">
+            <MasterChat pinCode={pinCode ?? ''} />
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 flex items-center gap-2 cursor-pointer"
               onClick={handleQuizStart}
