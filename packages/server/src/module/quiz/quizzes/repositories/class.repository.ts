@@ -34,6 +34,14 @@ export class ClassRepository {
             choices: true,
           },
         },
+        order: {
+          quizzes: {
+            position: 'ASC',
+            choices: {
+              position: 'ASC',
+            },
+          },
+        },
       });
       return result;
     } catch (error) {
