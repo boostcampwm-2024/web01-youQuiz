@@ -45,6 +45,11 @@ export default function MasterChat({ pinCode }: MasterChatProps) {
       if (e.key === 'Escape') {
         setMessage('');
         setIsFocused(false);
+        socket.emit('message', {
+          pinCode,
+          message: '',
+          position: -1,
+        });
       }
     };
     window.addEventListener('keydown', handleKeyDown);

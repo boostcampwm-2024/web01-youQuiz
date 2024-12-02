@@ -8,6 +8,7 @@ import { toastController } from '@/features/toast/model/toastController';
 import { apiClient } from '@/shared/api';
 import UserGridView from './ui/UserGridView';
 import { useNickname } from './model/hooks/useNickname';
+import MasterChat from './ui/MasterChat';
 
 export interface Guest {
   nickname: string;
@@ -70,7 +71,7 @@ export default function QuizWaitLazyPage() {
   };
 
   return (
-    <div className="flex justify-center gap-6 pt-8">
+    <div className="flex justify-center gap-4 pt-8">
       <div className="flex flex-col gap-6 justify-center items-center">
         <div className="w-full bg-white rounded-xl shadow-md p-6">
           <div className="relative flex items-center justify-between mb-4 gap-2">
@@ -87,11 +88,9 @@ export default function QuizWaitLazyPage() {
                 링크 복사하기
               </div>
             </div>
-
             <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-fit flex items-center gap-2 justify-center font-medium text-md text-gray-700">
               <span className="text-blue-500 font-bold"> / </span>입력 시 채팅을 칠 수 있어요.
             </p>
-
             <p className="flex items-center gap-6 font-bold text-lg">
               <div className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-2xl">
                 <Users className="w-5 h-5 text-gray-600" />
@@ -106,7 +105,8 @@ export default function QuizWaitLazyPage() {
           <UserGridView guests={participantList} myPosition={myPosition} />
         </div>
         {userType === 'master' && (
-          <div className="flex justify-end min-w-full">
+          <div className="relative flex justify-end min-w-full">
+            <MasterChat pinCode={pinCode ?? ''} />
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 flex items-center gap-2 cursor-pointer"
               onClick={handleQuizStart}
