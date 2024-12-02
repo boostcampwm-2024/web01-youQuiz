@@ -5,9 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "concurrently \"yarn start:server \" \"yarn dev:client\"",
+    "dev": "concurrently \"yarn dev:server \" \"yarn dev:client\"",
     "dev:client": "yarn workspace client run dev",
-    "start:server": "yarn workspace server run start"
+    "dev:server": "yarn workspace server run start:dev"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
