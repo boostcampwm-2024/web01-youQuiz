@@ -95,7 +95,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const quizMaxNum = quizData.length - 1;
     const gameStatus = GAMESTATUS_TYPES.WAITING;
 
-    const gameInfo = { classId, gameStatus, currentOrder: 0, quizMaxNum, participantList: [] };
+    const gameInfo = { classId, gameStatus, currentOrder: -1, quizMaxNum, participantList: [] };
 
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
@@ -173,13 +173,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
     const { classId, currentOrder, quizMaxNum } = gameInfo;
+
+    gameInfo.currentOrder += 1;
+    await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
     // TODO:캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
 
     // 퀴즈 데이터 가져오기, 초이스 개수를 알아야하기 위해 -> 이후 초이스 배열 만들어야함
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
-    const currentQuizData = quizData[currentOrder];
+    const currentQuizData = quizData[gameInfo.currentOrder];
 
     const choicesLength = currentQuizData['choices'].length;
 
@@ -199,9 +202,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
 
     await this.redisService.set(
-      `gameId=${pinCode}:quizId=${currentOrder}`,
+      `gameId=${pinCode}:quizId=${gameInfo.currentOrder}`,
       JSON.stringify(gameStatus),
     );
+
     // 마스터가 참여자들에게 게임 시작을 알림, 이 알림을 받은 참여자는 showranking을 시작한다.
     client.to(pinCode).emit('start quiz', { isStarted: true });
   }
