@@ -6,7 +6,6 @@ import QuizCreatePage from '@/pages/quiz-create';
 import GuestLayout from '@/app/layouts/GuestLayout';
 import NotFound from '@/app/routes/NotFound';
 import QuizSession from '@/pages/quiz-session';
-import QuizWait from '@/pages/quiz-wait';
 import Nickname from '@/pages/nickname';
 import QuizQuestion from '@/pages/quiz-question';
 import QnA from '@/pages/qna';
@@ -14,6 +13,8 @@ import GuestQnA from '@/pages/guest-qna';
 import QuizMasterSession from '@/pages/quiz-master-session';
 import Leaderboard from '@/pages/leaderboard';
 import QuizListPage from '@/pages/quiz-list';
+import QuizWaitPage from '@/pages/quiz-wait';
+import PreventGuestRouter from './PreventGuestRouter';
 
 export default function Router() {
   return (
@@ -25,10 +26,11 @@ export default function Router() {
         <Route path="/questions" element={<QnA />} />
       </Route>
       <Route element={<GuestLayout />}>
-        <Route path="/quiz/session/:pinCode/:id" element={<QuizSession />} />
-        <Route path="/quiz/wait/:pinCode" element={<QuizWait />} />
-        <Route path="/guest/questions" element={<GuestQnA />} />
-
+        <Route element={<PreventGuestRouter />}>
+          <Route path="/quiz/session/:pinCode/:id" element={<QuizSession />} />
+          <Route path="/quiz/wait/:pinCode" element={<QuizWaitPage />} />
+          <Route path="/guest/questions" element={<GuestQnA />} />
+        </Route>
         <Route path="/nickname/:pinCode" element={<Nickname />} />
       </Route>
       <Route path="/quiz/question" element={<QuizQuestion />} />
