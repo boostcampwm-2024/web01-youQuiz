@@ -69,10 +69,6 @@ export class QuizService {
   async getAllClasses(): Promise<GetClassResponseDto[]> {
     const classEntities = await this.classRepository.findAll();
 
-    if (!classEntities || classEntities.length === 0) {
-      throw new NotFoundException(`No classes found`);
-    }
-
     return classEntities.map((classEntity: Class) => GetClassResponseDto.fromEntity(classEntity));
   }
 

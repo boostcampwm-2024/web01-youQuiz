@@ -35,9 +35,6 @@ export class ClassRepository {
           },
         },
       });
-      if (!result) {
-        throw new NotFoundException(`No classes found`);
-      }
       return result;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
