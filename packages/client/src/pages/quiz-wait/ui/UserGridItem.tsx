@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Guest } from '../index';
+import { Guest } from '../index.lazy';
 import { getQuizSocket } from '@/shared/utils/socket';
 
 import DogImage from '@/shared/assets/characters/강아지.png';

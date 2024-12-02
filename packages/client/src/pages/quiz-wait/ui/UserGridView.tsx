@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Guest } from '../index';
+import { Guest } from '../index.lazy';
 import UserGridItem from './UserGridItem';
 import { getQuizSocket } from '@/shared/utils/socket';
 
