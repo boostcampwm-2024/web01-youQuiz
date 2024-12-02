@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { getQuizSocket } from '@/shared/utils/socket';
 import { getCookie } from '@/shared/utils/cookie';
+
+interface QuizEndProps {
+  quizOrder: number;
+}
 
 const Nickname = ({ nickname }: { nickname: string }) => {
   return (
@@ -11,8 +16,9 @@ const Nickname = ({ nickname }: { nickname: string }) => {
   );
 };
 
-export default function QuizEnd() {
+export default function QuizEnd({ quizOrder }: QuizEndProps) {
   const socket = getQuizSocket();
+  const navigate = useNavigate();
   const { pinCode } = useParams();
 
   const [ranking, setRanking] = useState<any>([]);
@@ -21,6 +27,16 @@ export default function QuizEnd() {
     socket.emit('show ranking', { pinCode, sid: getCookie('sid') }, (response: any) => {
       setRanking(response);
     });
+
+    const handleStartQuiz = () => {
+      navigate(`/quiz/session/${pinCode}/${quizOrder + 1}`);
+    };
+
+    socket.on('start quiz', handleStartQuiz);
+
+    return () => {
+      socket.off('start quiz', handleStartQuiz);
+    };
   }, []);
 
   return (

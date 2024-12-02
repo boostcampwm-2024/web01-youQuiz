@@ -19,6 +19,7 @@ import {
   INITIAL_EMOJI,
 } from '@/shared/constants/initialState';
 import EmojiChart from './ui/EmojiChart';
+import { useQuizSession } from '../quiz-session/model/hooks/useQuizSession';
 
 interface HistoryItem {
   user: string;
@@ -40,6 +41,8 @@ export default function QuizMasterSession() {
   const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
+  const { data: quiz } = useQuizSession({ socket, pinCode: pinCode as string });
+
   const initQuizData = () => {
     setQuizData(INITIAL_QUIZ_DATA);
     setMasterStatistics(INITIAL_MASTER_STATISTICS);
@@ -57,13 +60,13 @@ export default function QuizMasterSession() {
     if (Math.floor(tick.remainingTime / 1000) === 0) {
       initQuizData();
       setQuizIndex((prev) => prev + 1);
-      socket.emit('show quiz', { pinCode });
+      socket.emit('start quiz', { pinCode });
     }
   };
 
-  useEffect(() => {
-    socket.emit('show quiz', { pinCode });
+  console.log(quiz);
 
+  useEffect(() => {
     const handleShowQuiz = (response: ShowQuizResponse) => {
       const { currentQuizData, isLast } = response;
       setQuizData(currentQuizData);
@@ -98,7 +101,7 @@ export default function QuizMasterSession() {
           <div>
             <h1 className="text-xl font-bold mb-2">실시간 통계</h1>
             <p className="text-2xl font-bold mb-2">
-              Q{quizIndex + 1}. {quizData.content}
+              Q{quizIndex + 1}. {quiz.currentQuizData.content}
             </p>
           </div>
           <div>
@@ -125,7 +128,7 @@ export default function QuizMasterSession() {
         <AnswerGraph
           answerStats={masterStatistics.choiceStatus}
           participantCount={masterStatistics.participantLength}
-          quizData={quizData}
+          quizData={quiz.currentQuizData}
         />
         <div>
           <RecentSubmittedAnswers

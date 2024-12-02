@@ -1,24 +1,41 @@
 import { useEffect, useState } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
-import { TimerTickResponse } from '@youquiz/shared/interfaces/response';
 
 interface QuizHeaderProps {
-  tick: TimerTickResponse;
+  startTime: number;
+  timeLimit: number;
+  setQuizEnd: (value: boolean) => void;
 }
 
-export default function QuizHeader({ tick }: QuizHeaderProps) {
+export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHeaderProps) {
   const socket = getQuizSocket();
-  const [submitStatus, setSubmitStatus] = useState<{ count: number; total: number }>({
+  const [submitStatus, setSubmitStatus] = useState<any>({
     count: 0,
     total: 0,
   });
-
-  const handleSubmitStatus = (status: { count: number; total: number }) => {
-    setSubmitStatus(status);
-  };
+  const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {
+    const intervalId = setInterval(() => {
+      const timeLeft = timeLimit - Math.floor((Date.now() - startTime) / 1000);
+      setRemainingTime(timeLeft);
+      if (timeLeft <= 0) {
+        setQuizEnd(true);
+      }
+    }, 100);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [startTime, timeLimit]);
+
+  useEffect(() => {
+    const handleSubmitStatus = (status: any) => {
+      console.log('submitStatus', status);
+      setSubmitStatus(status);
+    };
+
     socket.on('submit status', handleSubmitStatus);
 
     return () => {
@@ -32,7 +49,7 @@ export default function QuizHeader({ tick }: QuizHeaderProps) {
         <div className="text-lg text-black-400 font-semibold">
           {submitStatus.count} / {submitStatus.total}명 제출
         </div>
-        <div className="text-bold-lg">{Math.floor(tick.remainingTime / 1000)}초 남음</div>
+        <div className="text-bold-lg">{remainingTime}초 남음</div>
       </div>
     </div>
   );

@@ -5,17 +5,14 @@ import { getCookie } from '@/shared/utils/cookie';
 import { useParams } from 'react-router-dom';
 import AfterQuizSubmit from './AfterQuizSubmit';
 import QuizBackground from './QuizBackground';
-import {
-  TimerTickResponse,
-  ParticipantStatisticsResponse,
-} from '@youquiz/shared/interfaces/response';
+import { ParticipantStatisticsResponse } from '@youquiz/shared/interfaces/response';
 import { INITIAL_PARTICIPANT_STATISTICS, INITIAL_EMOJI } from '@/shared/constants/initialState';
+import { emitEventWithAck } from '@/shared/utils/emitEventWithAck';
 interface QuizBoxProps {
   quiz: QuizData;
-  tick: TimerTickResponse;
 }
 
-export default function QuizBox({ quiz, tick }: QuizBoxProps) {
+export default function QuizBox({ quiz }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -41,19 +38,29 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
     });
   };
 
-  const handleSubmit = () => {
-    socket.emit(
-      'submit answer',
-      {
-        selectedAnswer: selectedAnswer,
-        sid: getCookie('sid'),
-        pinCode: pinCode,
-        submitTime: tick.elapsedTime,
-      },
-      (response: any) => {
-        setSubmitOrder(response.submitOrder);
-      },
-    );
+  const handleSubmit = async () => {
+    const { submitOrder } = await emitEventWithAck<any>(socket, 'submit answer', {
+      selectedAnswer: selectedAnswer,
+      sid: getCookie('sid'),
+      pinCode: pinCode,
+      // 풀이 시간
+    });
+
+    setSubmitOrder(submitOrder);
+
+    // socket.emit(
+    //   'submit answer',
+    //   {
+    //     selectedAnswer: selectedAnswer,
+    //     sid: getCookie('sid'),
+    //     pinCode: pinCode,
+    //     //submitTime: tick.elapsedTime,
+    //     // 풀이 시간
+    //   },
+    //   (response: any) => {
+    //     setSubmitOrder(response.submitOrder);
+    //   },
+    // );
     setHasSubmitted(true);
   };
 
