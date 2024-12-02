@@ -14,6 +14,10 @@ export class RedisService {
     }
   }
 
+  async exists(key: string) {
+    return await this.redis.exists(key);
+  }
+
   async get(key: string) {
     return await this.redis.get(key);
   }
