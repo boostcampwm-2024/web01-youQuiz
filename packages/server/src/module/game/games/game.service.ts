@@ -4,7 +4,7 @@ import { ClassRepository } from '../../quiz/quizzes/repositories/class.repositor
 import { QuizRepository } from '../../quiz/quizzes/repositories/quiz.repository';
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { Quiz } from 'src/module/quiz/quizzes/entities/quiz.entity';
-// import { RANK_THREE } from '@shared/constants/game.constants';
+import { PARTICIPANT_MAX_NUMBER } from '@shared/constants/game.constants';
 
 @Injectable()
 export class GameService {
@@ -85,5 +85,13 @@ export class GameService {
       .filter((item) => item !== undefined);
 
     return formattedRank;
+  }
+
+  async checkAccumulation(pinCode: string) {
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const participantLength = gameInfo.participantList.length;
+
+    const isPossible = participantLength >= PARTICIPANT_MAX_NUMBER ? false : true;
+    return { isPossible };
   }
 }
