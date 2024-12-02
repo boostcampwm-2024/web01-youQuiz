@@ -2,7 +2,10 @@
   <h1>YOU QUIZ?</h1>
 
 <br/>
-<img width="1676" alt="스크린샷 2024-12-01 오후 8 33 25" src="https://github.com/user-attachments/assets/97609207-531f-4f2a-804a-564e4d3e87e6">
+
+![화면 기록 2024-12-02 오전 3 58 47](https://github.com/user-attachments/assets/d124e56f-b896-41e8-a588-9c17f5685467)
+
+
 
 
 </div>
