@@ -18,5 +18,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     classTitle: '클래스명',
+    onClick: () => {},
   },
 };

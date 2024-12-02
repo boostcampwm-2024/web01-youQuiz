@@ -27,7 +27,8 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
   const mutation = useDeleteClass();
   const navigate = useNavigate();
 
-  const handleSelectClass = (index: number) => {
+  const handleSelectClass = (index: number, e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
     setSelectedClassIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
 
@@ -52,12 +53,16 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
   return (
     <>
       <div
-        className={`flex justify-between items-center min-w-content h-16 bg-white shadow-sm ${
-          selectedClassIndex === index ? 'border-secondary' : 'border-none'
-        } border rounded-base p-6 cursor-pointer`}
-        onClick={() => handleSelectClass(index)}
+        className={`flex justify-between items-center min-w-content h-20 bg-white shadow-sm border rounded-base p-6 cursor-pointer`}
+        onClick={(e) => handleSelectClass(index, e)}
       >
-        <span className="text-lg font-semibold">{quizList.title}</span>
+        <div className="flex flex-col">
+          <span className="text-lg font-semibold">{quizList.title}</span>
+          <span className="text-sm font-semibold text-gray-500">
+            문제 {quizList.quizzes.length !== 0 ? `${quizList.quizzes.length}개` : '없음'}
+          </span>
+        </div>
+
         <div className="flex gap-4">
           <button type="button" onClick={(e) => handleDeleteClass(e, quizList.id)}>
             <BinIcon className="w-5 h-5 text-red-500" />
@@ -68,7 +73,7 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
             color="secondary"
             onClick={() => handleQuizStart(quizList.id)}
           />
-          <button type="button" onClick={() => handleSelectClass(index)}>
+          <button type="button" onClick={(e) => handleSelectClass(index, e)}>
             <DownArrowIcon
               stroke="#000000"
               className={selectedClassIndex === index ? 'rotate-180' : 'rotate-0'}
@@ -77,7 +82,7 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
         </div>
       </div>
       {selectedClassIndex === index && (
-        <div className={`flex flex-col gap-3 p-4 -mt-4 border shadow-sm rounded-base bg-white`}>
+        <div className={`flex flex-col gap-1 p-4 -mt-4 border shadow-sm rounded-base bg-white`}>
           {quizList.quizzes.length === 0 && (
             <span className="text-md font-semibold text-gray-600">퀴즈가 없습니다.</span>
           )}

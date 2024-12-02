@@ -30,6 +30,7 @@ const randomColor = [
 export default function UserGridItem({ participant, isMine, otherMessage }: UserGridItemProps) {
   // 내 메시지, 상대방들 메시지
   const [message, setMessage] = useState('');
+  const [myMessage, setMyMessage] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const socket = getQuizSocket();
   const { pinCode } = useParams();
@@ -38,6 +39,7 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
+    setMyMessage(e.target.value);
     socket.emit('message', { pinCode, message: e.target.value, position: participant.position });
   };
 
@@ -45,14 +47,14 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
     if (e.key === 'Enter') {
       //메세지 전송
       setIsFocused(false);
-
+      setMessage('');
       setTimeout(() => {
         socket.emit('message', {
           pinCode,
           message: '',
           position: participant.position,
         });
-        setMessage('');
+        setMyMessage('');
       }, 1500);
     }
   };
@@ -101,11 +103,11 @@ export default function UserGridItem({ participant, isMine, otherMessage }: User
           />
         </>
       )}
-      {!isFocused && message && (
+      {!isFocused && myMessage && (
         <div
           className={`flex items-center absolute -top-7 left-1/2 transform -translate-x-1/2 ${randomColor[participant.position % 3]} px-2 h-6 rounded-lg shadow-sm text-sm font-bold whitespace-nowrap`}
         >
-          {message}
+          {myMessage}
         </div>
       )}
       <div

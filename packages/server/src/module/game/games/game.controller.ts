@@ -16,4 +16,10 @@ export class GameController {
   async checkSidType(@Param('sid') sid: string, @Param('pinCode') pinCode: string) {
     return await this.gameService.checkSidType(sid);
   }
+
+  @Get('games/:pinCode/check')
+  @UsePipes(ValidationPipe)
+  async checkAccumulation(@Param('pinCode') pinCode: string) {
+    return await this.gameService.checkAccumulation(pinCode);
+  }
 }

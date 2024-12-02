@@ -55,6 +55,7 @@ export default function QuizCreateSection({
               setShowTimeSelect={setShowTimeSelect}
             />
           )}
+          <span className="text-sm text-gray-500 ml-5">* 복수 선택 가능</span>
         </p>
         <p className="w-full">
           <InputBox
@@ -64,7 +65,7 @@ export default function QuizCreateSection({
             initialValue={quizData.content}
           />
         </p>
-        <div className="flex flex-col gap-4 w-full mt-10">
+        <div className="flex flex-col gap-4 w-full mt-6">
           {quizData.choices.map((choice, index) => (
             <AnswerBox
               key={index}

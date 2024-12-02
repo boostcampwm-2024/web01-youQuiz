@@ -37,6 +37,7 @@ export default function QuizCreatePage() {
   const { classId } = useParams();
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [quizzes, setQuizzes] = useState<QuizData[]>([INITIAL_QUIZ_VALUE]);
+  const [forceRender, setForceRender] = useState(1);
   const mutation = useCreateQuiz();
   const navigate = useNavigate();
 
@@ -47,12 +48,16 @@ export default function QuizCreatePage() {
 
   const removeQuiz = (index: number) => {
     if (quizzes.length === 1) return;
-    setCurrentQuizIndex((prev) => prev - 1);
     setQuizzes((prev) => {
       const newQuizzes = [...prev];
       newQuizzes.splice(index, 1);
+
+      if (index === prev.length - 1) {
+        setCurrentQuizIndex((prevIndex) => Math.max(0, prevIndex - 1));
+      }
       return newQuizzes;
     });
+    setForceRender((prev) => prev + 1);
   };
 
   const handlePreQuiz = () => {
@@ -88,10 +93,10 @@ export default function QuizCreatePage() {
         <button className="text-weak-md" onClick={handleNextQuiz}>
           다음 문제
         </button>
-        <div className="flex-1 flex justify-end text-weak-md">문제 유형</div>
+        <div className="flex-1 flex justify-end text-weak-md">문제 유형: 객관식</div>
       </div>
       <QuizCreateSection
-        key={currentQuizIndex}
+        key={currentQuizIndex + forceRender}
         currentQuizIndex={currentQuizIndex}
         quizData={quizzes[currentQuizIndex]}
         onQuizUpdate={(updatedData: QuizData) => {
@@ -116,7 +121,7 @@ export default function QuizCreatePage() {
             className="flex items-center min-w-fit h-[44px] px-4 py-2.5 bg-white border-2 border-red-500 text-red-500 rounded-base font-medium leading-none text-md
             disabled:bg-gray-200 disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed"
             onClick={() => removeQuiz(currentQuizIndex)}
-            disabled={quizzes.length === 1 || currentQuizIndex === 0}
+            disabled={quizzes.length === 1}
           >
             <PlusIcon className="w-5 h-5 mr-1 transform rotate-45" />
             문제 삭제하기
