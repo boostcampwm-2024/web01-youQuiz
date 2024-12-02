@@ -24,6 +24,7 @@ import {
   MASTER_POSITION,
   QUIZ_WAITING_TIME,
   INTERVAL_TIME,
+  PARTICIPANT_MAX_NUMBER,
 } from '@shared/constants/game.constants';
 import { CONVERT_TO_MS } from '@shared/constants/utils.constants';
 import { CONNECTION_TYPES } from '@shared/types/connection.types';
@@ -57,19 +58,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const data = JSON.parse(await this.redisService.get(key));
 
     if (data) {
-      const { pinCode, position } = data;
+      const { pinCode } = data;
       data['socketId'] = client.id;
       data['connection'] = CONNECTION_TYPES.ON;
 
       await this.redisService.set(key, JSON.stringify(data));
       client.join(pinCode);
-
-      const gameInfoJson = await this.redisService.get(`gameId=${pinCode}`);
-      if (gameInfoJson) {
-        const gameInfo = JSON.parse(gameInfoJson);
-        const myPositionData = { participantList: gameInfo.participantList, myPosition: position };
-        client.emit('my position', myPositionData);
-      }
     }
   }
 
@@ -109,37 +103,58 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit('pincode', pinCode);
   }
 
-  @SubscribeMessage('participant entry')
-  async handleParticipantEntry(client: Socket, payload: ParticipantEntryRequestDto) {
-    const { pinCode, nickname } = payload;
+  @SubscribeMessage('session')
+  async handleSession(client: Socket, dto) {
+    const { pinCode, nickname } = dto;
     const socketId = client.id;
 
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const participantLength = gameInfo.participantList.length;
 
-    // TODO: 만약 participant.length가 32로 제한이면 더이상 못들어오도록 막아야함 -> gameState를 업데이트?
+    if (participantLength >= PARTICIPANT_MAX_NUMBER) {
+      return undefined;
+    }
+
+    const participantSid = uuidv4();
     const character = Math.floor(Math.random() * 6);
-    const position = gameInfo.participantList.length;
+    const position = participantLength;
     const connection = CONNECTION_TYPES.ON;
 
     const clientInfo = { pinCode, nickname, socketId, character, position, connection };
 
     client.join(pinCode);
 
-    const participantSid = uuidv4();
     await this.redisService.set(`participant_sid=${participantSid}`, JSON.stringify(clientInfo));
-    client.emit('session', participantSid);
-
     await this.redisService.zincrby(`gameId=${pinCode}:ranking`, 0, participantSid);
 
     const pariticipantInfo = { nickname, character, position, connection };
     gameInfo.participantList.push(pariticipantInfo);
+
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
 
-    const nicknameEventData = { participantList: gameInfo.participantList };
-    const myPositionData = { participantList: gameInfo.participantList, myPosition: position };
+    return participantSid;
+  }
 
-    client.emit('my position', myPositionData);
-    client.to(pinCode).emit('nickname', nicknameEventData);
+  @SubscribeMessage('participant notice')
+  async handleParticipantNotice(client: Socket, dto) {
+    const { pinCode } = dto;
+    client.to(pinCode).emit('participant notice');
+  }
+
+  @SubscribeMessage('participant info')
+  async handleNickname(client: Socket, dto) {
+    const { pinCode, sid } = dto;
+    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+
+    const sidType = await this.gameService.checkSidType(sid);
+    const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+
+    const data = JSON.parse(await this.redisService.get(key));
+
+    const myPosition = data.position;
+    const participantList = gameInfo.participantList;
+
+    return { myPosition, participantList };
   }
 
   @SubscribeMessage('show quiz')
