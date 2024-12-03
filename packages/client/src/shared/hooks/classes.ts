@@ -3,11 +3,11 @@ import { createClass, deleteClass, getClasses } from '@/shared/api/classes';
 import { toastController } from '@/features/toast/model/toastController';
 
 export const useGetClasses = () => {
-  const { data } = useSuspenseQuery({
+  const { data, refetch } = useSuspenseQuery({
     queryKey: ['classes'],
     queryFn: () => getClasses(),
   });
-  return { data };
+  return { data, refetch };
 };
 
 export const useCreateClass = () => {
