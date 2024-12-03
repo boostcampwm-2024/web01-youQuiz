@@ -34,7 +34,6 @@ export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
 
   const { data: ranking } = useShowRanking({ socket, pinCode: pinCode as string });
   console.log(ranking);
-  // TODO: localStorage 삭제하기
   useEffect(() => {
     const handleStartQuiz = () => {
       clearLocalStorage(LOCAL_STORAGE_KEYS);
