@@ -5,25 +5,24 @@ import { getCookie } from '@/shared/utils/cookie';
 import { useParams } from 'react-router-dom';
 import AfterQuizSubmit from './AfterQuizSubmit';
 import QuizBackground from './QuizBackground';
-import {
-  TimerTickResponse,
-  ParticipantStatisticsResponse,
-} from '@youquiz/shared/interfaces/response';
+import { ParticipantStatisticsResponse } from '@youquiz/shared/interfaces/response';
 import { INITIAL_PARTICIPANT_STATISTICS, INITIAL_EMOJI } from '@/shared/constants/initialState';
+import { usePersistState } from '@/shared/hooks/usePersistState';
 interface QuizBoxProps {
   quiz: QuizData;
-  tick: TimerTickResponse;
+  startTime: number;
 }
 
-export default function QuizBox({ quiz, tick }: QuizBoxProps) {
+export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
-  const [participantStatistics, setParticipantStatistics] = useState<ParticipantStatisticsResponse>(
+  const [hasSubmitted, setHasSubmitted] = usePersistState('hasSubmitted', false);
+  const [reactionStats, setReactionStats] = usePersistState('reactionStats', INITIAL_EMOJI);
+  const [participantStatistics, setParticipantStatistics] = usePersistState(
+    'participantStatistics',
     INITIAL_PARTICIPANT_STATISTICS,
   );
-  const [submitOrder, setSubmitOrder] = useState<number>(0);
+  const [submitOrder, setSubmitOrder] = usePersistState('submitOrder', 0);
 
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
@@ -41,19 +40,16 @@ export default function QuizBox({ quiz, tick }: QuizBoxProps) {
     });
   };
 
-  const handleSubmit = () => {
-    socket.emit(
-      'submit answer',
-      {
-        selectedAnswer: selectedAnswer,
-        sid: getCookie('sid'),
-        pinCode: pinCode,
-        submitTime: tick.elapsedTime,
-      },
-      (response: any) => {
-        setSubmitOrder(response.submitOrder);
-      },
-    );
+  const handleSubmit = async () => {
+    const { submitOrder } = await socket.emitWithAck('submit answer', {
+      selectedAnswer: selectedAnswer,
+      sid: getCookie('sid'),
+      pinCode: pinCode,
+      submitTime: Date.now() - startTime,
+    });
+
+    setSubmitOrder(submitOrder);
+
     setHasSubmitted(true);
   };
 

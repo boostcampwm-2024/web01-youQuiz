@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { getQuizSocket } from '@/shared/utils/socket';
-import { getCookie } from '@/shared/utils/cookie';
+import { useShowRanking } from '../model/hooks/useShowRanking';
+import { clearLocalStorage } from '@/shared/utils/clearLocalStorage';
+interface QuizEndProps {
+  quizOrder: number;
+  refetch: () => void;
+  setQuizEnd: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const Nickname = ({ nickname }: { nickname: string }) => {
   return (
@@ -11,16 +18,43 @@ const Nickname = ({ nickname }: { nickname: string }) => {
   );
 };
 
-export default function QuizEnd() {
+const LOCAL_STORAGE_KEYS = [
+  'isQuizEnd',
+  'reactionStats',
+  'participantStatistics',
+  'hasSubmitted',
+  'submitOrder',
+  'remianingTime',
+];
+
+export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
   const socket = getQuizSocket();
-  const { pinCode } = useParams();
+  const navigate = useNavigate();
+  const { pinCode, id } = useParams();
 
-  const [ranking, setRanking] = useState<any>([]);
-
+  const { data: ranking } = useShowRanking({ socket, pinCode: pinCode as string });
+  console.log(ranking);
+  // TODO: localStorage 삭제하기
   useEffect(() => {
-    socket.emit('show ranking', { pinCode, sid: getCookie('sid') }, (response: any) => {
-      setRanking(response);
-    });
+    const handleStartQuiz = () => {
+      clearLocalStorage(LOCAL_STORAGE_KEYS);
+      navigate(`/quiz/session/${pinCode}/${parseInt(id as string) + 1}`);
+      setQuizEnd(false);
+      refetch();
+    };
+
+    const handleEndQuiz = () => {
+      clearLocalStorage(LOCAL_STORAGE_KEYS);
+      navigate(`/quiz/session/${pinCode}/end`);
+    };
+
+    socket.on('start quiz', handleStartQuiz);
+    socket.on('end quiz', handleEndQuiz);
+
+    return () => {
+      socket.off('start quiz', handleStartQuiz);
+      socket.off('end quiz', handleEndQuiz);
+    };
   }, []);
 
   return (

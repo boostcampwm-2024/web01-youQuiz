@@ -7,16 +7,15 @@ import {
   Tooltip,
   Bar,
   Legend,
+  Cell,
 } from 'recharts';
-import { useEffect, useState } from 'react';
 
 import { MasterStatisticsResponse } from '@youquiz/shared/interfaces/response';
 import { QuizData } from '@youquiz/shared/interfaces/utils/quizdata.interface';
-import LoadingSpinner from '@/shared/assets/icons/loading-alt-loop.svg?react';
 
 interface AnswerStatProps {
   answerStats: MasterStatisticsResponse['choiceStatus'];
-  quizData: QuizData | null;
+  quizData: QuizData;
   participantCount: number;
 }
 
@@ -30,35 +29,37 @@ const calculateTickCount = (maxValue: number): number => {
 };
 
 export default function AnswerGraph({ answerStats, quizData, participantCount }: AnswerStatProps) {
-  const [answerStatsArray, setAnswerStatsArray] = useState<{ answer: string; count: number }[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (quizData?.choices) {
-      const formattedData = Object.entries(answerStats).map(([key, count]) => ({
-        answer:
-          `${parseInt(key) + 1}번: ${quizData.choices[parseInt(key)].content}` || `답변 ${key}`,
-        count,
-      }));
-      setAnswerStatsArray(formattedData);
-      setLoading(false);
-    }
-  }, [quizData, answerStats]);
-
+  const answerStatsArray = quizData.choices.map((choice, index) => ({
+    answer: `${index + 1}번: ${choice.content} ${choice.isCorrect ? '(정답)' : ''}`,
+    count: answerStats[index] || 0,
+    isCorrect: choice.isCorrect,
+  }));
   const tickCount = calculateTickCount(participantCount);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner width={50} height={50} />
-      </div>
-    );
-  }
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={answerStatsArray} barSize={60}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="answer" axisLine={false} tickLine={false} />
+        <XAxis
+          dataKey="answer"
+          axisLine={false}
+          tickLine={false}
+          tick={({ x, y, payload }) => {
+            const answerData = answerStatsArray.find((item) => item.answer === payload.value);
+            const isCorrect = answerData?.isCorrect;
+            return (
+              <text
+                x={x}
+                y={y + 15}
+                textAnchor="middle"
+                fill={isCorrect ? 'green' : '#000'}
+                fontWeight={isCorrect ? 'bold' : 'normal'}
+              >
+                {payload.value}
+              </text>
+            );
+          }}
+        />
         <YAxis
           axisLine={false}
           tickLine={false}
@@ -67,7 +68,11 @@ export default function AnswerGraph({ answerStats, quizData, participantCount }:
         />
         <Tooltip formatter={(value: number) => [`${value}명`, '참여자 수']} />
         <Legend formatter={() => '참여자 수'} />
-        <Bar dataKey="count" fillOpacity={0.8} />
+        <Bar dataKey="count" fillOpacity={0.8} isAnimationActive>
+          {answerStatsArray.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.isCorrect ? '#15803D' : '#2C2C2C'} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );

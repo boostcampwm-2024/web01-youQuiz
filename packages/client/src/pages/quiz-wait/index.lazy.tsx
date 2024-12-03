@@ -41,8 +41,7 @@ export default function QuizWaitLazyPage() {
       setUserType(response.type);
     };
 
-    socket.on('start quiz', (response) => {
-      console.log('start quiz', response);
+    socket.on('start quiz', () => {
       navigate(`/quiz/session/${pinCode}/1`);
     });
 
@@ -66,8 +65,9 @@ export default function QuizWaitLazyPage() {
   };
 
   const handleQuizStart = () => {
-    socket.emit('start quiz', { sid: getCookie('sid'), pinCode });
-    navigate(`/quiz/session/host/${pinCode}/1`);
+    socket.emitWithAck('start quiz', { sid: getCookie('sid'), pinCode }).then(() => {
+      navigate(`/quiz/session/host/${pinCode}/0`);
+    });
   };
 
   return (

@@ -1,24 +1,45 @@
 import { useEffect, useState } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
-import { TimerTickResponse } from '@youquiz/shared/interfaces/response';
+import { usePersistState } from '@/shared/hooks/usePersistState';
 
 interface QuizHeaderProps {
-  tick: TimerTickResponse;
+  startTime: number;
+  timeLimit: number;
+  setQuizEnd: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function QuizHeader({ tick }: QuizHeaderProps) {
+export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHeaderProps) {
   const socket = getQuizSocket();
-  const [submitStatus, setSubmitStatus] = useState<{ count: number; total: number }>({
+  const [submitStatus, setSubmitStatus] = useState<any>({
     count: 0,
     total: 0,
   });
-
-  const handleSubmitStatus = (status: { count: number; total: number }) => {
-    setSubmitStatus(status);
-  };
+  const [remainingTime, setRemainingTime] = usePersistState('ramainingTime', timeLimit);
 
   useEffect(() => {
+    const intervalId = setInterval(() => {
+      const timeLeft = timeLimit - Math.floor((Date.now() - startTime) / 1000);
+      setRemainingTime(timeLeft);
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [startTime, timeLimit]);
+
+  useEffect(() => {
+    if (remainingTime === 0) {
+      setQuizEnd(true);
+    }
+  }, [remainingTime]);
+
+  useEffect(() => {
+    const handleSubmitStatus = (status: any) => {
+      console.log('submitStatus', status);
+      setSubmitStatus(status);
+    };
+
     socket.on('submit status', handleSubmitStatus);
 
     return () => {
@@ -32,7 +53,7 @@ export default function QuizHeader({ tick }: QuizHeaderProps) {
         <div className="text-lg text-black-400 font-semibold">
           {submitStatus.count} / {submitStatus.total}명 제출
         </div>
-        <div className="text-bold-lg">{Math.floor(tick.remainingTime / 1000)}초 남음</div>
+        <div className="text-bold-lg">{remainingTime}초 남음</div>
       </div>
     </div>
   );

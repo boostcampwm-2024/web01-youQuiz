@@ -73,6 +73,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
     // TODO: connection 상태 변경 필요
     // 마스터 참여자 여부에 따라서 disconnection 관리 로직 다를듯
+    // const timeoutKey = `timeout:${client.id}`;
+    // await this.redisService.set(timeoutKey, 'delete', 'EX', 30);
+
+    // // 30초 후 데이터 삭제 로직
+    // setTimeout(async () => {
+    //   const timeoutExists = await this.redisService.get(timeoutKey);
+    //   if (timeoutExists) {
+    //     await this.redisService.del(client.id);
+    //   }
+    // }, 30000);
   }
 
   @SubscribeMessage('master entry')
@@ -160,32 +170,42 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return { myPosition, participantList };
   }
 
+
   @UseGuards(SessionGuard)
   @SubscribeMessage('start quiz')
   async handleStartQuiz(client: Socket, payload: StartQuizRequestDto) {
     const { sid, pinCode } = payload;
+
     const { pinCode: storedPinCode } = JSON.parse(await this.redisService.get(`master_sid=${sid}`));
+
     if (storedPinCode !== pinCode) {
       console.log('Invalid pinCode');
     }
+
     // 퀴즈 진행 상태로 변경
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
     gameInfo.gameStatus = GAMESTATUS_TYPES.IN_PROGRESS;
+
     const { classId, currentOrder, quizMaxNum } = gameInfo;
+
     const updatedCurrentOrder = currentOrder + 1;
     gameInfo.currentOrder = updatedCurrentOrder;
     await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
+
     // TODO:캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
+
     // 퀴즈 데이터 가져오기, 초이스 개수를 알아야하기 위해 -> 이후 초이스 배열 만들어야함
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
     console.log('upadate', updatedCurrentOrder);
     const currentQuizData = quizData[updatedCurrentOrder];
+
     const choicesLength = currentQuizData['choices'].length;
     const choiceStatus = Object.fromEntries(
       Array.from({ length: choicesLength }, (_, i) => [i, 0]),
     );
     const startTime = Date.now();
+
     const gameStatus = {
       totalSubmit: 0,
       totalCorrect: 0,
@@ -195,6 +215,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       emojiStatus: { easy: 0, hard: 0 },
       startTime,
     };
+
     await this.redisService.set(
       `gameId=${pinCode}:quizId=${updatedCurrentOrder}`,
       JSON.stringify(gameStatus),
@@ -204,6 +225,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.to(pinCode).emit('start quiz', { isStarted: true });
     return { isStarted: true };
   }
+
 
   @UseGuards(SessionGuard)
   @SubscribeMessage('show quiz')
@@ -226,28 +248,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const quizRedis = JSON.parse(
       await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
     );
+
     const startTime = quizRedis.startTime;
     return { quizMaxNum, currentQuizData, startTime, isLast };
-    // await this.intervalTimeSender(pinCode, startTime, currentTimeLimit);
   }
 
-  // async intervalTimeSender(pinCode: string, startTime: number, timeLimit: number) {
-  //   const intervalId = setInterval(async () => {
-  //     const currentTime = Date.now();
-  //     const elapsedTime = currentTime - startTime;
-  //     const remainingTime = (timeLimit + QUIZ_WAITING_TIME) * 1000 - elapsedTime;
-  //     if (remainingTime <= 0) {
-  //       const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
-
-  //       gameInfo.currentOrder += 1;
-  //       await this.redisService.set(`gameId=${pinCode}`, JSON.stringify(gameInfo));
-  //       this.server.to(pinCode).emit('time end', { isEnd: true });
-  //       clearInterval(intervalId);
-  //       return;
-  //     }
-  //     this.server.to(pinCode).emit('timer tick', { currentTime, elapsedTime, remainingTime });
-  //   }, INTERVAL_TIME);
-  // }
 
   private async storeQuizToRedis(classId: number) {
     const cachedQuizData = await this.redisService.get(`classId=${classId}`);
