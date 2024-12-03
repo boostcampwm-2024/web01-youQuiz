@@ -6,6 +6,8 @@ import { getCookie } from '@/shared/utils/cookie';
 
 interface QuizEndProps {
   quizOrder: number;
+  refetch: () => void;
+  setQuizEnd: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Nickname = ({ nickname }: { nickname: string }) => {
@@ -16,10 +18,10 @@ const Nickname = ({ nickname }: { nickname: string }) => {
   );
 };
 
-export default function QuizEnd({ quizOrder }: QuizEndProps) {
+export default function QuizEnd({ quizOrder, refetch, setQuizEnd }: QuizEndProps) {
   const socket = getQuizSocket();
   const navigate = useNavigate();
-  const { pinCode } = useParams();
+  const { pinCode, id } = useParams();
 
   const [ranking, setRanking] = useState<any>([]);
 
@@ -29,13 +31,24 @@ export default function QuizEnd({ quizOrder }: QuizEndProps) {
     });
 
     const handleStartQuiz = () => {
-      navigate(`/quiz/session/${pinCode}/${quizOrder + 1}`);
+      console.log(
+        '[pariticipant] when start quiz event is triggered, navigate to next quiz and refetch',
+      );
+      navigate(`/quiz/session/${pinCode}/${parseInt(id as string) + 1}`);
+      setQuizEnd(false);
+      refetch();
+    };
+
+    const handleEndQuiz = () => {
+      navigate(`/quiz/session/${pinCode}/end`);
     };
 
     socket.on('start quiz', handleStartQuiz);
+    socket.on('end quiz', handleEndQuiz);
 
     return () => {
       socket.off('start quiz', handleStartQuiz);
+      socket.off('end quiz', handleEndQuiz);
     };
   }, []);
 

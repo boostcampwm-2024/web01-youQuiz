@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import QuizBox from './ui/QuizBox';
@@ -11,7 +11,7 @@ export default function QuizSessionLazyPage() {
   const socket = getQuizSocket();
   const { pinCode } = useParams();
   const [isQuizEnd, setIsQuizEnd] = useState(false);
-  const { data: quiz } = useQuizSession({ socket, pinCode: pinCode as string });
+  const { data: quiz, refetch } = useQuizSession({ socket, pinCode: pinCode as string });
 
   return (
     <>
@@ -22,10 +22,16 @@ export default function QuizSessionLazyPage() {
             timeLimit={quiz.currentQuizData.timeLimit}
             setQuizEnd={setIsQuizEnd}
           />
-          <QuizBox quiz={quiz.currentQuizData} />
+          <QuizBox quiz={quiz.currentQuizData} startTime={quiz.startTime} />
         </div>
       )}
-      {isQuizEnd && <QuizEnd quizOrder={quiz.currentQuizData.position} />}
+      {isQuizEnd && (
+        <QuizEnd
+          quizOrder={quiz.currentQuizData.position}
+          refetch={refetch}
+          setQuizEnd={setIsQuizEnd}
+        />
+      )}
     </>
   );
 }

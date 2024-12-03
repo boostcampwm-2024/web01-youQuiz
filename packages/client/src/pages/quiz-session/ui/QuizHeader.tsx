@@ -5,7 +5,7 @@ import { getQuizSocket } from '@/shared/utils/socket';
 interface QuizHeaderProps {
   startTime: number;
   timeLimit: number;
-  setQuizEnd: (value: boolean) => void;
+  setQuizEnd: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHeaderProps) {
@@ -14,21 +14,24 @@ export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHea
     count: 0,
     total: 0,
   });
-  const [remainingTime, setRemainingTime] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(timeLimit);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       const timeLeft = timeLimit - Math.floor((Date.now() - startTime) / 1000);
       setRemainingTime(timeLeft);
-      if (timeLeft <= 0) {
-        setQuizEnd(true);
-      }
-    }, 100);
+    }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
   }, [startTime, timeLimit]);
+
+  useEffect(() => {
+    if (remainingTime === 0) {
+      setQuizEnd(true);
+    }
+  }, [remainingTime]);
 
   useEffect(() => {
     const handleSubmitStatus = (status: any) => {

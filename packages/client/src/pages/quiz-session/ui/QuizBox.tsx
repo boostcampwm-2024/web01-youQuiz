@@ -10,9 +10,10 @@ import { INITIAL_PARTICIPANT_STATISTICS, INITIAL_EMOJI } from '@/shared/constant
 import { emitEventWithAck } from '@/shared/utils/emitEventWithAck';
 interface QuizBoxProps {
   quiz: QuizData;
+  startTime: number;
 }
 
-export default function QuizBox({ quiz }: QuizBoxProps) {
+export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -43,7 +44,7 @@ export default function QuizBox({ quiz }: QuizBoxProps) {
       selectedAnswer: selectedAnswer,
       sid: getCookie('sid'),
       pinCode: pinCode,
-      // 풀이 시간
+      submitTime: Date.now() - startTime,
     });
 
     setSubmitOrder(submitOrder);
