@@ -5,6 +5,7 @@ import { QuizRepository } from '../../quiz/quizzes/repositories/quiz.repository'
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { Quiz } from 'src/module/quiz/quizzes/entities/quiz.entity';
 import { PARTICIPANT_MAX_NUMBER } from '@shared/constants/game.constants';
+import { RedisException } from 'src/module/exceptions/redis.exception';
 
 @Injectable()
 export class GameService {
@@ -64,10 +65,11 @@ export class GameService {
       const keyIds = ['master', 'participant'];
 
       for (const keyId of keyIds) {
-        if (await this.redisService.get(`${keyId}_sid=${sid}`)) {
+        if (await this.redisService.exists(`${keyId}_sid=${sid}`)) {
           return { type: keyId };
         }
       }
+      throw new RedisException(`Key not found:`, 404);
     } catch (error) {
       console.error('error: ', error);
     }

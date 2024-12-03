@@ -1,7 +1,9 @@
-import { Controller, Get, Param, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Param, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GameService } from './game.service';
+import { RedisExceptionFilter } from 'src/module/filters/redis.exception.filter';
 
 @Controller('api')
+@UseFilters(RedisExceptionFilter)
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
@@ -22,7 +24,9 @@ export class GameController {
   async checkAccumulation(@Param('pinCode') pinCode: string) {
     return await this.gameService.checkAccumulation(pinCode);
   }
+
   @Get('games/:pinCode/sid/:sid/status')
+  @UseFilters(RedisExceptionFilter)
   async checkGameStatus(@Param('sid') sid: string, @Param('pinCode') pinCode: string) {
     return await this.gameService.checkGameStatus(sid, pinCode);
   }

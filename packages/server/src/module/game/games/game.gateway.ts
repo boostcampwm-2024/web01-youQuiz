@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './game.service';
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, UseFilters, UseGuards } from '@nestjs/common';
 import { MasterEntryRequestDto } from './dto/request/master-entry.request.dto';
 import { ParticipantEntryRequestDto } from './dto/request/participant-entry.request.dto';
 import { ShowQuizRequestDto } from './dto/request/show-quiz.request.dto';
@@ -29,9 +29,11 @@ import {
 import { CONVERT_TO_MS } from '@shared/constants/utils.constants';
 import { CONNECTION_TYPES } from '@shared/types/connection.types';
 import { GAMESTATUS_TYPES } from '@shared/types/gameStatus.types';
-import { SessionGuard } from '../../guards/session.guard';
+import { RedisExceptionFilter } from 'src/module/filters/redis.exception.filter';
+import { RedisException } from 'src/module/exceptions/redis.exception';
 
 @Injectable()
+@UseFilters(RedisExceptionFilter)
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -47,24 +49,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly gameService: GameService,
   ) {}
 
+  // private async extractKey(client: Socket, sid: string) {
+  //   try {
+  //     const sidType = await this.gameService.checkSidType(sid);
+  //     const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+  //     const data = JSON.parse(await this.redisService.get(key));
+  //     return { key, data };
+  //   } catch (error) {
+  //     client.emit('error');
+  //   }
+  // }
+
   async handleConnection(client: Socket) {
     const { sid } = client.handshake?.auth;
     if (!sid) {
       return;
     }
+    try {
+      const sidType = await this.gameService.checkSidType(sid);
+      const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+      const data = JSON.parse(await this.redisService.get(key));
 
-    const sidType = await this.gameService.checkSidType(sid);
-    const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+      if (data) {
+        const { pinCode } = data;
+        data['socketId'] = client.id;
+        data['connection'] = CONNECTION_TYPES.ON;
 
-    const data = JSON.parse(await this.redisService.get(key));
-
-    if (data) {
-      const { pinCode } = data;
-      data['socketId'] = client.id;
-      data['connection'] = CONNECTION_TYPES.ON;
-
-      await this.redisService.set(key, JSON.stringify(data));
-      client.join(pinCode);
+        await this.redisService.set(key, JSON.stringify(data));
+        client.join(pinCode);
+      }
+    } catch (error) {
+      client.emit('error');
     }
   }
 
@@ -156,18 +171,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // @UseGuards(SessionGuard)
   @SubscribeMessage('participant info')
   async handleNickname(client: Socket, dto) {
-    const { pinCode, sid } = dto;
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    try {
+      const { pinCode, sid } = dto;
+      const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    const sidType = await this.gameService.checkSidType(sid);
-    const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+      const sidType = await this.gameService.checkSidType(sid);
+      const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
 
-    const data = JSON.parse(await this.redisService.get(key));
+      const data = JSON.parse(await this.redisService.get(key));
 
-    const myPosition = data.position;
-    const participantList = gameInfo.participantList;
+      const myPosition = data.position;
+      const participantList = gameInfo.participantList;
 
-    return { myPosition, participantList };
+      return { myPosition, participantList };
+    } catch (error) {
+      client.emit('error');
+    }
   }
 
   // @UseGuards(SessionGuard)
