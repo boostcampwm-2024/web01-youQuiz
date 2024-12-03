@@ -16,7 +16,7 @@ import { QuizData } from '@youquiz/shared/interfaces/utils/quizdata.interface';
 interface AnswerStatProps {
   answerStats: MasterStatisticsResponse['choiceStatus'];
   quizData: QuizData;
-  participantCount: number;
+  totalParticipants: number;
 }
 
 const calculateTickCount = (maxValue: number): number => {
@@ -28,13 +28,13 @@ const calculateTickCount = (maxValue: number): number => {
   return Math.max(divisors[Math.min(divisors.length - 1, maxTicks - 1)], 2);
 };
 
-export default function AnswerGraph({ answerStats, quizData, participantCount }: AnswerStatProps) {
+export default function AnswerGraph({ answerStats, quizData, totalParticipants }: AnswerStatProps) {
   const answerStatsArray = quizData.choices.map((choice, index) => ({
     answer: `${index + 1}번: ${choice.content} ${choice.isCorrect ? '(정답)' : ''}`,
     count: answerStats[index] || 0,
     isCorrect: choice.isCorrect,
   }));
-  const tickCount = calculateTickCount(participantCount);
+  const tickCount = calculateTickCount(totalParticipants);
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -64,7 +64,7 @@ export default function AnswerGraph({ answerStats, quizData, participantCount }:
           axisLine={false}
           tickLine={false}
           tickCount={tickCount}
-          domain={[0, participantCount]}
+          domain={[0, totalParticipants]}
         />
         <Tooltip formatter={(value: number) => [`${value}명`, '참여자 수']} />
         <Legend formatter={() => '참여자 수'} />

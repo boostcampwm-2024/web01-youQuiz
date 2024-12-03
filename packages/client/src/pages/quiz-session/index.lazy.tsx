@@ -20,6 +20,7 @@ export default function QuizSessionLazyPage() {
             startTime={quiz.startTime}
             timeLimit={quiz.currentQuizData.timeLimit}
             setQuizEnd={setIsQuizEnd}
+            totalParticipants={quiz.participantLength}
           />
           <QuizBox
             quiz={quiz.currentQuizData}

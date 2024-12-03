@@ -49,6 +49,7 @@ export default function QuizMasterSessionLazyPage() {
         quizData={quiz.currentQuizData}
         initializeStates={initializeStates}
         setInitializeStates={setInitializeStates}
+        totalParticipants={quiz.participantLength}
       />
     </div>
   );

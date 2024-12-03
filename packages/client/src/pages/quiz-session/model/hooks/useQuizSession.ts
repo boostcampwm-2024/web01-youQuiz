@@ -12,6 +12,7 @@ interface ShowQuizResponse {
   currentQuizData: QuizData;
   isLast: boolean;
   startTime: number;
+  participantLength: number;
 }
 
 export const useQuizSession = ({ socket, pinCode }: UseQuizSessionProps) => {

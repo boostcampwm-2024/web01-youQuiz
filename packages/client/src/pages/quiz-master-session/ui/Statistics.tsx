@@ -13,6 +13,7 @@ interface StatisticsProps {
   quizData: QuizData;
   initializeStates: boolean;
   setInitializeStates: React.Dispatch<React.SetStateAction<boolean>>;
+  totalParticipants: number;
 }
 
 interface HistoryItem {
@@ -26,6 +27,7 @@ export default function Statistics({
   quizData,
   initializeStates,
   setInitializeStates,
+  totalParticipants,
 }: StatisticsProps) {
   const socket = getQuizSocket();
   const [masterStatistics, setMasterStatistics] = usePersistState<MasterStatisticsResponse>(
@@ -72,7 +74,7 @@ export default function Statistics({
       <div className="grid grid-cols-[3fr_1fr] gap-4 mx-5 h-[calc(100vh-300px)]">
         <AnswerGraph
           answerStats={masterStatistics.choiceStatus}
-          participantCount={masterStatistics.participantLength}
+          totalParticipants={totalParticipants}
           quizData={quizData}
         />
         <div>
