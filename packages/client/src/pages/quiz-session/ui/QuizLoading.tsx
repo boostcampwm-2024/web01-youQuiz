@@ -22,7 +22,7 @@ const QuizLoading = () => {
 
           <div className="mt-8 text-center">
             <h2 className="text-xl font-medium text-slate-700 tracking-wide">
-              다음 퀴즈로 이동 중 입니다.
+              데이터를 가져오는 중 입니다.
             </h2>
 
             <div className="flex items-center justify-center gap-1.5 mt-3">
