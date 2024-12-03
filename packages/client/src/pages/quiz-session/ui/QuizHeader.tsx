@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import { getQuizSocket } from '@/shared/utils/socket';
 import { usePersistState } from '@/shared/hooks/usePersistState';
 
 interface QuizHeaderProps {
@@ -10,11 +9,6 @@ interface QuizHeaderProps {
 }
 
 export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHeaderProps) {
-  const socket = getQuizSocket();
-  const [submitStatus, setSubmitStatus] = useState<any>({
-    count: 0,
-    total: 0,
-  });
   const [remainingTime, setRemainingTime] = usePersistState('ramainingTime', timeLimit);
 
   useEffect(() => {
@@ -29,7 +23,7 @@ export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHea
   }, [startTime, timeLimit]);
 
   useEffect(() => {
-    if (remainingTime === 0) {
+    if (remainingTime <= 0) {
       setQuizEnd(true);
     }
   }, [remainingTime]);
