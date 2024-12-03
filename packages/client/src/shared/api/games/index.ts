@@ -7,3 +7,7 @@ export function getPincodeExist(pinCode: string) {
 export function checkPincodePossible(pinCode: string) {
   return apiClient.get(`/games/${pinCode}/check`);
 }
+
+export function checkPincodeStatus(pinCode: string, sid: string) {
+  return apiClient.get(`/games/${pinCode}/sid/${sid}/status`);
+}
