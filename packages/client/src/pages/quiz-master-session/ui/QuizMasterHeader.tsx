@@ -1,4 +1,3 @@
-import { getCookie } from '@/shared/utils/cookie';
 import { useEffect } from 'react';
 
 import { useState } from 'react';

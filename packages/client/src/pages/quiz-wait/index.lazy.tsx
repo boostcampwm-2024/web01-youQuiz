@@ -9,7 +9,6 @@ import { apiClient } from '@/shared/api';
 import UserGridView from './ui/UserGridView';
 import { useNickname } from './model/hooks/useNickname';
 import MasterChat from './ui/MasterChat';
-import { emitEventWithDelay } from '@/shared/utils/emitEventWithDelay';
 
 export interface Guest {
   nickname: string;
