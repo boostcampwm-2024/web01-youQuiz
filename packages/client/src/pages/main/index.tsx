@@ -1,9 +1,25 @@
 import { toastController } from '@/features/toast/model/toastController';
-import { getPincodeExist, checkPincodePossible } from '@/shared/api/games';
+import { getPincodeExist, checkPincodePossible, checkPincodeStatus } from '@/shared/api/games';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingSquare from './ui/FloatingSquare';
 import FloatingQuestion from './ui/FloatingQuestion';
+import { getCookie } from '@/shared/utils/cookie';
+
+const mappingGameStatus = (status: string, pinCode: string) => {
+  switch (status) {
+    case 'WAITING':
+      return `/quiz/wait/${pinCode}`;
+    case 'IN PROGRESS':
+      return `/quiz/session/${pinCode}/1`;
+    case 'LEADERBOARD':
+      return `/quiz/session/${pinCode}/end`;
+    case 'END':
+      return `/quiz/session/${pinCode}/end`;
+    default:
+      return '/';
+  }
+};
 
 export default function MainPage() {
   const [pinCode, setPinCode] = useState<string>('');
@@ -18,12 +34,24 @@ export default function MainPage() {
     const response = await getPincodeExist(pinCode);
 
     if (response.isExist) {
-      const checkResponse = await checkPincodePossible(pinCode);
-      console.log(checkResponse);
-      if (checkResponse.isPossible) {
-        navigate(`/nickname/${pinCode}`);
+      const sid = getCookie('sid');
+      if (sid) {
+        const response = await checkPincodeStatus(pinCode, sid);
+        if (response.isPossible) {
+          const status = response.gameStatus;
+          const path = mappingGameStatus(status, pinCode);
+          navigate(path);
+        } else {
+          toast.info('게임이 종료되었습니다.');
+        }
       } else {
-        toast.warning('방이 가득 찼습니다.');
+        const checkResponse = await checkPincodePossible(pinCode);
+        console.log(checkResponse);
+        if (checkResponse.isPossible) {
+          navigate(`/nickname/${pinCode}`);
+        } else {
+          toast.warning('방이 가득 찼습니다.');
+        }
       }
       return;
     }
