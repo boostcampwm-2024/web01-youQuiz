@@ -231,7 +231,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { pinCode } = payload;
     const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
 
-    const { classId, currentOrder, quizMaxNum } = gameInfo;
+    const { classId, currentOrder, quizMaxNum, participantList } = gameInfo;
     // TODO:캐싱된 퀴즈를 가져온다. 퀴즈를 생성할 경우, 만들어졌을거라 예상
     // 만일 레디스에 퀴즈가 저장되어있지않다면, 퀴즈를 다시 캐싱해오는 로직이 필요할지도.
 
@@ -247,8 +247,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.redisService.get(`gameId=${pinCode}:quizId=${currentOrder}`),
     );
 
+    const participantLength = participantList.length;
+
     const startTime = quizRedis.startTime;
-    return { quizMaxNum, currentQuizData, startTime, isLast };
+    return { quizMaxNum, currentQuizData, startTime, isLast, participantLength };
   }
 
   private async storeQuizToRedis(classId: number) {
