@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { CustomButton } from '@/shared/ui/buttons';
 import PlusIcon from '@/shared/assets/icons/plus.svg?react';
 import QuizCreateSection from './ui/QuizCreateSection';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useCreateQuiz } from '@/shared/hooks/quizzes';
 
 interface Choice {
@@ -39,7 +39,6 @@ export default function QuizCreatePage() {
   const [quizzes, setQuizzes] = useState<QuizData[]>([INITIAL_QUIZ_VALUE]);
   const [forceRender, setForceRender] = useState(1);
   const mutation = useCreateQuiz();
-  const navigate = useNavigate();
 
   const addNewQuiz = () => {
     setQuizzes((prev) => [...prev, INITIAL_QUIZ_VALUE]);
@@ -74,14 +73,7 @@ export default function QuizCreatePage() {
     const quizzesData = {
       quizzes: quizzes,
     };
-    mutation.mutate(
-      { quizData: quizzesData, classId: Number(classId) },
-      {
-        onSuccess: () => {
-          navigate('/quiz-list');
-        },
-      },
-    );
+    mutation.mutate({ quizData: quizzesData, classId: Number(classId) });
   };
 
   return (
