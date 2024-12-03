@@ -11,9 +11,10 @@ import { usePersistState } from '@/shared/hooks/usePersistState';
 interface QuizBoxProps {
   quiz: QuizData;
   startTime: number;
+  quizMaxNum: number;
 }
 
-export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
+export default function QuizBox({ quiz, startTime, quizMaxNum }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
   const [hasSubmitted, setHasSubmitted] = usePersistState('hasSubmitted', false);
@@ -99,13 +100,8 @@ export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
       <div className="relative z-10 p-6 max-w-4xl mx-auto mb-8">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-12">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-sm text-gray-500">Question {quiz.position}/10</span>
             <span className="text-sm text-gray-500">
-              난이도
-              <div className="flex items-center">
-                <div className="w-12 h-2 bg-gradient-to-t from-blue-200 to-blue-100 rounded-base" />
-                <div className="w-12 h-2 bg-gradient-to-t from-blue-200 to-blue-100 rounded-base" />
-              </div>
+              Question {quiz.position + 1}/{quizMaxNum + 1}
             </span>
           </div>
           {/* 문제 */}
@@ -159,7 +155,7 @@ export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
           <button
             ref={hardButtonRef}
             onClick={() => handleReaction('hard')}
-            className={`relative w-[160px] px-4 py-2 rounded-full transition-all flex items-center justify-center space-x-2 ${
+            className={`relative w-[170px] px-4 py-2 rounded-full transition-all flex items-center justify-center space-x-2 ${
               reactionStats.hard > 0
                 ? 'bg-red-500/90 text-white'
                 : 'bg-white border hover:border-red-400'

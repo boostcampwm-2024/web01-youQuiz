@@ -34,25 +34,10 @@ export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHea
     }
   }, [remainingTime]);
 
-  useEffect(() => {
-    const handleSubmitStatus = (status: any) => {
-      console.log('submitStatus', status);
-      setSubmitStatus(status);
-    };
-
-    socket.on('submit status', handleSubmitStatus);
-
-    return () => {
-      socket.off('submit status', handleSubmitStatus);
-    };
-  }, []);
-
   return (
     <div className="relative z-10 p-6 max-w-4xl mx-auto pt-8 ">
       <div className="flex justify-between items-center bg-white backdrop-blur-sm rounded-2xl shadow-lg p-4">
-        <div className="text-lg text-black-400 font-semibold">
-          {submitStatus.count} / {submitStatus.total}명 제출
-        </div>
+        <div className="text-lg text-gray-500 font-medium">서두르세요!</div>
         <div className="text-bold-lg">{remainingTime}초 남음</div>
       </div>
     </div>
