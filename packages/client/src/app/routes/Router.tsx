@@ -27,16 +27,14 @@ export default function Router() {
       </Route>
       <Route element={<GuestLayout />}>
         <Route element={<PreventGuestRouter />}>
-          <Route path="/quiz/session/:pinCode/:id" element={<QuizSession />} />
           <Route path="/quiz/wait/:pinCode" element={<QuizWaitPage />} />
           <Route path="/guest/questions" element={<GuestQnA />} />
         </Route>
         <Route path="/nickname/:pinCode" element={<Nickname />} />
       </Route>
       <Route path="/quiz/question" element={<QuizQuestion />} />
-
+      <Route path="/quiz/session/:pinCode/:id" element={<QuizSession />} />
       <Route path="/quiz/session/host/:pinCode/:id" element={<QuizMasterSession />} />
-
       <Route path="/quiz/session/:pinCode/end" element={<Leaderboard />} />
       <Route path={'*'} element={<NotFound />} />
     </Routes>
