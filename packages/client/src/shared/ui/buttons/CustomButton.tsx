@@ -12,7 +12,7 @@ interface CustomButtonProps {
   /** 버튼 라벨 */
   label: string;
   /** 버튼 클릭 이벤트 */
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const buttonStyles = {

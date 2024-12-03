@@ -32,7 +32,8 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
     setSelectedClassIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
 
-  const handleQuizStart = async (id: number) => {
+  const handleQuizStart = async (id: number, e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     const socket = getQuizSocket();
     socket.emit('master entry', { classId: id });
 
@@ -71,7 +72,7 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
             type="full"
             label="퀴즈 시작하기"
             color="secondary"
-            onClick={() => handleQuizStart(quizList.id)}
+            onClick={(e) => handleQuizStart(quizList.id, e)}
           />
           <button type="button" onClick={(e) => handleSelectClass(index, e)}>
             <DownArrowIcon
