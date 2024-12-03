@@ -4,6 +4,7 @@ import { useState } from 'react';
 import QuizTitleModal from './ui/QuizTitleModal';
 import { useGetClasses } from '@/shared/hooks/classes';
 import ClassItem from './ui/ClassItem';
+import EmptyQuizList from './ui/EmptyClassList';
 
 export default function QuizListLazyPage() {
   const { data: classList } = useGetClasses();
@@ -14,6 +15,7 @@ export default function QuizListLazyPage() {
       {classList.data.map((item, index) => {
         return <ClassItem key={item.id} quizList={item} index={index} />;
       })}
+      {classList.data.length === 0 && <EmptyQuizList />}
       <div className="self-end ">
         <CustomButton
           type="outline"
