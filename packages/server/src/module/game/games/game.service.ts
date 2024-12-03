@@ -94,4 +94,17 @@ export class GameService {
     const isPossible = participantLength >= PARTICIPANT_MAX_NUMBER ? false : true;
     return { isPossible };
   }
+
+  async checkGameStatus(sid: string, pinCode: string) {
+    const { pinCode: joinedPinCode } = JSON.parse(
+      await this.redisService.get(`participant_sid=${sid}`),
+    );
+
+    if (joinedPinCode !== pinCode) {
+      return { isPossible: false, gameStatus: null };
+    }
+
+    const { gameStatus } = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    return { isPossible: true, gameStatus };
+  }
 }
