@@ -4,9 +4,10 @@ import AnswerGraph from './AnswerChart';
 import RecentSubmittedAnswers from './RecentSubmittedAnswers';
 import StatisticsGroup from './StatisticsGroup';
 import EmojiChart from './EmojiChart';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { MasterStatisticsResponse } from '@youquiz/shared/interfaces/response/master-statistics.response.interface';
 import { getQuizSocket } from '@/shared/utils/socket';
+import { usePersistState } from '@/shared/hooks/usePersistState';
 
 interface StatisticsProps {
   quizData: QuizData;
@@ -27,10 +28,12 @@ export default function Statistics({
   setInitializeStates,
 }: StatisticsProps) {
   const socket = getQuizSocket();
-  const [masterStatistics, setMasterStatistics] =
-    useState<MasterStatisticsResponse>(INITIAL_MASTER_STATISTICS);
-  const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [masterStatistics, setMasterStatistics] = usePersistState<MasterStatisticsResponse>(
+    'masterStatistics',
+    INITIAL_MASTER_STATISTICS,
+  );
+  const [reactionStats, setReactionStats] = usePersistState('reactionStats', INITIAL_EMOJI);
+  const [history, setHistory] = usePersistState<HistoryItem[]>('history', []);
 
   const initializeStatistics = () => {
     setMasterStatistics(INITIAL_MASTER_STATISTICS);

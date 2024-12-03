@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { getCookie } from '@/shared/utils/cookie';
@@ -7,6 +7,9 @@ import { getQuizSocket } from '@/shared/utils/socket';
 import { useQuizSession } from '../quiz-session/model/hooks/useQuizSession';
 import QuizMasterHeader from './ui/QuizMasterHeader';
 import Statistics from './ui/Statistics';
+import { clearLocalStorage } from '@/shared/utils/clearLocalStorage';
+
+const LOCAL_STORAGE_KEYS = ['masterStatistics', 'reactionStats', 'history'];
 
 export default function QuizMasterSessionLazyPage() {
   const { pinCode, id } = useParams();
@@ -16,8 +19,6 @@ export default function QuizMasterSessionLazyPage() {
 
   const { data: quiz, refetch } = useQuizSession({ socket, pinCode: pinCode as string });
 
-  console.log('quiz', quiz);
-
   const handleNextQuiz = () => {
     if (quiz.isLast) {
       socket.emit('end quiz', { pinCode, sid: getCookie('sid') });
@@ -26,7 +27,7 @@ export default function QuizMasterSessionLazyPage() {
     }
 
     socket.emitWithAck('start quiz', { pinCode, sid: getCookie('sid') }).then(() => {
-      console.log('start quiz after return response -> navigate to next quiz and refetch');
+      clearLocalStorage(LOCAL_STORAGE_KEYS);
       navigate(`/quiz/session/host/${pinCode}/${parseInt(id as string) + 1}`);
       refetch();
       setInitializeStates(true);
