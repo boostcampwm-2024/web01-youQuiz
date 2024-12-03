@@ -30,7 +30,7 @@ const calculateTickCount = (maxValue: number): number => {
 
 export default function AnswerGraph({ answerStats, quizData, participantCount }: AnswerStatProps) {
   const answerStatsArray = quizData.choices.map((choice, index) => ({
-    answer: `${index + 1}번: ${choice.content}`,
+    answer: `${index + 1}번: ${choice.content} ${choice.isCorrect ? '(정답)' : ''}`,
     count: answerStats[index] || 0,
     isCorrect: choice.isCorrect,
   }));
@@ -70,7 +70,7 @@ export default function AnswerGraph({ answerStats, quizData, participantCount }:
         <Legend formatter={() => '참여자 수'} />
         <Bar dataKey="count" fillOpacity={0.8} isAnimationActive>
           {answerStatsArray.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.isCorrect ? 'green' : '#000000'} />
+            <Cell key={`cell-${index}`} fill={entry.isCorrect ? '#15803D' : '#2C2C2C'} />
           ))}
         </Bar>
       </BarChart>

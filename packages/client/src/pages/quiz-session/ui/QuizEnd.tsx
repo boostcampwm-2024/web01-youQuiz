@@ -24,6 +24,7 @@ const LOCAL_STORAGE_KEYS = [
   'participantStatistics',
   'hasSubmitted',
   'submitOrder',
+  'remianingTime',
 ];
 
 export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {

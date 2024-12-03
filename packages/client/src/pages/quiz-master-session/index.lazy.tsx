@@ -9,7 +9,7 @@ import QuizMasterHeader from './ui/QuizMasterHeader';
 import Statistics from './ui/Statistics';
 import { clearLocalStorage } from '@/shared/utils/clearLocalStorage';
 
-const LOCAL_STORAGE_KEYS = ['masterStatistics', 'reactionStats', 'history'];
+const LOCAL_STORAGE_KEYS = ['masterStatistics', 'reactionStats', 'history', 'remainingTime'];
 
 export default function QuizMasterSessionLazyPage() {
   const { pinCode, id } = useParams();
@@ -22,6 +22,7 @@ export default function QuizMasterSessionLazyPage() {
   const handleNextQuiz = () => {
     if (quiz.isLast) {
       socket.emit('end quiz', { pinCode, sid: getCookie('sid') });
+      clearLocalStorage(LOCAL_STORAGE_KEYS);
       navigate(`/quiz/session/${pinCode}/end`);
       return;
     }

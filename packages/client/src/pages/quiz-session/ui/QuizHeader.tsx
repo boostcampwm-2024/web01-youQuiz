@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getQuizSocket } from '@/shared/utils/socket';
+import { usePersistState } from '@/shared/hooks/usePersistState';
 
 interface QuizHeaderProps {
   startTime: number;
@@ -14,7 +15,7 @@ export default function QuizHeader({ startTime, timeLimit, setQuizEnd }: QuizHea
     count: 0,
     total: 0,
   });
-  const [remainingTime, setRemainingTime] = useState(timeLimit);
+  const [remainingTime, setRemainingTime] = usePersistState('ramainingTime', timeLimit);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

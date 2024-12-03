@@ -1,6 +1,6 @@
+import { usePersistState } from '@/shared/hooks/usePersistState';
 import { useEffect } from 'react';
 
-import { useState } from 'react';
 import { Socket } from 'socket.io-client';
 
 interface QuizMasterHeaderProps {
@@ -20,7 +20,7 @@ export default function QuizMasterHeader({
   pinCode,
   socket,
 }: QuizMasterHeaderProps) {
-  const [remainingTime, setRemainingTime] = useState(timeLimit);
+  const [remainingTime, setRemainingTime] = usePersistState('remainingTime', timeLimit);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -35,7 +35,6 @@ export default function QuizMasterHeader({
 
   useEffect(() => {
     if (remainingTime === 0) {
-      console.log('time end', remainingTime);
       socket.emit('time end', { pinCode: pinCode });
     }
   }, [remainingTime]);
