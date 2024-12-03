@@ -41,7 +41,6 @@ export default function ClassItem({ index, quizList }: ClassItemProps) {
     setCookie('sid', sid);
 
     const pinCode = await waitForSocketEvent('pincode', socket);
-    setCookie('pinCode', pinCode);
 
     navigate(`/quiz/wait/${pinCode}`);
   };
