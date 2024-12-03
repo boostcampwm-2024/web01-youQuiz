@@ -7,7 +7,7 @@ import AfterQuizSubmit from './AfterQuizSubmit';
 import QuizBackground from './QuizBackground';
 import { ParticipantStatisticsResponse } from '@youquiz/shared/interfaces/response';
 import { INITIAL_PARTICIPANT_STATISTICS, INITIAL_EMOJI } from '@/shared/constants/initialState';
-import { emitEventWithAck } from '@/shared/utils/emitEventWithAck';
+import { usePersistState } from '@/shared/hooks/usePersistState';
 interface QuizBoxProps {
   quiz: QuizData;
   startTime: number;
@@ -16,12 +16,13 @@ interface QuizBoxProps {
 export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
   const { pinCode } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<number[]>([]);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [reactionStats, setReactionStats] = useState(INITIAL_EMOJI);
-  const [participantStatistics, setParticipantStatistics] = useState<ParticipantStatisticsResponse>(
+  const [hasSubmitted, setHasSubmitted] = usePersistState('hasSubmitted', false);
+  const [reactionStats, setReactionStats] = usePersistState('reactionStats', INITIAL_EMOJI);
+  const [participantStatistics, setParticipantStatistics] = usePersistState(
+    'participantStatistics',
     INITIAL_PARTICIPANT_STATISTICS,
   );
-  const [submitOrder, setSubmitOrder] = useState<number>(0);
+  const [submitOrder, setSubmitOrder] = usePersistState('submitOrder', 0);
 
   const easyButtonRef = useRef<HTMLButtonElement>(null);
   const hardButtonRef = useRef<HTMLButtonElement>(null);
@@ -40,7 +41,7 @@ export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
   };
 
   const handleSubmit = async () => {
-    const { submitOrder } = await emitEventWithAck<any>(socket, 'submit answer', {
+    const { submitOrder } = await socket.emitWithAck('submit answer', {
       selectedAnswer: selectedAnswer,
       sid: getCookie('sid'),
       pinCode: pinCode,
@@ -49,19 +50,6 @@ export default function QuizBox({ quiz, startTime }: QuizBoxProps) {
 
     setSubmitOrder(submitOrder);
 
-    // socket.emit(
-    //   'submit answer',
-    //   {
-    //     selectedAnswer: selectedAnswer,
-    //     sid: getCookie('sid'),
-    //     pinCode: pinCode,
-    //     //submitTime: tick.elapsedTime,
-    //     // 풀이 시간
-    //   },
-    //   (response: any) => {
-    //     setSubmitOrder(response.submitOrder);
-    //   },
-    // );
     setHasSubmitted(true);
   };
 

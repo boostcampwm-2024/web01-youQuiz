@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { getQuizSocket } from '@/shared/utils/socket';
-import { getCookie } from '@/shared/utils/cookie';
-
+import { useShowRanking } from '../model/hooks/useShowRanking';
+import { clearLocalStorage } from '@/shared/utils/clearLocalStorage';
 interface QuizEndProps {
   quizOrder: number;
   refetch: () => void;
@@ -18,18 +18,23 @@ const Nickname = ({ nickname }: { nickname: string }) => {
   );
 };
 
-export default function QuizEnd({ quizOrder, refetch, setQuizEnd }: QuizEndProps) {
+const LOCAL_STORAGE_KEYS = [
+  'isQuizEnd',
+  'reactionStats',
+  'participantStatistics',
+  'hasSubmitted',
+  'submitOrder',
+];
+
+export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
   const socket = getQuizSocket();
   const navigate = useNavigate();
   const { pinCode, id } = useParams();
 
-  const [ranking, setRanking] = useState<any>([]);
-
+  const { data: ranking } = useShowRanking({ socket, pinCode: pinCode as string });
+  console.log(ranking);
+  // TODO: localStorage 삭제하기
   useEffect(() => {
-    socket.emit('show ranking', { pinCode, sid: getCookie('sid') }, (response: any) => {
-      setRanking(response);
-    });
-
     const handleStartQuiz = () => {
       console.log(
         '[pariticipant] when start quiz event is triggered, navigate to next quiz and refetch',
@@ -40,6 +45,8 @@ export default function QuizEnd({ quizOrder, refetch, setQuizEnd }: QuizEndProps
     };
 
     const handleEndQuiz = () => {
+      clearLocalStorage(LOCAL_STORAGE_KEYS);
+
       navigate(`/quiz/session/${pinCode}/end`);
     };
 

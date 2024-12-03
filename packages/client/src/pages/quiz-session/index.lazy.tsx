@@ -5,12 +5,13 @@ import QuizBox from './ui/QuizBox';
 import QuizEnd from './ui/QuizEnd';
 import QuizHeader from './ui/QuizHeader';
 import { useQuizSession } from './model/hooks/useQuizSession';
+import { usePersistState } from '@/shared/hooks/usePersistState';
 import { getQuizSocket } from '@/shared/utils/socket';
 
 export default function QuizSessionLazyPage() {
   const socket = getQuizSocket();
   const { pinCode } = useParams();
-  const [isQuizEnd, setIsQuizEnd] = useState(false);
+  const [isQuizEnd, setIsQuizEnd] = usePersistState('isQuizEnd', false);
   const { data: quiz, refetch } = useQuizSession({ socket, pinCode: pinCode as string });
 
   return (
