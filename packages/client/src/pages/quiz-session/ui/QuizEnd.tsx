@@ -37,9 +37,7 @@ export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
   // TODO: localStorage 삭제하기
   useEffect(() => {
     const handleStartQuiz = () => {
-      console.log(
-        '[pariticipant] when start quiz event is triggered, navigate to next quiz and refetch',
-      );
+      clearLocalStorage(LOCAL_STORAGE_KEYS);
       navigate(`/quiz/session/${pinCode}/${parseInt(id as string) + 1}`);
       setQuizEnd(false);
       refetch();
@@ -47,7 +45,6 @@ export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
 
     const handleEndQuiz = () => {
       clearLocalStorage(LOCAL_STORAGE_KEYS);
-
       navigate(`/quiz/session/${pinCode}/end`);
     };
 
