@@ -68,7 +68,9 @@ export default function Leaderboard() {
             </div>
             <div className="p-2 border-x border-gray-100">
               <div className="text-sm text-gray-500 mb-1">평균 점수</div>
-              <div className="font-bold text-gray-800">{data?.averageScore.toFixed(1)}점</div>
+              <div className="font-bold text-gray-800">
+                {Number(data?.averageScore.toFixed(1))}점
+              </div>
             </div>
           </div>
         </div>
