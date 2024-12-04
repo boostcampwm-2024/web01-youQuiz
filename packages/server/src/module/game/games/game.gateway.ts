@@ -197,7 +197,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 퀴즈 데이터 가져오기, 초이스 개수를 알아야하기 위해 -> 이후 초이스 배열 만들어야함
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
     console.log('upadate', updatedCurrentOrder);
-    const currentQuizData = quizData[updatedCurrentOrder];
+    const currentQuizData = quizData.find((quiz) => quiz.position === updatedCurrentOrder);
 
     const choicesLength = currentQuizData['choices'].length;
     const choiceStatus = Object.fromEntries(
@@ -238,7 +238,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 퀴즈 데이터 가져오기 이건 참여자들에게 보여줄려고 get한 데이터
     const quizData = JSON.parse(await this.redisService.get(`classId=${classId}`));
 
-    const currentQuizData = quizData[currentOrder];
+    const currentQuizData = quizData.find((quiz) => quiz.position === currentOrder);
 
     const isLast = gameInfo.currentOrder === quizMaxNum ? true : false;
 
@@ -468,5 +468,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(client: Socket, payload: MessageRequestDto) {
     const { pinCode, message, position } = payload;
     this.server.to(pinCode).emit('message', { message, position });
+  }
+
+  @SubscribeMessage('my info')
+  async handleMyInfo(client: Socket, payload: any) {
+    const { sid } = payload;
+    const sidType = await this.gameService.checkSidType(sid);
+    const key = sidType.type === 'master' ? `master_sid=${sid}` : `participant_sid=${sid}`;
+
+    const { nickname, character } = JSON.parse(await this.redisService.get(key));
+
+    return { nickname, character };
   }
 }
