@@ -12,6 +12,7 @@ import PenguinImage from '@/shared/assets/characters/펭귄.png';
 import HamsterImage from '@/shared/assets/characters/햄스터.png';
 import { Calendar, Clock, Users } from 'lucide-react';
 import { QueryClient } from '@tanstack/react-query';
+
 // import ProgressBar from './ProgressBar';
 
 interface QuizHeaderProps {
