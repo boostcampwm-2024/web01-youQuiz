@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Class } from '../entities/class.entity';
 import { Quiz } from '../entities/quiz.entity';
 import { Choice } from '../entities/choice.entity';
@@ -10,6 +10,7 @@ export class ClassRepository {
   constructor(
     @InjectRepository(Class)
     private readonly repository: Repository<Class>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(classData: Partial<Class>): Promise<Class> {
@@ -129,40 +130,25 @@ export class ClassRepository {
     }
   }
 
-  async deleteWithRelations(classEntity: Class): Promise<void> {
-    const queryRunner = this.repository.manager.connection.createQueryRunner();
+  async deleteWithRelations(id: number): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      // 1. 먼저 모든 하위 Choice 삭제
-      if (classEntity.quizzes) {
-        for (const quiz of classEntity.quizzes) {
-          if (quiz.choices && quiz.choices.length > 0) {
-            await queryRunner.manager.delete(Choice, {
-              quizId: quiz.id,
-            });
-          }
-        }
-      }
+      await queryRunner.query(
+        `DELETE FROM choice WHERE quiz_id IN (SELECT id FROM quiz WHERE class_id = ?)`,
+        [id],
+      );
 
-      // 2. Quiz 삭제
-      if (classEntity.quizzes && classEntity.quizzes.length > 0) {
-        await queryRunner.manager.delete(Quiz, {
-          classId: classEntity.id,
-        });
-      }
+      await queryRunner.query(`DELETE FROM quiz WHERE class_id = ?`, [id]);
 
-      // 3. 마지막으로 Class 삭제
-      await queryRunner.manager.delete(Class, {
-        id: classEntity.id,
-      });
+      await queryRunner.query(`DELETE FROM class WHERE id = ?`, [id]);
 
       await queryRunner.commitTransaction();
     } catch (error) {
-      console.error('Failed to delete class with relations:', error);
       await queryRunner.rollbackTransaction();
-      throw error;
+      throw new InternalServerErrorException('Failed to delete');
     } finally {
       await queryRunner.release();
     }

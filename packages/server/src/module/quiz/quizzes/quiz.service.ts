@@ -103,12 +103,6 @@ export class QuizService {
   }
 
   async deleteClass(id: number): Promise<void> {
-    const classEntity = await this.classRepository.findClassWithRelations(id);
-
-    if (!classEntity) {
-      throw new NotFoundException(`Class with ID ${id} not found`);
-    }
-
-    await this.classRepository.deleteWithRelations(classEntity);
+    await this.classRepository.deleteWithRelations(id);
   }
 }
