@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ChoiceRepository } from '../../quiz/quizzes/repositories/choice.repository';
 import { ClassRepository } from '../../quiz/quizzes/repositories/class.repository';
-import { QuizRepository } from '../../quiz/quizzes/repositories/quiz.repository';
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { Quiz } from 'src/module/quiz/quizzes/entities/quiz.entity';
 import { PARTICIPANT_MAX_NUMBER } from '@shared/constants/game.constants';
+import { RedisException } from 'src/module/errors/redis.exception';
 
 @Injectable()
 export class GameService {
   constructor(
     private readonly classRepository: ClassRepository,
-    private readonly quizRepository: QuizRepository,
-    private readonly choiceRepository: ChoiceRepository,
     private readonly redisService: RedisService,
   ) {}
 
@@ -47,30 +44,26 @@ export class GameService {
   }
 
   async checkPinCode(pinCode: string) {
-    try {
-      const result = await this.redisService.get(`gameId=${pinCode}`);
+    const result = await this.redisService.get(`gameId=${pinCode}`);
 
-      if (result) {
-        return { isExist: true, message: 'pinCode exists.' };
-      }
-      return { isExist: false, message: 'pinCode not exists.' };
-    } catch (error) {
-      console.error('error: ', error);
+    if (result) {
+      return { isExist: true, message: 'pinCode exists.' };
     }
+    return { isExist: false, message: 'pinCode not exists.' };
   }
 
   async checkSidType(sid: string) {
-    try {
-      const keyIds = ['master', 'participant'];
+    const keyIds = ['master', 'participant'];
 
-      for (const keyId of keyIds) {
-        if (await this.redisService.get(`${keyId}_sid=${sid}`)) {
-          return { type: keyId };
-        }
+    for (const keyId of keyIds) {
+      const result = await this.redisService.get(`${keyId}_sid=${sid}`);
+
+      if (result) {
+        return { type: keyId };
       }
-    } catch (error) {
-      console.error('error: ', error);
     }
+
+    throw new RedisException(`Key Error: any_sid=${sid} not exists in Redis`);
   }
 
   async getRank(key: string, participantNum: number) {
@@ -88,7 +81,13 @@ export class GameService {
   }
 
   async checkAccumulation(pinCode: string) {
-    const gameInfo = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const result = await this.redisService.get(`gameId=${pinCode}`);
+
+    if (!result) {
+      throw new RedisException(`Key Error: gameId=${pinCode} not exists in Redis`);
+    }
+
+    const gameInfo = JSON.parse(result);
     const participantLength = gameInfo.participantList.length;
 
     const isPossible = participantLength >= PARTICIPANT_MAX_NUMBER ? false : true;
@@ -96,15 +95,35 @@ export class GameService {
   }
 
   async checkGameStatus(sid: string, pinCode: string) {
-    const { pinCode: joinedPinCode } = JSON.parse(
-      await this.redisService.get(`participant_sid=${sid}`),
-    );
+    const participantData = await this.redisService.get(`participant_sid=${sid}`);
+    if (!participantData) {
+      throw new RedisException(`Key Error: participant_sid=${sid} not exists in Redis`);
+    }
 
+    const gameData = await this.redisService.get(`gameId=${pinCode}`);
+    if (!gameData) {
+      throw new RedisException(`Key Error: gameId=${pinCode} not exists in Redis`);
+    }
+
+    const { pinCode: joinedPinCode } = JSON.parse(participantData);
     if (joinedPinCode !== pinCode) {
       return { isPossible: false, gameStatus: null };
     }
 
-    const { gameStatus } = JSON.parse(await this.redisService.get(`gameId=${pinCode}`));
+    const { gameStatus } = JSON.parse(gameData);
     return { isPossible: true, gameStatus };
+  }
+
+  async checkIsProgressed(pinCode: string) {
+    const result = await this.redisService.get(`gameId=${pinCode}`);
+    if (!result) {
+      throw new RedisException(`Key Error: gameId=${pinCode} not exists in Redis`);
+    }
+
+    const { gameStatus } = JSON.parse(result);
+    return {
+      isPossible: true,
+      isProgressed: gameStatus === 'IN PROGRESS' || gameStatus === 'END',
+    };
   }
 }
