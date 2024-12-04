@@ -49,7 +49,7 @@ export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
 
   return (
     <div className="h-dvh bg-gradient-to-b from-blue-100 to-white p-4">
-      <div className="max-w-2xl mx-auto mt-12 p-16 ">
+      <div className="max-w-2xl mx-auto mt-12 p-12 ">
         <div className="text-center mb-8">
           <span className="text-4xl font-semibold text-gray-600">🏆 중 간 점 검</span>
         </div>

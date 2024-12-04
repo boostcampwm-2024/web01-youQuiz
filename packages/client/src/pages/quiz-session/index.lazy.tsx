@@ -28,9 +28,8 @@ export default function QuizSessionLazyPage() {
       setIsQuizEnd(false);
       setInitializeStates(true);
     }
-
     const handleBeforeUnload = () => {
-      localStorage.setItem('currentOrder', quiz.currentQuizData.position.toString());
+      localStorage.setItem('currentOrder', JSON.stringify(quiz.currentQuizData.position));
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -38,7 +37,7 @@ export default function QuizSessionLazyPage() {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [quiz.currentQuizData.position]);
 
   return (
     <>
