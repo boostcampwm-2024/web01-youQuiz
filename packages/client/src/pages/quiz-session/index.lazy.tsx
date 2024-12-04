@@ -21,9 +21,6 @@ export default function QuizSessionLazyPage() {
     quizOrder: parseInt(id as string),
   });
 
-  console.log(quiz.currentQuizData.timeLimit);
-  console.log(quiz.currentQuizData.position);
-
   useEffect(() => {
     const prevCurrentOrder = localStorage.getItem('currentOrder');
     if (prevCurrentOrder !== null && parseInt(prevCurrentOrder) !== quiz.currentQuizData.position) {
@@ -46,21 +43,23 @@ export default function QuizSessionLazyPage() {
   return (
     <>
       {!isQuizEnd && (
-        <div className="relative w-full">
-          <QuizHeader
-            startTime={quiz.startTime}
-            timeLimit={quiz.currentQuizData.timeLimit}
-            setQuizEnd={setIsQuizEnd}
-            totalParticipants={quiz.participantLength}
-            pinCode={pinCode as string}
-          />
-          <QuizBox
-            quiz={quiz.currentQuizData}
-            startTime={quiz.startTime}
-            quizMaxNum={quiz.quizMaxNum}
-            initializeStates={initializeStates}
-            setInitializeStates={setInitializeStates}
-          />
+        <div className="flex justify-center items-center h-screen w-screen">
+          <div className="relative w-full">
+            <QuizHeader
+              startTime={quiz.startTime}
+              timeLimit={quiz.currentQuizData.timeLimit}
+              setQuizEnd={setIsQuizEnd}
+              totalParticipants={quiz.participantLength}
+              pinCode={pinCode as string}
+            />
+            <QuizBox
+              quiz={quiz.currentQuizData}
+              startTime={quiz.startTime}
+              quizMaxNum={quiz.quizMaxNum}
+              initializeStates={initializeStates}
+              setInitializeStates={setInitializeStates}
+            />
+          </div>
         </div>
       )}
       {isQuizEnd && (
