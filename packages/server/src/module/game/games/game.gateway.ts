@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { RedisService } from '../../../config/database/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './game.service';
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, UseFilters, UseGuards } from '@nestjs/common';
 import { MasterEntryRequestDto } from './dto/request/master-entry.request.dto';
 import { ParticipantEntryRequestDto } from './dto/request/participant-entry.request.dto';
 import { ShowQuizRequestDto } from './dto/request/show-quiz.request.dto';
@@ -30,8 +30,10 @@ import { CONVERT_TO_MS } from '@shared/constants/utils.constants';
 import { CONNECTION_TYPES } from '@shared/types/connection.types';
 import { GAMESTATUS_TYPES } from '@shared/types/gameStatus.types';
 import { SessionGuard } from '../../guards/session.guard';
+import { RedisWsExceptionFilter } from 'src/module/filters/redis.ws.exception.filter';
 
 @Injectable()
+@UseFilters(RedisWsExceptionFilter)
 @WebSocketGateway({
   cors: {
     origin: '*',
