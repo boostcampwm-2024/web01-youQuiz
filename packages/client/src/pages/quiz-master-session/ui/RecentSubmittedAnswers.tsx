@@ -61,7 +61,7 @@ export default function RecentSubmittedAnswers({
   }, []);
 
   return (
-    <div className="h-2/3 overflow-y-scroll">
+    <div className="grow overflow-y-scroll">
       <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-4 border-b border-gray-100">
           <h3 className="font-semibold">최근 제출 답안</h3>
