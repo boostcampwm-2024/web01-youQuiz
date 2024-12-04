@@ -21,6 +21,7 @@ export default function QuizSessionLazyPage() {
             timeLimit={quiz.currentQuizData.timeLimit}
             setQuizEnd={setIsQuizEnd}
             totalParticipants={quiz.participantLength}
+            pinCode={pinCode as string}
           />
           <QuizBox
             quiz={quiz.currentQuizData}

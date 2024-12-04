@@ -33,7 +33,7 @@ export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
   const { pinCode, id } = useParams();
 
   const { data: ranking } = useShowRanking({ socket, pinCode: pinCode as string });
-  console.log(ranking);
+
   useEffect(() => {
     const handleStartQuiz = () => {
       clearLocalStorage(LOCAL_STORAGE_KEYS);
