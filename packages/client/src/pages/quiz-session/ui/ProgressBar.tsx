@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 interface ProgressBarProps {
   /** 전체 시간 설정 */
   time: number;
@@ -10,7 +12,7 @@ interface ProgressBarProps {
   /** 애니메이션 종료 시 콜백 함수 */
   handleAnimationEnd?: () => void;
   /** 현재 진행 시간 */
-  currentTime?: number;
+  remainingTime: number;
 }
 
 const progressBarColors = {
@@ -22,27 +24,42 @@ const progressBarColors = {
 };
 
 const progressBarShapes = {
-  rounded: 'rounded-r-base',
+  rounded: 'rounded-base',
   square: 'rounded-none',
 };
 
 const ProgressBar = ({
-  time = 5,
+  time,
   type = 'success',
   barShape = 'rounded',
   pauseOnHover,
   handleAnimationEnd,
-  currentTime = 0,
+  remainingTime,
 }: ProgressBarProps) => {
   const progressBarColor = progressBarColors[type];
   const progressBarShape = progressBarShapes[barShape];
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
-  // 현재 시간에 따른 진행률 계산
-  const progress = Math.min(Math.max((currentTime / time) * 100, 0), 100);
-  // 남은 시간 비율 계산
-  const remainingTimeRatio = 1 - currentTime / time;
-  // 애니메이션 지속 시간 계산 (초 단위)
-  const animationDuration = time * remainingTimeRatio;
+  useEffect(() => {
+    const startTime = Date.now();
+    const endTime = startTime + remainingTime * 1000;
+
+    const updateWidth = () => {
+      const now = Date.now();
+      const remaining = Math.max(endTime - now, 0);
+      const progress = (remaining / (time * 1000)) * 100;
+
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${progress}%`;
+      }
+
+      if (remaining > 0) {
+        requestAnimationFrame(updateWidth);
+      }
+    };
+
+    updateWidth();
+  }, [remainingTime, time]);
 
   return (
     <section className="group" onAnimationEnd={handleAnimationEnd}>
@@ -51,10 +68,7 @@ const ProgressBar = ({
           className={`h-[6px] ${progressBarColor} ${progressBarShape} ${
             pauseOnHover && 'group-hover:[animation-play-state:paused]'
           }`}
-          style={{
-            width: `${progress}%`,
-            animation: `progress ${animationDuration}s linear forwards`,
-          }}
+          ref={progressBarRef}
         />
       </div>
     </section>
