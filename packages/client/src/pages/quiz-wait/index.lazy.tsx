@@ -9,12 +9,23 @@ import { apiClient } from '@/shared/api';
 import UserGridView from './ui/UserGridView';
 import { useNickname } from './model/hooks/useNickname';
 import MasterChat from './ui/MasterChat';
+import { clearLocalStorage } from '@/shared/utils/clearLocalStorage';
 
 export interface Guest {
   nickname: string;
   character: number;
   position: number;
 }
+
+const GUEST_LOCAL_STORAGE_KEYS = [
+  'isQuizEnd',
+  'reactionStats',
+  'participantStatistics',
+  'hasSubmitted',
+  'submitOrder',
+  'ramainingTime',
+];
+const MASTER_LOCAL_STORAGE_KEYS = ['masterStatistics', 'reactionStats', 'history', 'remainingTime'];
 
 export default function QuizWaitLazyPage() {
   const socket = getQuizSocket();
@@ -42,6 +53,7 @@ export default function QuizWaitLazyPage() {
     };
 
     socket.on('start quiz', () => {
+      clearLocalStorage(GUEST_LOCAL_STORAGE_KEYS);
       navigate(`/quiz/session/${pinCode}/1`);
     });
 
@@ -65,6 +77,7 @@ export default function QuizWaitLazyPage() {
   };
 
   const handleQuizStart = () => {
+    clearLocalStorage(MASTER_LOCAL_STORAGE_KEYS);
     socket.emitWithAck('start quiz', { sid: getCookie('sid'), pinCode }).then(() => {
       navigate(`/quiz/session/host/${pinCode}/0`);
     });
