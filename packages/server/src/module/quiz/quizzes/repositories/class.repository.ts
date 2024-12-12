@@ -2,8 +2,6 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Class } from '../entities/class.entity';
-import { Quiz } from '../entities/quiz.entity';
-import { Choice } from '../entities/choice.entity';
 
 @Injectable()
 export class ClassRepository {

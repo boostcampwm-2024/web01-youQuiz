@@ -33,7 +33,7 @@ export class QuizController {
   @Post('classes/:classId/quizzes')
   @UseInterceptors(new TransformInterceptor(ResponseDto))
   async createQuiz(@Param('classId') classId: number, @Body() dto: CreateQuizListRequestDto) {
-    return await this.quizService.createQuiz(classId, dto);
+    return await this.quizService.createBulkQuizWithChoices(classId, dto);
   }
 
   @Get('classes')
