@@ -11,11 +11,7 @@ export class ChoiceRepository {
     private readonly repository: Repository<Choice>,
   ) {}
 
-  async create(
-    quizId: number,
-    choiceData: CreateChoiceRequestDto,
-    manager?: EntityManager,
-  ): Promise<Choice> {
+  async create(quizId: number, choiceData: CreateChoiceRequestDto): Promise<Choice> {
     const { content, isCorrect, position } = choiceData;
     const choiceEntity = this.repository.create({
       quizId,
@@ -72,12 +68,10 @@ export class ChoiceRepository {
     }
   }
 
-  async deleteByQuizId(quizId: number, manager?: EntityManager): Promise<void> {
-    const repo = manager ? manager.getRepository(Choice) : this.repository;
-    try {
-      await repo.delete({ quizId });
-    } catch (error) {
-      throw new InternalServerErrorException('Failed to delete choices');
-    }
+  async deleteByClassId(classId: number, manager: EntityManager): Promise<void> {
+    await manager.query(
+      'DELETE FROM choice WHERE quiz_id IN (SELECT id FROM quiz WHERE class_id = ?)',
+      [classId],
+    );
   }
 }

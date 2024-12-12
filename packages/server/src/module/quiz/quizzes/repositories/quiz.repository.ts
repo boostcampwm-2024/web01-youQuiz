@@ -198,4 +198,8 @@ export class QuizRepository {
       await queryRunner.release();
     }
   }
+
+  async deleteByClassId(classId: number, manager: EntityManager): Promise<void> {
+    await manager.query('DELETE FROM quiz WHERE class_id = ?', [classId]);
+  }
 }

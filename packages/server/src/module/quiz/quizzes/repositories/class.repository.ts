@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { Class } from '../entities/class.entity';
 
 @Injectable()
@@ -128,27 +128,7 @@ export class ClassRepository {
     }
   }
 
-  async deleteWithRelations(id: number): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await queryRunner.query(
-        `DELETE FROM choice WHERE quiz_id IN (SELECT id FROM quiz WHERE class_id = ?)`,
-        [id],
-      );
-
-      await queryRunner.query(`DELETE FROM quiz WHERE class_id = ?`, [id]);
-
-      await queryRunner.query(`DELETE FROM class WHERE id = ?`, [id]);
-
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException('Failed to delete');
-    } finally {
-      await queryRunner.release();
-    }
+  async delete(id: number, manager: EntityManager): Promise<void> {
+    await manager.delete(Class, { id });
   }
 }
