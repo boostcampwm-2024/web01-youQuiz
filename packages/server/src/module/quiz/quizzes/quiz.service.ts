@@ -1,23 +1,13 @@
-import {
-  Injectable,
-  HttpException,
-  HttpStatus,
-  Param,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { DataSource, InsertResult } from 'typeorm';
 import { QuizRepository } from './repositories/quiz.repository';
 import { ChoiceRepository } from './repositories/choice.repository';
 import { ClassRepository } from './repositories/class.repository';
 import { CreateClassRequestDto } from './dto/request/create-class.request.dto';
 import { CreateClassResponseDto } from './dto/response/create-class.response.dto';
 import { CreateQuizListRequestDto } from './dto/request/create-quizlist.request.dto';
-import { ResponseDto } from '../../utils/dto/response.dto';
-import { Quiz } from './entities/quiz.entity';
 import { QuizResponseDto } from './dto/response/quiz.response.dto';
 import { UpdateClassRequestDto } from './dto/request/update-class.request.dto';
-import { UpdateQuizRequestDto } from './dto/request/update-quiz.request.dto';
 import { UpdateQuizListRequestDto } from './dto/request/update-quizlist.request.dto';
 import { GetClassResponseDto } from './dto/response/get-class.response.dto';
 import { Class } from './entities/class.entity';
@@ -39,31 +29,44 @@ export class QuizService {
     return responseDto;
   }
 
-  async createQuiz(classId: number, quizData: CreateQuizListRequestDto): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
+  async createBulkQuizWithChoices(
+    classId: number,
+    quizData: CreateQuizListRequestDto,
+  ): Promise<void> {
+    return this.dataSource.transaction(async (manager) => {
       await this.classRepository.findClassById(classId);
-      await Promise.all(
-        quizData.quizzes.map(async (quiz) => {
-          const quizEntity = await this.quizRepository.create(classId, quiz);
-          await Promise.all(
-            quiz.choices.map(async (choice) => {
-              await this.choiceRepository.create(quizEntity.id, choice);
-            }),
-          );
-        }),
-      );
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      if (error instanceof HttpException) throw error;
-      throw new InternalServerErrorException('Failed to create quiz');
-    } finally {
-      await queryRunner.release();
-    }
+
+      const quizValues = this.prepareQuizData(classId, quizData);
+      const insertedQuizzes = await this.quizRepository.createBulkQuizzes(manager, quizValues);
+
+      const choiceValues = this.prepareChoiceData(quizData, insertedQuizzes);
+      await this.choiceRepository.createBulkChoices(manager, choiceValues);
+    });
+  }
+
+  private prepareQuizData(classId: number, quizData: CreateQuizListRequestDto) {
+    return quizData.quizzes.map((quiz) => ({
+      classId,
+      content: quiz.content,
+      quizType: quiz.quizType,
+      timeLimit: quiz.timeLimit,
+      point: quiz.point,
+      position: quiz.position,
+      createdAt: new Date(),
+    }));
+  }
+
+  private prepareChoiceData(quizData: CreateQuizListRequestDto, insertedQuizzes: InsertResult) {
+    const quizIds = insertedQuizzes.identifiers.map((identifier) => identifier.id);
+    return quizData.quizzes.flatMap((quiz, index) =>
+      quiz.choices.map((choice) => ({
+        quizId: quizIds[index],
+        content: choice.content,
+        isCorrect: choice.isCorrect,
+        position: choice.position,
+        createdAt: new Date(),
+      })),
+    );
   }
 
   async getAllClasses(): Promise<GetClassResponseDto[]> {
@@ -72,7 +75,7 @@ export class QuizService {
     return classEntities.map((classEntity: Class) => GetClassResponseDto.fromEntity(classEntity));
   }
 
-  async getQuizzesByClassId(classId: number): Promise<any> {
+  async getQuizzesByClassId(classId: number): Promise<QuizResponseDto[]> {
     const quizzes = await this.quizRepository.findByClassId(classId);
 
     if (!quizzes || quizzes.length === 0) {
