@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { Quiz } from '../entities/quiz.entity';
 import { Choice } from '../entities/choice.entity';
 import { CreateQuizRequestDto } from '../dto/request/create-quiz.request.dto';
@@ -29,6 +29,18 @@ export class QuizRepository {
       return await this.repository.save(quizEntity);
     } catch (error) {
       throw new InternalServerErrorException('Failed to create quiz');
+    }
+  }
+
+  async createBulkQuizzes(manager: EntityManager, quizData: any[]) {
+    try {
+      if (!quizData.length) {
+        throw new Error('Quiz data array is empty');
+      }
+
+      return await manager.createQueryBuilder().insert().into(Quiz).values(quizData).execute();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create quizzes');
     }
   }
 

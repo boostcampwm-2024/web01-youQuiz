@@ -34,6 +34,18 @@ export class ChoiceRepository {
     }
   }
 
+  async createBulkChoices(manager: EntityManager, choiceData: any[]) {
+    try {
+      if (!choiceData.length) {
+        throw new Error('Choice data array is empty');
+      }
+
+      return await manager.createQueryBuilder().insert().into(Choice).values(choiceData).execute();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create choices');
+    }
+  }
+
   async findById(id: number): Promise<Choice> {
     try {
       const choice = await this.repository.findOne({ where: { id } });
