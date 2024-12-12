@@ -106,6 +106,11 @@ export class QuizService {
   }
 
   async deleteClass(id: number): Promise<void> {
-    await this.classRepository.deleteWithRelations(id);
+    return this.dataSource.transaction(async (manager) => {
+      await this.classRepository.findClassById(id);
+      await this.choiceRepository.deleteByClassId(id, manager);
+      await this.quizRepository.deleteByClassId(id, manager);
+      await this.classRepository.delete(id, manager);
+    });
   }
 }
