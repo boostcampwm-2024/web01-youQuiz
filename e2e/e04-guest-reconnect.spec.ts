@@ -6,9 +6,7 @@ import { getGameInfo, getQuizState } from './support/gameState';
 
 const GUEST_NICKNAME = 'E2E참가자-재접속';
 
-// socket.io 핸드셰이크의 pingInterval(25s)+pingTimeout(20s)=45s가 서버가
-// 단절을 인지하기까지 걸리는 정상 상한이다. 여기에 여유를 둔 값을 사용한다.
-const HEARTBEAT_TIMEOUT_MS = 45_000;
+// socket.io pingInterval(25s)+pingTimeout(20s)=45s가 서버의 단절 인지 상한이다.
 const HEARTBEAT_WAIT_BUDGET_MS = 58_000;
 
 interface TimelineEntry {
@@ -64,7 +62,6 @@ async function waitForCurrentOrder(
   return { ok: false, elapsedMs: Date.now() - start };
 }
 
-// 단절 인지(최대 45s) + 다음 문제 전환 + 복구 후 제출까지 감안한 상한
 test.setTimeout(150_000);
 
 test('E04: 참가자 단절 중 문제 진행 후 재접속하면 새로고침 없이 최신 문제로 복구된다', async ({
@@ -77,7 +74,6 @@ test('E04: 참가자 단절 중 문제 진행 후 재접속하면 새로고침 �
   let classId: number | undefined;
   let pinCode: string | undefined;
 
-  // 실제 전체 페이지 리로드(main frame navigation)가 있었는지 직접 관측
   let mainFrameNavigations = 0;
   guestPage.on('framenavigated', (frame) => {
     if (frame === guestPage.mainFrame()) {
@@ -146,26 +142,20 @@ test('E04: 참가자 단절 중 문제 진행 후 재접속하면 새로고침 �
     });
     const participantCountBefore = getGameInfo(pinCode)!.participantList.length;
 
-    // 이후 구간에서 실제로 몇 번 navigate 됐는지만 세기 위해 리셋
     mainFrameNavigations = 0;
 
-    // 참가자 연결만 끊는다 (주최자는 계속 동작)
     const before = await waitForParticipantConnection(pinCode, 'ON', 5_000);
     expect(before.ok).toBe(true);
     timeline.mark('participant offline 설정 직전 (서버는 아직 ON)');
     await session.guestContext.setOffline(true);
     timeline.mark('participant offline 설정 완료 (도구 호출)');
 
-    // 도구 호출 성공이 아니라 서버가 실제로 연결 해제를 관측했는지 폴링으로 확인
     const off = await waitForParticipantConnection(pinCode, 'OFF', HEARTBEAT_WAIT_BUDGET_MS);
     timeline.mark(`서버에서 참가자 OFF 관측 (${off.ok ? off.elapsedMs + 'ms' : 'timeout'})`);
     expect(off.ok).toBe(true);
-    expect(
-      off.elapsedMs,
-      'heartbeat 타임아웃(45s) 대비 지나치게 빠른 단절 감지는 setOffline이 즉시 close를 보낸 것일 뿐 실제 대상 시나리오(네트워크 단절)와 다를 수 있음을 표시',
-    ).toBeGreaterThan(0);
+    // 0에 가까운 elapsedMs는 실제 단절이 아니라 setOffline이 즉시 close를 보낸 것일 수 있다
+    expect(off.elapsedMs).toBeGreaterThan(0);
 
-    // 주최자는 실제 UI 절차(제한시간 종료 후 "다음 퀴즈" 버튼)로 다음 문제 진행
     await hostPage.bringToFront();
     const nextQuizButton = hostPage.getByRole('button', { name: '다음 퀴즈' });
     await expect(nextQuizButton).toBeEnabled({ timeout: 20_000 });
@@ -186,8 +176,7 @@ test('E04: 참가자 단절 중 문제 진행 후 재접속하면 새로고침 �
     timeline.mark(`서버에서 참가자 ON 관측 = 연결 복구 시간 (${on.ok ? on.elapsedMs + 'ms' : 'timeout'})`);
     expect(on.ok).toBe(true);
 
-    // 참가자가 수동 새로고침 없이 서버의 현재 문제(Q2)로 복구되는지 확인
-    // (이 아래로 reload()/goto() 호출 없음)
+    // 이 아래로 reload()/goto() 호출 없음 — 새로고침 없이 복구되는지 확인
     const screenRecoverStart = Date.now();
     await expect(guestPage.getByText(SHORT_TIMELIMIT_QUIZZES[1].content)).toBeVisible({
       timeout: 15_000,
@@ -221,7 +210,6 @@ test('E04: 참가자 단절 중 문제 진행 후 재접속하면 새로고침 �
       await session.guestContext.setOffline(false).catch(() => {});
       await session.close();
 
-      // 서버 disconnect 처리 완료(connection:'OFF')를 폴링으로 확인 (실패해도 정리는 계속 진행)
       if (pinCode) {
         const disconnectSettled = await waitForParticipantConnection(pinCode, 'OFF', 10_000);
         console.log(

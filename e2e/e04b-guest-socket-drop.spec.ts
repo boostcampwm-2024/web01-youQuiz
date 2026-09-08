@@ -5,10 +5,8 @@ import { createSession, sleep } from './support/session';
 import { RedisTracker } from './support/redis';
 import { getGameInfo, getQuizState } from './support/gameState';
 
-// e04(BrowserContext.setOffline)와 달리, setOffline()이 이 환경에서 45초 대기 중
-// 브라우저가 스스로 전체 페이지 재로드를 반복 시도하는 부작용이 실측되어(앱/HMR과
-// 무관), 여기서는 routeWebSocket()으로 socket.io 연결만 끊고 복구한다. 서버
-// 입장에서는 실제 전송계층 단절과 동일하게 관측된다(close 프레임 즉시 수신).
+// e04는 setOffline()으로 네트워크 전체를 끊지만, 이 파일은 routeWebSocket()으로
+// socket.io 연결만 끊어 같은 시나리오를 대안 방식으로 검증한다.
 test('E04b(소켓 라우트 차단): 참가자 소켓 연결 차단 중 문제 진행 후 복구되면 새로고침 없이 최신 문제로 복구된다', async ({
   browser,
 }) => {
@@ -29,9 +27,6 @@ test('E04b(소켓 라우트 차단): 참가자 소켓 연결 차단 중 문제 �
     }
   });
 
-  // socket.io 연결만 가로채 실제 서버로 프록시하고, 이후 밖에서 직접 close()할 수
-  // 있도록 라우트 핸들을 저장한다. onClose를 등록하지 않아야 Playwright 기본
-  // forwarding(한쪽이 닫히면 반대쪽도 닫아 서버까지 close 프레임을 전달)이 유지된다.
   await session.guestContext.routeWebSocket('**/socket.io/**', (ws) => {
     if (blocked) {
       ws.close({ code: 1006, reason: 'e2e: connection blocked' });
@@ -83,13 +78,9 @@ test('E04b(소켓 라우트 차단): 참가자 소켓 연결 차단 중 문제 �
 
     mainFrameNavigations = 0;
 
-    // 1. 참가자 소켓 연결만 끊는다 - 기존 연결을 직접 close()하고, 이후
-    // 재연결 시도는 blocked=true라 라우트 핸들러가 즉시 다시 닫는다.
     expect(getGameInfo(pinCode)!.participantList[0].connection).toBe('ON');
     blocked = true;
-    expect(currentServerRoute, '테스트 시작 시점에 활성 서버 라우트가 있어야 함').toBeTruthy();
-    // 서버·페이지 양쪽을 모두 명시적으로 close한다(한쪽만 닫으면 반대쪽에
-    // 전파되지 않는 것을 실측으로 확인했다).
+    expect(currentServerRoute).toBeTruthy();
     await Promise.all([
       currentServerRoute!.close({ code: 1006, reason: 'e2e: connection blocked' }),
       currentClientRoute?.close({ code: 1006, reason: 'e2e: connection blocked' }),
@@ -99,7 +90,6 @@ test('E04b(소켓 라우트 차단): 참가자 소켓 연결 차단 중 문제 �
     console.log(`[timeline] 서버에서 참가자 OFF 관측: ${off.ok ? off.elapsedMs + 'ms' : 'timeout'}`);
     expect(off.ok).toBe(true);
 
-    // 2. 주최자는 실제 UI 절차로 다음 문제 진행
     const nextQuizButton = hostPage.getByRole('button', { name: '다음 퀴즈' });
     await expect(nextQuizButton).toBeEnabled({ timeout: 20_000 });
     await nextQuizButton.click();
@@ -109,13 +99,11 @@ test('E04b(소켓 라우트 차단): 참가자 소켓 연결 차단 중 문제 �
       timeout: 15_000,
     });
 
-    // 3. 참가자 소켓 연결 복구 허용 (socket.io-client가 자체적으로 재시도)
     blocked = false;
     const on = await waitForParticipantConnection(pinCode, 'ON', 20_000);
     console.log(`[timeline] 연결 복구 시간: ${on.ok ? on.elapsedMs + 'ms' : 'timeout'}`);
     expect(on.ok).toBe(true);
 
-    // 4. 참가자가 수동 새로고침 없이 최신 문제로 복구되는지 확인
     const screenRecoverStart = Date.now();
     await expect(guestPage.getByText(SHORT_TIMELIMIT_QUIZZES[1].content)).toBeVisible({
       timeout: 15_000,
