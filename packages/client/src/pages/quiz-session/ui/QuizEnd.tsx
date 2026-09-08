@@ -38,6 +38,13 @@ export default function QuizEnd({ refetch, setQuizEnd }: QuizEndProps) {
       navigate(`/quiz/session/${pinCode}/end`);
     };
 
+    // 재연결 시 이 화면을 벗어나는 처리는 여기(QuizEnd)가 아니라 부모
+    // QuizSessionLazyPage가 담당한다. 이 컴포넌트는 useShowRanking
+    // (useSuspenseQuery)에 의존하는데, 연결이 끊긴 동안 그 쿼리가 pending
+    // 상태로 멈춰 있으면 QuizEnd는 최초 커밋조차 못 해 이 useEffect 자체가
+    // 실행되지 않는다 - 즉 여기에 재연결 리스너를 둬도 정작 필요한 순간에
+    // 등록되어 있지 않을 수 있다(실측으로 확인됨). 항상 성공적으로 렌더된
+    // 상태를 유지하는 부모에서 처리하는 것이 안전하다.
     socket.on('start quiz', handleStartQuiz);
     socket.on('end quiz', handleEndQuiz);
 
