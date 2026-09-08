@@ -16,9 +16,15 @@ interface ShowQuizResponse {
   participantLength: number;
 }
 
-export const useQuizSession = ({ socket, pinCode, quizOrder }: UseQuizSessionProps) => {
-  return useSuspenseQuery({
-    queryKey: ['show quiz', pinCode, quizOrder],
-    queryFn: () => emitEventWithAck<ShowQuizResponse>(socket, 'show quiz', { pinCode }),
-  });
+export const getQuizSessionQueryOptions = ({
+  socket,
+  pinCode,
+  quizOrder,
+}: UseQuizSessionProps) => ({
+  queryKey: ['show quiz', pinCode, quizOrder],
+  queryFn: () => emitEventWithAck<ShowQuizResponse>(socket, 'show quiz', { pinCode }),
+});
+
+export const useQuizSession = (props: UseQuizSessionProps) => {
+  return useSuspenseQuery(getQuizSessionQueryOptions(props));
 };

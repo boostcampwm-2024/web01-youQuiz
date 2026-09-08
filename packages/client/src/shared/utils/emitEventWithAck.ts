@@ -1,8 +1,19 @@
 import { Socket } from 'socket.io-client';
 
-export const emitEventWithAck = <T>(socket: Socket, event: string, data: any) => {
+export const DEFAULT_ACK_TIMEOUT_MS = 3000;
+
+export const emitEventWithAck = <T>(
+  socket: Socket,
+  event: string,
+  data: any,
+  ackTimeoutMs: number = DEFAULT_ACK_TIMEOUT_MS,
+) => {
   return new Promise<T>((resolve, reject) => {
-    socket.emit(event, data, (response: T) => {
+    socket.timeout(ackTimeoutMs).emit(event, data, (err: Error | null, response: T) => {
+      if (err) {
+        reject(err);
+        return;
+      }
       if (response) {
         resolve(response);
       } else {
