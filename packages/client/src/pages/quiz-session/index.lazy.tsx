@@ -22,6 +22,18 @@ export default function QuizSessionLazyPage() {
   });
 
   useEffect(() => {
+    const handleReconnect = async () => {
+      await refetch();
+      clearLocalStorage(GUEST_LOCAL_STORAGE_KEYS);
+      setIsQuizEnd(false);
+    };
+    socket.on('connect', handleReconnect);
+    return () => {
+      socket.off('connect', handleReconnect);
+    };
+  }, []);
+
+  useEffect(() => {
     const prevCurrentOrder = localStorage.getItem('currentOrder');
     if (prevCurrentOrder !== null && parseInt(prevCurrentOrder) !== quiz.currentQuizData.position) {
       clearLocalStorage(GUEST_LOCAL_STORAGE_KEYS);

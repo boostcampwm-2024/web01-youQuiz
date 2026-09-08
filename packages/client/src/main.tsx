@@ -15,7 +15,7 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <App />
-        <ReactQueryDevtools initialIsOpen={true} />
+        {!import.meta.env.VITE_DISABLE_QUERY_DEVTOOLS && <ReactQueryDevtools initialIsOpen={true} />}
       </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
